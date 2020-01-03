@@ -1,0 +1,44 @@
+@import './../../style/default';
+
+.home-wrap {
+    height: calc(80vh);
+    // 因为是自动计算的高度, 所以水平不太好算, 所以用flex布局, 有自带的属性
+    display: flex;
+    align-items: center; // 垂直方向
+    justify-content: center; // 水平方向
+    font-size: 20px;
+    background-color: @colorM;
+}
+
+.content {
+    padding: 5px;
+    // margin-left: 5px;
+}
+
+.likeNumber {
+    font-size: 20px;
+    padding: 10px;
+}
+
+.otherNumber {
+    font-size: 20px;
+    text-align: center;
+}
+
+.timeLineFormat {
+    margin-top: 10px;
+}
+
+// 走马灯的样式
+.ant-carousel .slick-slide {
+    text-align: center;
+    height: calc(47vh);
+    line-height: 160px;
+    background: #364d79;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.ant-carousel .slick-slide h3 {
+    color: #fff;
+}
