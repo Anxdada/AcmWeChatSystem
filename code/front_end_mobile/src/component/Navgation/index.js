@@ -25,7 +25,7 @@ const data = [
     },
     {
 		icon: <Icon type="schedule" style={{ fontSize: '25px',color: '#FFA54F', }}/>,
-  	    text: `值日`,
+  	    text: `值班表`,
   	    href:'#'
 	},
 ];
