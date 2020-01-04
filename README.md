@@ -23,3 +23,4 @@
  其余技术:
   - **数据库:** [Mysql](https://reactjs.org/)
   - **网络:** [Fetch](https://developer.mozilla.org/zh-CN/docs/Web/API/Fetch_API/Using_Fetch)
+  - **富文本编辑器:** [wangeditor](http://www.wangeditor.com/)
