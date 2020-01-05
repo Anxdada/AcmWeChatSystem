@@ -1,5 +1,5 @@
 import React from 'react';
-import './index.less'
+import './index.less';
 import { Carousel, Timeline, Button, Statistic, Card, Row, Col, Icon } from 'antd';
 
 export default class Home extends React.Component {
