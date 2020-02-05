@@ -12,7 +12,7 @@ export default class NoMatch extends React.Component {
                 status="404"
                 title="404"
                 subTitle="Sorry, the page you visited does not exist."
-                extra={<Link to="/admin/ui/buttons"><Button type="primary">Back Home</Button></Link>}
+                extra={<Link to="/admin/home"><Button type="primary">Back Home</Button></Link>}
             />
         );
     }

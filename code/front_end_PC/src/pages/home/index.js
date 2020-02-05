@@ -1,11 +1,16 @@
 import React from 'react';
 import './index.less';
+import axios from 'axios';
 import { Carousel, Timeline, Button, Statistic, Card, Row, Col, Icon } from 'antd';
 
-export default class Home extends React.Component {
+class HomeView extends React.Component {
 
     state = {
         like: 0
+    }
+
+    componentWillMount() {
+        
     }
 
     handleClickLike = () => {
@@ -27,17 +32,17 @@ export default class Home extends React.Component {
                         </Card>
                     </Col>
                     <Col span={6}>
-                    <Card title={<span><Icon type="team" /><span>用户个数</span></span>}>
+                        <Card title={<span><Icon type="team" /><span>用户个数</span></span>}>
                             <span className="otherNumber">2</span>
                         </Card>
                     </Col>
                     <Col span={6}>
-                    <Card title={<span><Icon type="paper-clip" /><span>友链个数</span></span>}>
+                        <Card title={<span><Icon type="paper-clip" /><span>友链个数</span></span>}>
                             <span className="otherNumber">6</span>
                         </Card>
                     </Col>
                     <Col span={6}>
-                    <Card title={<span><Icon type="desktop" /><span>帖子个数</span></span>}>
+                        <Card title={<span><Icon type="desktop" /><span>帖子个数</span></span>}>
                             <span className="otherNumber">12</span>
                         </Card>
                     </Col>
@@ -66,6 +71,16 @@ export default class Home extends React.Component {
                     </Card>
                     </Col>
                 </Row>
+            </div>
+        );
+    }
+}
+
+export default class Home extends React.Component {
+    render() {
+        return (
+            <div>
+                <HomeView />
             </div>
         );
     }

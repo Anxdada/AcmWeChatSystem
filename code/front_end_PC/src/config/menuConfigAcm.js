@@ -8,11 +8,11 @@ const menuListAcm = [
         key:'/admin/user',
         children:[
             {
-                title:'用户统计',
-                key:'/admin/user/statistics',
+                title:'用户分析',
+                key:'/admin/user/analysis',
             },
             {
-                title:'管理用户',
+                title:'用户管理',
                 key:'/admin/user/manage',
             }
         ]
@@ -66,8 +66,8 @@ const menuListAcm = [
                 key:'/admin/forum/manage',
             },
             {
-                title:'管理评论',
-                key:'/admin/forum/comment',
+                title:'添加帖子',
+                key:'/admin/forum/add',
             },
         ]
     },
@@ -82,6 +82,10 @@ const menuListAcm = [
     {
         title:'关于我们',
         key:'/admin/about',
+    },
+    {
+        title:'系统反馈',
+        key:'/admin/feedback',
     },
 ];
 export default menuListAcm;
