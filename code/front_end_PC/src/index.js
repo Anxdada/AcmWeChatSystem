@@ -1,13 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Life from './pages/demo/Life';
-import Admin from './admin';
-import Home from './pages/route-demo/route1/Home';
 import * as serviceWorker from './serviceWorker';
 import Router from './router';
+import store from './redux/store/configureStore';
+import { Provider } from 'react-redux';
 
-ReactDOM.render(<Router />, document.getElementById('root'));
+// 通过provider把redux和react连接, store传递到react项目中
+ReactDOM.render(
+    <Provider store={store}>
+        <Router/>
+    </Provider>
+    , document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

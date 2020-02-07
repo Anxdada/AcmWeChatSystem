@@ -10,10 +10,9 @@ import Messages from './pages/ui/messages';
 import myTabs from './pages/ui/tabs';
 import Gallery from './pages/ui/gallery';
 import Carousels from './pages/ui/carousel';
-import FormLogin from './pages/form/login';
-import Register from './pages/form/register'
+import FormLogin from './pages/login/login';
+import Register from './pages/login/register'
 import NoMatch from './pages/nomatch';
-import BasicTable from './pages/table/basicTable';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 import UserManage from './pages/user/userManage';
 import UserAnalysis from './pages/user/userAnalysis';
@@ -22,16 +21,21 @@ import CategoryNews from './pages/news/category';
 import AddNews from './pages/news/addNews';
 import ManageNews from './pages/news/manageNews';
 import DetailNews from './pages/news/detailNews';
+import ModifyNews from './pages/news/modifyNews';
 
 import CategoryAnnounce from './pages/announcement/category';
 import AddAnnouncement from './pages/announcement/addAnnouncement';
 import ManageAnnouncement from './pages/announcement/manageAnnouncement';
 import DetailAnnouncement from './pages/announcement/detailAnnounment';
+import RegisterInfo from './pages/announcement/registerInfo';
+import ModifyAnnouncement from './pages/announcement/modifyAnnouncement';
 
 import LabelsManageForum from './pages/forum/labelsManageForum';
-import ManagePost from './pages/forum/managePost';
-import ManageComment from './pages/forum/manageComment';
 import AddPost from './pages/forum/addPost';
+import ManagePost from './pages/forum/managePost';
+import DetailPost from './pages/forum/detailPost';
+import ManageComment from './pages/forum/manageComment';
+import ModifyPost from './pages/forum/modifyPost';
 
 
 import FriendUrl from './pages/friendUrl';
@@ -59,19 +63,24 @@ export default class IRouter extends React.Component {
                             <Route path='/admin/news/category' component={CategoryNews} />
                             <Route path='/admin/news/add' component={AddNews} />
                             <Route path='/admin/news/manage' component={ManageNews} />
-                            <Route path='/admin/news/detail' component={DetailNews} />
+                            <Route path='/admin/news/detail/:id' component={(props) => <DetailNews {...props} /> } />
+                            <Route path='/admin/news/modifyNews/:id' component={(props) => <ModifyNews {...props} /> } />
 
 
                             <Route path='/admin/announcement/category' component={CategoryAnnounce} />
                             <Route path='/admin/announcement/add/' component={AddAnnouncement} />
                             <Route path='/admin/announcement/manage' component={ManageAnnouncement} />
-                            <Route path='/admin/announcement/detail' component={(prpos) => <DetailAnnouncement {...prpos} /> } />
+                            <Route path='/admin/announcement/detail/:id' component={(props) => <DetailAnnouncement {...props} /> } />
+                            <Route path='/admin/announcement/registerPerson/:id' component={(props) => <RegisterInfo {...props} /> } />
+                            <Route path='/admin/announcement/modifyAnnouncement/:id' component={(props) => <ModifyAnnouncement {...props} /> } />
 
 
                             <Route path='/admin/forum/label' component={LabelsManageForum} />
-                            <Route path='/admin/forum/manage' component={ManagePost} />
-                            <Route path='/admin/forum/comment' component={ManageComment} />
                             <Route path='/admin/forum/add' component={AddPost} />
+                            <Route path='/admin/forum/manage' component={ManagePost} />
+                            <Route path='/admin/forum/detail/:id' component={(props) => <DetailPost {...props} /> } />
+                            <Route path='/admin/forum/comment/:id' component={(props) => <ManageComment {...props} /> } />
+                            <Route path='/admin/forum/modifyPost/:id' component={(props) => <ModifyPost {...props} /> } />
                             
 
                             <Route path='/admin/friendurl' component={FriendUrl} />

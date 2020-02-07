@@ -1,22 +1,65 @@
 import React from 'react';
-import { Card, Tag, DatePicker, Input } from 'antd';
+import { Table, Card, Tag, DatePicker, Input } from 'antd';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import './index.less';
+import { thisExpression } from '@babel/types';
 import { connect } from 'react-redux';
 import { switchMenu, addMenu } from './../../redux/actions';
 
 
 moment.locale('zh-cn');
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
+const { Search } = Input;
 
-class DetailAnnouncement extends React.Component {
+class RegisterInfoTable extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            createName: '',
-            createTime: '',
+            isRegister: false,
+        }
+        this.columns = [
+            {
+                title: '学号',
+                dataIndex: 'studentId',
+                key: 'studentId',
+                sorter: (a, b) => a.studentId - b.studentId
+            },
+            {
+                title: '姓名',
+                dataIndex: 'name',
+                key: 'name',
+            },
+        ];
+
+        // 测试数据
+        this.data = [
+            {
+                key: '1',
+                studentId: '2018091192',
+                name: '闫国龙',
+            },
+            {
+                key: '2',
+                studentId: '2017061717',
+                name: '谢仁义',
+            },
+        ]
+    }
+
+    render() {
+        return (
+            <Table columns={this.columns} dataSource={this.data} bordered />
+        );
+    }
+}
+
+class RegisterInfoView extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
             announcementTitle: '',
             announcementBody: '',
             tagName: '讲座',
@@ -26,26 +69,8 @@ class DetailAnnouncement extends React.Component {
             isRegister: false,
             registerStartTime: '',
             registerEndTime: '',
+            allRegisterPerson: '',
         }
-    }
-    
-    componentDidMount() {
-        const { dispatch } = this.props;
-        const titleArray = [
-            {
-                title: '公告',
-                key: 'none',
-            },
-            {
-                title: '管理公告',
-                key: '/admin/announcement/manage',
-            },
-            {
-                title: '查看公告详情',
-                key: 'none',
-            }
-        ];
-        dispatch(switchMenu(titleArray));
     }
 
     componentWillMount() {
@@ -54,8 +79,6 @@ class DetailAnnouncement extends React.Component {
 
     getData() {
         this.setState({
-            createName: '超级管理员',
-            createTime: moment(),
             announcementTitle: 'DFS第一次讲座',
             announcementBody: '未了控股空间的巴萨咖啡酒吧开始的减肥包括节哀顺变就开始打',
             tagName: '讲座',
@@ -88,17 +111,17 @@ class DetailAnnouncement extends React.Component {
         //   }
       
         // )
-      }
+    }
+    
+    handleSearchStudentIdBtn = () => {
+        
+    }
 
     render() {
         const registerRangeTime = [this.state.registerStartTime, this.state.registerStartTime];
         return (
+            <div>
             <Card title={this.state.announcementTitle}>
-                <strong>创建人:&nbsp;&nbsp;{this.state.createName}</strong>
-                <br />
-                <strong>创建时间:</strong>&nbsp;&nbsp;
-                <DatePicker format="YYYY-MM-DD" defaultValue={this.state.createTime} disabled />
-                <br /><br />
                 <strong>类别:</strong>&nbsp;&nbsp;
                 <Tag color={this.state.tagColor} key={this.state.tagName}>{this.state.tagName}</Tag>
                 {
@@ -124,11 +147,44 @@ class DetailAnnouncement extends React.Component {
                 }
                 <br />
                 <br />
-                <strong>内容:</strong>&nbsp;&nbsp;
+                <strong>内容:</strong>&nbsp;&nbsp;<br />
                 <p> {this.state.announcementBody } </p>
+                <strong>报名表:</strong>&nbsp;&nbsp;
+                <br /><br />
+                <Search placeholder="学号" onSearch={this.handleSearchStudentIdBtn} style={{ height: 30, width: 150}} className="searchF" />
+                <RegisterInfoTable data={this.state.allRegisterPerson} />
             </Card>
+            </div>
         );
     }
 }
 
-export default connect()(DetailAnnouncement);
+class RegisterInfo extends React.Component {
+
+    componentDidMount() {
+        const { dispatch } = this.props;
+        const titleArray = [
+            {
+                title: '公告',
+                key: 'none',
+            },
+            {
+                title: '管理公告',
+                key: '/admin/announcement/manage',
+            },
+            {
+                title: '查看公告报名信息',
+                key: 'none',
+            }
+        ];
+        dispatch(switchMenu(titleArray));
+    }
+
+    render() {
+        return (
+            <RegisterInfoView />
+        );
+    }
+}
+
+export default connect()(RegisterInfo);

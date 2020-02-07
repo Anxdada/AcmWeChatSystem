@@ -5,6 +5,9 @@ import { Link } from 'react-router-dom';
 import {EventEmitter2} from 'eventemitter2';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
+import { connect } from 'react-redux';
+import { switchMenu, addMenu } from './../../redux/actions';
+
 moment.locale('zh-cn');
 
 var emitter = new EventEmitter2()
@@ -43,7 +46,7 @@ class NewsTable extends React.Component {
                 key: 'NewsTitle',
                 render: (text, record) => (
                     <span>
-                        <a><Link to={'/admin/News/detail'}>{text}</Link></a>
+                        <a><Link to={'/admin/news/detail/'+record.newsId}>{text}</Link></a>
                     </span>
                 ),
             }, 
@@ -66,30 +69,18 @@ class NewsTable extends React.Component {
                 title: '创建时间',
                 dataIndex: 'createTime',
                 key: 'createTime',
+                sorter: (a, b) => a.createTime < b.createTime
             },  
             {
                 title: '操作',
                 key: 'action',
                 render: (text, record) => (
                     <span>
-                        <a><Link to={'/updateLecture/'+record.lectureId}>修改</Link></a>
+                        <a><Link to={'/admin/news/modifyNews/'+record.newsId}>修改</Link></a>
                         <Divider type="vertical" />
-                        <Popconfirm title="确定删除?" onConfirm={() => this.handleDelete(record.lectureId)} okText="确定" cancelText="取消">
-                            <a >删除</a>
+                        <Popconfirm title="确定删除?" onConfirm={() => this.handleDelete(record.newsId)} okText="确定" cancelText="取消">
+                            <a className="deleteHerf">删除</a>
                         </Popconfirm>
-                    </span>
-                ),
-            },
-            {
-                title: '截至操作',
-                key: 'stopaction',
-                render: (text, record) => (
-                    <span>
-                    {
-                        record.isDone==1?<a href="javascript:;"><Tag color="#108ee9" onClick={()=>this.handleDoneLecture(record.lectureId)}>截至报名</Tag></a>:
-                        <Tag color="#f50">已结束</Tag>
-                    }
-                    
                     </span>
                 ),
             }
@@ -114,14 +105,14 @@ class NewsTable extends React.Component {
         ]
     }
 
-    handleDoneLecture = (key) => {
-        // fetch(DoneLectureUrl,{   //Fetch方法
+    handleDonenews = (key) => {
+        // fetch(DonenewsUrl,{   //Fetch方法
         //         method: 'POST',
         //         headers: {
         //           'Authorization': cookie.load('token'),
         //           'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
         //         },
-        //        body: 'lectureId='+key
+        //        body: 'newsId='+key
     
         //     }).then(res => res.json()).then(
         //         data => {
@@ -142,15 +133,15 @@ class NewsTable extends React.Component {
     
       }
 
-      handleDelete = (lectureId) => {
+      handleDelete = (newsId) => {
         console.log("------");
-        // fetch(DeleteLectureUrl,{   //Fetch方法
+        // fetch(DeletenewsUrl,{   //Fetch方法
         //         method: 'POST',
         //         headers: {
         //           'Authorization': cookie.load('token'),
         //           'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
         //         },
-        //        body: 'lectureId='+lectureId
+        //        body: 'newsId='+newsId
     
         //     }).then(res => res.json()).then(
         //         data => {
@@ -185,7 +176,7 @@ class NewsView extends React.Component {
             pageSize: 10,
             allNews: '',
             searchNewsTitle: '',
-            searchTag: '时事新闻',
+            searchTag: '',
         }
     }
 
@@ -199,13 +190,13 @@ class NewsView extends React.Component {
 
     getNewsData() {
         //alert(this.state.competitionTitle);
-        // fetch(SelectLectureUrl, {
+        // fetch(SelectnewsUrl, {
         //   method: 'POST',
         //   headers: {
         //     'Authorization': cookie.load('token'),
         //     'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
         //   },
-        //   body: 'lectureTitle='+this.state.lectureTitle+'&pageNum='+this.state.nowPage+'&pageSize='+this.state.pageSize
+        //   body: 'newsTitle='+this.state.newsTitle+'&pageNum='+this.state.nowPage+'&pageSize='+this.state.pageSize
         // }).then( res=> res.json()).then(
         //   data => {
         //     if (data.code==0) {
@@ -279,7 +270,22 @@ class NewsView extends React.Component {
 }
 
 
-export default class ManageNews extends React.Component {
+class ManageNews extends React.Component {
+
+    componentDidMount() {
+        const { dispatch } = this.props;
+        const titleArray = [
+            {
+                title: '新闻',
+                key: 'none',
+            },
+            {
+                title: '管理新闻',
+                key: '/admin/news/manage',
+            },
+        ];
+        dispatch(switchMenu(titleArray));
+    }
 
     render() {
         return (
@@ -289,3 +295,5 @@ export default class ManageNews extends React.Component {
         );
     }
 }
+
+export default connect()(ManageNews);

@@ -1,16 +1,25 @@
 import React from 'react';
 import './index.less';
-import { Card, Tag, Divider, Table, Button, Popconfirm, Pagination, Input, DatePicker } from 'antd';
+import { Card, Tag, Divider, Table, Button, Popconfirm, Pagination, Input, DatePicker, Select } from 'antd';
 import { Link } from 'react-router-dom';
 import {EventEmitter2} from 'eventemitter2';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
+import { connect } from 'react-redux';
+import { switchMenu,addMenu } from './../../redux/actions';
+
 moment.locale('zh-cn');
 
 var emitter = new EventEmitter2()
 var emitter2 = new EventEmitter2()
 const { Search } = Input;
+const { Option } = Select;
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
+
+const children = [];
+for (let i = 10; i < 36; i++) {
+    children.push(<Option value={i.toString(36) + i} key={i.toString(36) + i}>{i.toString(36) + i}</Option>);
+}
 
 class PostTable extends React.Component {
 
@@ -20,6 +29,7 @@ class PostTable extends React.Component {
         this.state = {
             isGreat: false,
             isHot: false,
+            isHead: false,
         }
         this.columns = [
             {
@@ -28,7 +38,7 @@ class PostTable extends React.Component {
                 key: 'postTitle',
                 render: (text, record) => (
                     <span>
-                        <a><Link to={'/admin/forum/detail'}>{text}</Link></a>
+                        <a><Link to={'/admin/forum/detail/'+record.postId}>{text}</Link></a>
                     </span>
                 ),
             }, 
@@ -57,6 +67,7 @@ class PostTable extends React.Component {
                 title: '创建时间',
                 dataIndex: 'createTime',
                 key: 'createTime',
+                sorter: (a, b) => a.createTime < b.createTime
             },  
             {
                 title: '操作',
@@ -65,7 +76,7 @@ class PostTable extends React.Component {
                     <span>
                         <a disable><Link to={'/admin/forum/comment/'+record.postId}>查看评论</Link></a>
                         <Divider type="vertical" />
-                        <a><Link to={'/updateLecture/'+record.postId}>修改</Link></a>
+                        <a><Link to={'/admin/forum/modifyPost/'+record.postId}>修改</Link></a>
                         <Divider type="vertical" />
                         <Popconfirm title="确定删除?" onConfirm={() => this.handleDelete(record.postId)} okText="确定" cancelText="取消">
                             <a className="deleteHerf">删除</a>
@@ -78,6 +89,11 @@ class PostTable extends React.Component {
                 key: 'stopaction',
                 render: (text, record) => (
                     <span>
+                    {
+                        this.state.isHead==false?<a><Tag color="#108ee9" onClick={()=>this.handleHead(record.postId)}>置顶</Tag></a>:
+                            <a ><Tag color="#FF0000" onClick={()=>this.handleHead(record.postId)}>取消置顶</Tag></a>
+                        // 暂时用state的, 实际直接用record的, 都是通过id操作的.
+                    }
                     {
                         this.state.isGreat==false?<a><Tag color="#108ee9" onClick={()=>this.handleGreat(record.postId)}>加精</Tag></a>:
                             <a ><Tag color="#FF0000" onClick={()=>this.handleGreat(record.postId)}>取消加精</Tag></a>
@@ -119,6 +135,12 @@ class PostTable extends React.Component {
     handleHot = () => {
         this.setState({
             isHot: !this.state.isHot,
+        })
+    }
+
+    handleHead = () => {
+        this.setState({
+            isHead: !this.state.isHead,
         })
     }
 
@@ -221,6 +243,14 @@ class PostView extends React.Component {
         this.getData();
     }
 
+    handleSelectTags = (datas) => {
+
+    }
+
+    handleSearchTagsBtn = () => {
+
+    }
+
     handlePageChange = (page) => {
         console.log(page);
         this.setState({
@@ -242,6 +272,16 @@ class PostView extends React.Component {
                     <RangePicker onChange={this.handleSearchRangeTime} disabledDate={this.disabledDate} />
                     <Button type="primary" shape="circle" icon="search" onClick={this.handleSearchRangeTimeBtn}/>
                     &nbsp;&nbsp;
+                    <Select
+                        mode="multiple"
+                        style={{ width: '100%' }}
+                        placeholder="帖子的标签"
+                        onChange={this.handleSelectTags}
+                        style={{ height: 30, width: 200}}
+                    >
+                        {children}
+                    </Select>
+                    <Button type="primary" onClick={this.handleSearchTagsBtn}>搜索</Button>
                     <PostTable allPost={this.state.allPost}/>
                     <div className="tablePage">
                         <Pagination size="small" simple onChange={this.handlePageChange} total={this.state.totalPage*this.state.pageSize}
@@ -253,7 +293,23 @@ class PostView extends React.Component {
     }
 }
 
-export default class ManagePost extends React.Component {
+class ManagePost extends React.Component {
+
+    componentDidMount() {
+        const { dispatch } = this.props;
+        const titleArray = [
+            {
+                title: '讨论区管理',
+                key: 'none',
+            },
+            {
+                title: '管理帖子',
+                key: '/admin/forum/manage',
+            },
+        ];
+        dispatch(switchMenu(titleArray));
+    }
+
     render() {
         return (
             <div>
@@ -261,4 +317,6 @@ export default class ManagePost extends React.Component {
             </div>
         );
     }
-} 
+}
+
+export default connect()(ManagePost);

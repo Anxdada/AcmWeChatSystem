@@ -3,11 +3,11 @@ import { Card, DatePicker } from 'antd';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import { connect } from 'react-redux';
-import { switchMenu, addMenu } from './../../redux/actions'; 
+import { switchMenu,addMenu } from './../../redux/actions';
 
 moment.locale('zh-cn');
 
-class DetailNews extends React.Component {
+class DetailPost extends React.Component {
 
     constructor(props) {
         super(props);
@@ -19,25 +19,6 @@ class DetailNews extends React.Component {
         }
     }
 
-    componentDidMount() {
-        const { dispatch } = this.props;
-        const titleArray = [
-            {
-                title: '新闻',
-                key: 'none',
-            },
-            {
-                title: '管理新闻',
-                key: '/admin/news/manage',
-            },
-            {
-                title: '查看新闻详情',
-                key: 'none',
-            }
-        ];
-        dispatch(switchMenu(titleArray));
-    }
-
     componentWillMount() {
         this.getData();
     }
@@ -46,8 +27,8 @@ class DetailNews extends React.Component {
         this.setState({
             createName: '超级管理员',
             createTime: moment(),
-            newsTitle: '我校首获ICPC金牌',
-            newsBody: '未了控股空间的巴萨咖啡酒吧开始的减肥包括节哀顺变就开始打',
+            newsTitle: 'HDU 2018',
+            newsBody: '求第10000000000 个斐波那契数是多少 (%1e9+7) 输出答案',
         })
         // fetch(LectureDetailUrl, {
         //     method: 'POST',
@@ -71,7 +52,26 @@ class DetailNews extends React.Component {
         //   }
       
         // )
-      }
+    }
+
+    componentDidMount() {
+        const { dispatch } = this.props;
+        const titleArray = [
+            {
+                title: '讨论区管理',
+                key: 'none',
+            },
+            {
+                title: '管理帖子',
+                key: '/admin/forum/manage',
+            },
+            {
+                title: '查看帖子详情',
+                key: 'none',
+            }
+        ];
+        dispatch(switchMenu(titleArray));
+    }
 
     render() {
         return (
@@ -88,4 +88,5 @@ class DetailNews extends React.Component {
     }
 }
 
-export default connect()(DetailNews);
+// 通过connect连接组件和redux数据,传递state数据和dispatch方法
+export default connect()(DetailPost);

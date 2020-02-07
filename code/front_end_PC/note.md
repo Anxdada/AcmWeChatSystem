@@ -17,6 +17,7 @@
 // this.setState 中直接写 变量名表示, key-value是一样的, 不一样则需要明示.
 // less 的嵌套不能是div的, div之间的className必须分开写
 // 样式中不要轻易用content, 有自带最高级div块级的默认值
+// return 里面只能写简单的 ?: , 其它定义变量或者条件语句都是在render下面, return上面, 或者在函数里面写
 
 
 

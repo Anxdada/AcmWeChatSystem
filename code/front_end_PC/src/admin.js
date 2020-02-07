@@ -1,13 +1,14 @@
-import React from 'react'
+import React from 'react';
 import { Row, Col } from 'antd';
-import Header from './components/Header'
-import Footer from './components/Footer'
-import NavLeft from './components/NavLeft'
-import Home from './pages/home'
-import HomeBili from './pages/homeBilibili'
-import './style/common.less'
+import Header from './components/Header';
+import Footer from './components/Footer';
+import NavLeft from './components/NavLeft';
+import './style/common.less';
+import cookie from 'react-cookies';
+import {HashRouter as Router, Link, Redirect, Route} from 'react-router-dom';
 
-export default class Admin extends React.Component {
+
+class AdminPage extends React.Component {
     render() {
         return (
             <Row className="container">
@@ -22,6 +23,28 @@ export default class Admin extends React.Component {
                     <Footer />
                 </Col>
             </Row>
+        );
+    }
+}
+
+export default class Admin extends React.Component {
+
+    constructor(props) {
+        console.log(props);
+        super(props);
+        this.state = {
+            singup: cookie.load('userName'),
+        }
+        console.log(cookie.load('userName'));
+        console.log(cookie.load('password'));
+        console.log(cookie.load('passwor'));
+    }
+
+    render() {
+        return (
+            // this.state.singup == null ? <Redirect to={'/login'}></Redirect>
+            //     : <AdminPage > {this.props.children} </AdminPage>
+            <AdminPage > {this.props.children} </AdminPage>
         );
     }
 }

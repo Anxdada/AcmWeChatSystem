@@ -1,6 +1,6 @@
 import React from 'react';
 import './index.less';
-import { Modal, Table, Popconfirm, Divider, Select, Input, DatePicker, Card, Button, Pagination } from 'antd';
+import { Modal, Table, Popconfirm, Divider, Select, Input, DatePicker, Card, Button, Pagination, Avatar } from 'antd';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 
@@ -171,13 +171,12 @@ class UserTable extends React.Component {
                 title: '学号',
                 dataIndex: 'studentId',
                 key: 'studentId',
-                
+                sorter: (a, b) => a.studentId - b.studentId
             },  
             {
                 title: '年级',
                 dataIndex: 'grade',
                 key: 'grade',
-                
             }, 
             {
                 title: '操作',
@@ -286,6 +285,10 @@ class UserTable extends React.Component {
                         okText="关闭"
                         ancelText=""
                 >
+                    <div>
+                        头&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;像:&nbsp;&nbsp;
+                        <Avatar src="/images/acm.jpg" />
+                    </div>
                     <div>
                         用&nbsp;&nbsp;户&nbsp;&nbsp;名: <strong>{this.state.modalUserName} </strong>
                     </div>

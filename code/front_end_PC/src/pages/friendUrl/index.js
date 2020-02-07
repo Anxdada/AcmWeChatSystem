@@ -213,17 +213,20 @@ const columns = [
         title: '友链名称',
         dataIndex: 'urlName',
         key: 'urlName',
+        align: 'center',
     },
     {
         title: '友链网址',
         dataIndex: 'urlAddress',
         key: 'urlAddress',
+        align: 'center',
         render: text => <a href={"http://" + text}>{text}</a>,
     },
     {
         title: '类别',
         key: 'urlTag',
         dataIndex: 'urlTag',
+        align: 'center',
         render: (text, record) => (
             <span>
                 <UrlColorTag text={text} />
@@ -234,10 +237,15 @@ const columns = [
         title: '创建时间',
         dataIndex: 'createTime',
         key: 'createTime',
+        align: 'center',
+        sorter: (a, b) => a.createTime < b.createTime
+        // sorter: (a, b) => moment(a.createTime).isAfter(moment(b.createTime)) || moment(a.createTime).isBefore(moment(b.createTime))
+        // defaultSortOrder: 'descend'
     },
     {
         title: '操作',
         key: 'action',
+        align: 'center',
         render: (text, record) => (
             <span>
                 <UrlModifyAction modifyUrlId={record.fridenUrlId} />
@@ -271,14 +279,14 @@ const data = [
         urlName: '多校题解博客',
         urlAddress: 'www.google.com',
         urlTag: '圈内知名博客',
-        createTime: '2020-01-03',
+        createTime: moment('2020-01-03').format('YYYY-MM-DD'),
     },
     {
         key: '4',
         urlName: 'Codeforces',
         urlAddress: 'codeforces.com',
         urlTag: '竞赛网站',
-        createTime: '2020-01-04',
+        createTime: moment('2020-01-04').format('YYYY-MM-DD'),
     },
 ];
 
@@ -352,6 +360,7 @@ class FriendUrlTable extends React.Component {
     }
 
     handleShowModal = () => {
+        console.log(moment.duration(moment('2013-02-08 09:30:26')).seconds());
         this.setState({
             visible: true,
         });

@@ -3,6 +3,7 @@ import E from 'wangeditor';
 import { DatePicker, Input, Button, Card, Select, Tag, Modal, Row, Col } from 'antd';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
+import './index.less';
 
 
 moment.locale('zh-cn');
@@ -36,11 +37,11 @@ class AddAnnouncementPublishView extends React.Component {
         this.state = {
             editorContent: '',
             publishTag: '',
-            singUpInfo: '',
-            singUpStart: '',
-            singUpEnd: '',
+            isRegister: false,
+            registerStartTime: '',
+            registerEndTime: '',
             startTime: '',
-            lastTextTime: '',
+            lastTime: '',
         }
     }
 
@@ -87,18 +88,18 @@ class AddAnnouncementPublishView extends React.Component {
     handleLastTime = (e) => {
         console.log(e.target.value);
         this.setState({
-            lastTextTime: e.target.value,
+            lastTime: e.target.value,
         })
     }
 
-    handleSignUpInfo = (value) => {
+    handleIsRegister = (value) => {
         console.log(value);
         this.setState({
-            singUpInfo: value,
+            isRegister: value,
         })
     }
 
-    handleSingUpRangeTime = (dates) => {
+    handleRegisterRangeTime = (dates) => {
         console.log(dates[0]);
         console.log(dates[1]);
     }
@@ -114,7 +115,7 @@ class AddAnnouncementPublishView extends React.Component {
 
     render() {
         return (
-            <div className="publishView">
+            <div className="publishViewAnnoun">
                 <Card title="参数配置">
                 <div>
                     &nbsp;&nbsp;&nbsp;类别: &nbsp;&nbsp;
@@ -144,13 +145,20 @@ class AddAnnouncementPublishView extends React.Component {
                 </div>
                 <div>
                     &nbsp;&nbsp;&nbsp;是否报名: &nbsp;&nbsp;
-                    <Select style={{ width: 150 }} onChange={this.handleSignUpInfo} className="modalInput">
-                        <Option value="是">是</Option>
-                        <Option value="否">否</Option>
+                    <Select style={{ width: 150 }} onChange={this.handleIsRegister} className="modalInput">
+                        <Option value={true}>是</Option>
+                        <Option value={false}>否</Option>
                     </Select>
                     {
-                        this.state.singUpInfo == "是" ? <span>&nbsp;&nbsp;报名起止时间: <RangePicker onChange={this.handleSingUpRangeTime} disabledDate={this.disabledDate} />
-                            </span>: null
+                        this.state.isRegister == false ? null :
+                            <span>&nbsp;&nbsp;报名起止时间: 
+                                <RangePicker 
+                                    showTime
+                                    format="YYYY-MM-DD HH:mm:ss"
+                                    onChange={this.handleRegisterRangeTime} 
+                                    disabledDate={this.disabledDate} 
+                                    style={{ width: 400 }} />
+                            </span>
                     }
                 </div>
                 <Button type="primary" onClick={this.handlePublish}>发布</Button>

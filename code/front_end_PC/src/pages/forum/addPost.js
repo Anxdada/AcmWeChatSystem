@@ -9,6 +9,8 @@ for (let i = 10; i < 36; i++) {
   children.push(<Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>);
 }
 
+//<Option value={item.tagName}><Tag color={item.tagColor} key={item.tagName} > {item.tagName} </Tag></Option>
+
 class AddPostPublishView extends React.Component {
 
     handleSelectTags = (tags) => {
