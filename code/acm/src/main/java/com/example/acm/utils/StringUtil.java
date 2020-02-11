@@ -8,7 +8,7 @@ import java.net.URL;
  * @version 1.0
  * @date 2020-02-11 15:52
  */
-public class StringUtils {
+public class StringUtil {
 
     public static boolean isNull(String s) {
         if (s == null || "".equals(s)) {
@@ -19,21 +19,37 @@ public class StringUtils {
     public static boolean isConnect(String urlStr) {
 
         int counts = 0;
+
         if (isNull(urlStr)) {
             return false;
         }
 
-        while(counts<5) {
+        if (urlStr.indexOf("http") == -1) {
+            urlStr = "http://" + urlStr;
+            // 有些网址使用https协议是无法访问的, 只能用http...
+            // 部分需要翻墙的网站也无法访问. 防止这类网址卡住, 设置超时时间为1s.
+        }
+
+        while(counts < 2) {
             try {
                 URL url = new URL(urlStr);
-                HttpURLConnection con=(HttpURLConnection)url.openConnection();
+                HttpURLConnection con = (HttpURLConnection)url.openConnection();
                 int state = con.getResponseCode();
+
+                con.setConnectTimeout(1000); // 超时
+                con.setReadTimeout(1000);
+
+                System.setProperty("sun.net.client.defaultConnectTimeout", "1000");
+                System.setProperty("sun.net.client.defaultReadTimeout", "1000");
+
+                System.out.println("访问网址成功");
+                System.out.println(con);
                 if (state == 200) {
                     return true;
                 }
                 return false;
             } catch (Exception e) {
-                counts++;
+                ++ counts;
             }
 
         }

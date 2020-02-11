@@ -1,9 +1,12 @@
 package com.example.acm.common;
 
 /**
- * Created by ggg on 2018/11/25.
+ * @author Anxdada
+ * @version 1.0
+ * @date 2020-02-10 10:38
  */
-public enum  ResultCode {
+
+public enum ResultCode {
     SUCCESS(0, "成功"),
     HTTP_PARA_ERROR(1, "系统繁忙"),
     HAS_NO_THIS_USER(2, "尚未注册"),
@@ -29,20 +32,16 @@ public enum  ResultCode {
     USER_EXEIST(22, "该用户已存在");
 
 
-    private final int code;
+    private final int status;  // code
     private String msg;
 
     private ResultCode(int code, String msg) {
-        this.code = code;
+        this.status = code;
         this.msg = msg;
     }
 
-    public Integer getCode() {
-        return Integer.valueOf(this.code);
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public Integer getStatus() {
+        return Integer.valueOf(this.status);
     }
 
     public String getMsg() {
@@ -53,3 +52,10 @@ public enum  ResultCode {
         return this.toString().toLowerCase().replaceAll("_", " ");
     }
 }
+
+/*
+枚举类的注意点:
+1、需要在枚举实例后面加上分号，然后再写构造函数等
+2、枚举实例必须在前面
+3、定义枚举的构造器方法带参,只能为private
+ */

@@ -1,11 +1,13 @@
 package com.example.acm.common;
 
 /**
- * Created by ggg on 2018/11/25.
+ * @author Anxdada
+ * @version 1.0
+ * @date 2020-02-10 10:37
  */
 
 public class ResultBean {
-    private int code;
+    private int status;
     private String result;
     private String msg;
     private Object resultBean;
@@ -14,37 +16,30 @@ public class ResultBean {
     }
 
     public ResultBean(ResultCode code) {
-        this.code = code.getCode().intValue();
+        this.status = code.getStatus().intValue();
         this.result = code.toMessage();
         this.msg = code.getMsg();
     }
 
     public ResultBean(ResultCode code, String msg) {
-        this.code = code.getCode().intValue();
+        this.status = code.getStatus().intValue();
         this.result = code.toMessage();
         this.msg = msg;
     }
 
     public ResultBean(ResultCode code, Object resultBean) {
-        this.code = code.getCode().intValue();
+        this.status = code.getStatus().intValue();
         this.result = code.toMessage();
         this.msg = code.getMsg();
         this.resultBean = resultBean;
     }
 
-    public ResultBean(ResultCode code, String msg, Object resultBean) {
-        this.code = code.getCode().intValue();
-        this.result = code.toMessage();
-        this.msg = msg;
-        this.resultBean = resultBean;
+    public int getStatus() {
+        return status;
     }
 
-    public int getCode() {
-        return this.code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public String getResult() {

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace用于绑定Dao接口 -->
+<mapper namespace="com.example.acm.mapper.FriendUrlMapper">
+    <!-- 查询初始所有Url -->
+    <select id="selectAll" resultType="com.example.acm.entity.FriendUrl">
+        SELECT * FROM friendUrl;
+    </select>
+
+    <!-- 添加URL -->
+    <insert id="addFriendUrl" useGeneratedKeys="true">
+        INSERT INTO friendUrl
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="friendUrl.friendUrlId != null">friendUrlId,</if>
+            <if test="friendUrl.friendUrlName != null">friendUrlName,</if>
+            <if test="friendUrl.friendUrlAddress != null">friendUrlAddress,</if>
+            <if test="friendUrl.friendUrlTag != null">friendUrlTag,</if>
+            <if test="friendUrl.createUser != null">createUser,</if>
+            <if test="friendUrl.createTime != null">createTime,</if>
+            <if test="friendUrl.updateUser != null">updateUser,</if>
+            <if test="friendUrl.updateTime != null">updateTime,</if>
+            <if test="friendUrl.isEffective != null">isEffective,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="friendUrl.friendUrlId != null">#{friendUrl.friendUrlId},</if>
+            <if test="friendUrl.friendUrlName != null">#{friendUrl.friendUrlName},</if>
+            <if test="friendUrl.friendUrlAddress != null">#{friendUrl.friendUrlAddress},</if>
+            <if test="friendUrl.friendUrlTag != null">#{friendUrl.friendUrlTag},</if>
+            <if test="friendUrl.createUser != null">#{friendUrl.createUser},</if>
+            <if test="friendUrl.createTime != null">#{friendUrl.createTime},</if>
+            <if test="friendUrl.updateUser != null">#{friendUrl.updateUser},</if>
+            <if test="friendUrl.updateTime != null">#{friendUrl.updateTime},</if>
+            <if test="friendUrl.isEffective != null">#{friendUrl.isEffective},</if>
+        </trim>
+    </insert>
+
+    <!-- 更新URL -->
+    <update id="updateFriendUrlByFriendUrlId">
+        UPDATE friendUrl
+        <set>
+            <if test="friendUrl.friendUrlId != null">friendUrlId=#{friendUrl.friendUrlId},</if>
+            <if test="friendUrl.friendUrlName != null">friendUrlName=#{friendUrl.friendUrlName},</if>
+            <if test="friendUrl.friendUrlAddress != null">friendUrlAddress=#{friendUrl.friendUrlAddress},</if>
+            <if test="friendUrl.friendUrlTag != null">friendUrlTag=#{friendUrl.friendUrlTag},</if>
+            <if test="friendUrl.createUser != null">createUser=#{friendUrl.createUser},</if>
+            <if test="friendUrl.createTime != null">createTime=#{friendUrl.createTime},</if>
+            <if test="friendUrl.updateUser != null">updateUser=#{friendUrl.updateUser},</if>
+            <if test="friendUrl.updateTime != null">updateTime=#{friendUrl.updateTime},</if>
+            <if test="friendUrl.isEffective != null">isEffective=#{friendUrl.isEffective},</if>
+        </set>
+        WHERE friendUrlId = #{friendUrl.friendUrlId};
+    </update>
+
+    <!-- 查询单条URL -->
+    <select id="findFriendUrlListByFriendUrlId" resultType="com.example.acm.entity.FriendUrl">
+        SELECT
+        *
+        FROM friendUrl tt
+        <where>
+            <if test="friendUrlId != null">
+                tt.friendUrlId = #{friendUrlId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的Url的总数 -->
+    <select id="countFriendUrlMapListByQuery" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        friendUrl tt
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.friendUrlName != null ">
+                AND tt.friendUrlName like CONCAT ('%', #{map.friendUrlName}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND tt.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <sql id="friend_url_table">
+		tt.friendUrlId,
+		tt.friendUrlName,
+		tt.friendUrlAddress,
+		tt.friendUrlTag,
+		tt.createUser,
+		tt.createTime,
+		tt.updateUser,
+		tt.updateTime,
+		tt.isEffective
+	</sql>
+
+    <!-- 通过很多限制条件查询满足的Url -->
+    <select id="findFriendUrlMapListByQuery" resultType="java.util.Map">
+        SELECT
+        <include refid="friend_url_table"/>
+        FROM
+        friendUrl tt
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.friendUrlName != null ">
+                AND tt.friendUrlName like CONCAT ('%', #{map.friendUrlName}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND tt.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            tt.${map.order} ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start},#{map.limit}
+        </if>
+    </select>
+</mapper>

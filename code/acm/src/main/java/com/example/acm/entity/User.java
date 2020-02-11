@@ -11,19 +11,19 @@ import java.util.Date;
 public class User implements Serializable {
 
 	private Integer auth;// 0-未通过审核 1-超级管理员 2-管理员 3-队员 4-萌新 5-未完善资料的萌新
-	private Integer classNum;//
-	private Date createDay;//
-	private Integer grade;//
-	private String image;//
-	private Integer isEffective;//
-	private String mobile;//
-	private String openId;//
-	private String password;//
-	private String realname;//
-	private Long studentId;//
-	private Integer userId;//
-	private String username;//手机号
-	private String unionid;//
+	private Integer classNum;
+	private Date createDay;
+	private Integer grade;
+	private String image;
+	private Integer isEffective;
+	private String mobile;
+	private String openId;
+	private String password;
+	private String realname;
+	private Long studentId;
+	private Integer userId;
+	private String username;
+	private String unionid;
 
 	public void setAuth(Integer auth) {
 		this.auth = auth;

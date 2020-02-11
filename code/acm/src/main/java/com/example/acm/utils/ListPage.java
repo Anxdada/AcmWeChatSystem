@@ -6,6 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Anxdada
+ * @version 1.0
+ * @date 2020-02-11 10:40
+ */
+
 public class ListPage<T> {
     private int currentPage;
     private int nextPage;

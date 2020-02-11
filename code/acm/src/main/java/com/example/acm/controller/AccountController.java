@@ -1,4 +1,4 @@
-package com.example.acm.Controller;
+package com.example.acm.controller;
 
 import com.example.acm.entity.Account;
 import com.example.acm.service.AccountService;

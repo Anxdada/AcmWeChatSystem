@@ -1,21 +1,16 @@
-
 package com.example.acm.utils;
 
 import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 
-public class DateUtils {
+public class DateUtil {
     private static final SimpleDateFormat ORA_DATE_TIME_EXTENDED_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss");
     private static final int ERRCODE = -99;
 
-    public DateUtils() {
+    public DateUtil() {
     }
 
     public static String calDateDayDiff(Date currentDate, Date preDate) {
