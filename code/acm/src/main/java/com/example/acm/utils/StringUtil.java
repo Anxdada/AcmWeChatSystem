@@ -16,6 +16,7 @@ public class StringUtil {
         }
         return false;
     }
+
     public static boolean isConnect(String urlStr) {
 
         int counts = 0;

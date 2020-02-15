@@ -5,6 +5,7 @@ import com.example.acm.common.ResultBean;
 import com.example.acm.common.ResultCode;
 import com.example.acm.common.SysConst;
 import com.example.acm.entity.FriendUrl;
+import com.example.acm.service.UserService;
 import com.example.acm.utils.*;
 import com.example.acm.entity.User;
 import com.example.acm.service.FriendUrlService;
@@ -29,6 +30,9 @@ public class FriendUrlDealServiceImpl implements FriendUrlDealService {
     @Autowired
     private FriendUrlService friendUrlService;
 
+    @Autowired
+    private UserService userService;
+
     /**
      * 添加友链
      * @param user 添加的人
@@ -39,17 +43,17 @@ public class FriendUrlDealServiceImpl implements FriendUrlDealService {
      */
     public ResultBean addFriendUrl(User user, String friendUrlName, String friendUrlAddress, String friendUrlTag){
 
-        if (!StringUtil.isConnect(friendUrlAddress)) {
-            return new ResultBean(ResultCode.PARAM_ERROR, "网址不正确");
-        } // 可能需要修改为一些更友好的提示(404, 500, 403 等等)
+        if (!URLUtil.isAvailable(friendUrlAddress, 2000, 2)) {
+            return new ResultBean(ResultCode.PARAM_ERROR, "连接超时! 请尝试自己能否访问后再次尝试");
+        }
 
         FriendUrl friendUrl = new FriendUrl();
         friendUrl.setFriendUrlName(friendUrlName);
         friendUrl.setFriendUrlAddress(friendUrlAddress);
         friendUrl.setFriendUrlTag(friendUrlTag);
-        friendUrl.setCreateUser(user.getUserId().longValue());
+        friendUrl.setCreateUser(user.getUserId());
         friendUrl.setCreateTime(new Date());
-        friendUrl.setUpdateUser(user.getUserId().longValue());
+        friendUrl.setUpdateUser(user.getUserId());
         friendUrl.setUpdateTime(new Date());
         friendUrl.setIsEffective(SysConst.LIVE);
 
@@ -76,7 +80,8 @@ public class FriendUrlDealServiceImpl implements FriendUrlDealService {
         friendUrl.setUpdateUser(user.getUserId().longValue());
         friendUrl.setUpdateTime(new Date());
         friendUrl.setIsEffective(SysConst.NOT_LIVE);
-
+        friendUrl.setUpdateUser(user.getUserId());
+        friendUrl.setUpdateTime(new Date());
         friendUrlService.updateFriendUrlByFriendUrlId(friendUrl);
 
         return new ResultBean(ResultCode.SUCCESS);
@@ -94,6 +99,11 @@ public class FriendUrlDealServiceImpl implements FriendUrlDealService {
      */
     public ResultBean updateFriendUrl(User user, long friendUrlId, String friendUrlName, String friendUrlAddress,
                                       String friendUrlTag, String createTime) {
+
+        if (!URLUtil.isAvailable(friendUrlAddress, 2000, 2)) {
+            return new ResultBean(ResultCode.PARAM_ERROR, "连接超时! 请尝试自己能否访问后再次尝试");
+        }
+
         List<FriendUrl> friendUrls = friendUrlService.findFriendUrlListByFriendUrlId(friendUrlId);
         if (friendUrls.size()<1) {
             return new ResultBean(ResultCode.PARAM_ERROR, "不存在该友链");
@@ -103,6 +113,8 @@ public class FriendUrlDealServiceImpl implements FriendUrlDealService {
         friendUrl.setFriendUrlName(friendUrlName);
         friendUrl.setFriendUrlAddress(friendUrlAddress);
         friendUrl.setFriendUrlTag(friendUrlTag);
+        friendUrl.setUpdateUser(user.getUserId());
+        friendUrl.setUpdateTime(new Date());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             friendUrl.setCreateTime(sdf.parse(createTime));
@@ -148,14 +160,20 @@ public class FriendUrlDealServiceImpl implements FriendUrlDealService {
         System.out.println("xierenyi");
         List<Map<String, Object>> list = friendUrlService.findFriendUrlMapListByQuery(map);
 
-        System.out.println(list.size());
+        //System.out.println(list.size());
 
         if (list.size() >0) {
             for (Map<String, Object> mapTemp : list) {
-                mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd HH:mm:ss"));
+//                System.out.println((Long)mapTemp.get("updateUser"));
+                List<User> listUsers = userService.findUserListByUserId((Long)mapTemp.get("updateUser"));
+                User tUs = null;
+                if (listUsers.size() > 0) tUs = listUsers.get(0);
+                if (tUs != null) mapTemp.put("updateUser", tUs.getRealName());
+//                mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd HH:mm:ss"));
                 mapTemp.put("updateTime", DateUtil.convDateToStr((Date) mapTemp.get("updateTime"), "yyyy-MM-dd HH:mm:ss"));
             }
         }
+
 
         int allNum = friendUrlService.countFriendUrlMapListByQuery(map);
 

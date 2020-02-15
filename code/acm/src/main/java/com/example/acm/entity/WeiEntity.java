@@ -7,27 +7,27 @@ package com.example.acm.entity;
  */
 public class WeiEntity {
 
-    private String image;
+    private String avatar;
     private String openId;
 
-    public WeiEntity(String image, String openId) {
-        this.image = image;
+    public WeiEntity(String avatar, String openId) {
+        this.avatar = avatar;
         this.openId = openId;
     }
-    public String getImage() {
-        return image;
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getOpenId() {
         return openId;
     }
 
-    public void setImage(String image) {
-        this.image = image;
-    }
-
     public void setOpenId(String openId) {
         this.openId = openId;
     }
-
 }

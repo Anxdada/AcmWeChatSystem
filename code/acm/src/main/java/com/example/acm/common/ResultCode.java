@@ -9,7 +9,7 @@ package com.example.acm.common;
 public enum ResultCode {
     SUCCESS(0, "成功"),
     HTTP_PARA_ERROR(1, "系统繁忙"),
-    HAS_NO_THIS_USER(2, "尚未注册"),
+    NO_THIS_USER(2, "尚未注册"),
     PWD_ERROR(3, "密码错误"),
     NO_OAUTH(4, "尚未授权或者授权失败，请重新授权"),
     READ_MYSQL_FAILED(5, "获取信息失败"),
@@ -29,8 +29,8 @@ public enum ResultCode {
     SOURCE_INVALID(19, "素材不符合要求"),
     TASK_IS_CONDUCTING(20, "关联任务进行中"),
     USER_NOT_ADMIN(21, "用户不是管理员"),
-    USER_EXEIST(22, "该用户已存在");
-
+    USER_EXEIST(22, "该用户已存在"),
+    FEEDBACK_COUNT_NULL_RECODE(23, "没有满足条件的记录");
 
     private final int status;  // code
     private String msg;

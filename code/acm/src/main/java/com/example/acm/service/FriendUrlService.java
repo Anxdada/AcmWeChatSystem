@@ -49,6 +49,7 @@ public interface FriendUrlService {
     /**
      * 根据查询条件获取友链列表(Map)
      * 分页机制取
+     * @param map 查询条件
      */
     public List<Map<String,Object>> findFriendUrlMapListByQuery(Map<String, Object> map);
 }

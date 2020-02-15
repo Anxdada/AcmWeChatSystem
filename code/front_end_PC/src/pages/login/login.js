@@ -1,7 +1,8 @@
 import React from 'react';
-import { Card, Form, Input, Button, Icon, Col, Checkbox } from 'antd';
+import { Card, Form, Input, Button, Icon, Col, Checkbox, message, notification } from 'antd';
 import './index.less';
 import cookie from 'react-cookies';
+import { LoginUrl } from './../../config/dataAddress';
 
 const FormItem = Form.Item;
 
@@ -9,6 +10,42 @@ class FormLogin extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            userName: '',
+            password: '',
+        }
+    }
+
+    getData() {
+        const expires = new Date();
+        expires.setDate(Date.now() + 1000 * 60);
+        fetch(LoginUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': cookie.load('token'),
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+            },
+            body: 'userName='+this.state.userName+'&password='+this.state.password
+        }).then( res => res.json() ).then (
+            data => {
+                if (data.status == 0) {
+                    cookie.save('token', data.resultBean.token, { expires });
+                    console.log(cookie.load('token'));
+                    message.success("登录成功!");
+                    this.props.history.push(`${this.props.match.url.replace(/\/[^/]+$/, '')}/admin/home`);
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        console.log(data.status);
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        )
     }
 
     handleSubmit = (e) => {
@@ -17,10 +54,14 @@ class FormLogin extends React.Component {
             if (!err) {
                 console.log('Received values of form: ', values);
                 console.log(values.userName);
+                this.setState({
+                    userName: values.userName,
+                    password: values.password,
+                }, () => this.getData());
                 // this.props.history.push('/admin/home');
-                this.props.history.push(`${this.props.match.url.replace(/\/[^/]+$/, '')}/admin/home`);
-                cookie.save('userName', values.userName);
-                cookie.save('password', values.password);
+                // this.props.history.push(`${this.props.match.url.replace(/\/[^/]+$/, '')}/admin/home`);
+                // cookie.save('userName', values.userName);
+                // cookie.save('password', values.password);
             }
         });
     }
@@ -42,7 +83,7 @@ class FormLogin extends React.Component {
                                     message: 'Please input your username!'
                                 },
                                 {
-                                    max:10,min:3,
+                                    max:10,min:2,
                                     message: 'Length not in range'
                                 }
                             ]

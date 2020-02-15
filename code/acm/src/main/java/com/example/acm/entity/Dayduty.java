@@ -7,7 +7,7 @@ import java.util.Date;
  * @Description:
  * @Date: Created in 15:14 2019-12-22
  */
-public class Dayduty {
+public class DayDuty {
     private Integer dayDutyId;
     private String dayName;
     private String dutyUserNames;

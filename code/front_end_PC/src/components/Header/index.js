@@ -1,10 +1,11 @@
 import React from 'react'
-import { Breadcrumb, Menu, Row, Col, Avatar, Dropdown, Icon } from 'antd';
+import { Breadcrumb, Menu, Row, Col, Avatar, Dropdown, Icon, message, notification } from 'antd';
 import './index.less';
 import Util from './../../utils/utils';
 import { Link } from 'react-router-dom';
 import cookie from 'react-cookies';
 import { connect } from 'react-redux';
+import { GetLoginUserName } from './../../config/dataAddress';
 
 const menu = (
     <Menu>
@@ -18,11 +19,37 @@ const menu = (
 
 class Header extends React.Component {
 
-    state = {};
+    state = {
+        userName: '',
+    };
+
     componentWillMount() {
-        this.setState({
-            userName: '谢谢',
-        });
+        fetch(GetLoginUserName, {
+            method: 'GET',
+            headers: {
+                'Authorization': cookie.load('token'),
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+            },
+        }).then( res => res.json() ).then (
+            data => {
+                console.log(data);
+                if (data.status == 0) {
+                    this.setState({
+                        userName: data.resultBean.realName,
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        )
+        
         // setInterval(() => {
         //     let sysTime = Util.formateDate();
         //     this.setState({
@@ -33,12 +60,14 @@ class Header extends React.Component {
     }
 
     componentWillUnmount() {
-        console.log(cookie.load('userName'));
-        console.log(cookie.load('password'));
-        cookie.remove('userName');
-        cookie.remove('password');
-        console.log(cookie.load('userName'));
-        console.log(cookie.load('password'));
+        // console.log(cookie.load('userName'));
+        // console.log(cookie.load('password'));
+        // cookie.remove('userName');
+        // cookie.remove('password');
+        // console.log(cookie.load('userName'));
+        // console.log(cookie.load('password'));
+        console.log(cookie.load('token'));
+        cookie.remove('token');
     }
 
 

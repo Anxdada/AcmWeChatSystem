@@ -3,6 +3,8 @@ package com.example.acm.controller;
 import com.example.acm.common.ResultBean;
 import com.example.acm.entity.User;
 import com.example.acm.service.deal.FriendUrlDealService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -23,7 +25,13 @@ import java.util.List;
 @Controller
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 @RequestMapping("/friendUrl")
-public class FriendUrlController {
+public class FriendUrlController extends BaseController {
+
+    private Logger LOG = LoggerFactory.getLogger(this.getClass());
+
+    private final int two = 2;
+    private final Long longTwo = Long.parseLong(String.valueOf(2));
+
     @Autowired
     private FriendUrlDealService friendUrlDealService;
 
@@ -43,13 +51,12 @@ public class FriendUrlController {
                                    @RequestParam(value = "friendUrlAddress", required = true) String friendUrlAddress,
                                    @RequestParam(value = "friendUrlTag", required = true) String friendUrlTag,
                                    HttpServletRequest request, HttpServletResponse response) {
-//        User user = getUserIdFromSession(request);
-        System.out.println(friendUrlName + " " + friendUrlAddress + " " + friendUrlTag + " ");
-        User user = null;
+        User user = getUserIdFromSession(request);
+//        System.out.println(friendUrlName + " " + friendUrlAddress + " " + friendUrlTag + " ");
         if (user == null) {
             //return new ResultBean(ResultCode.SESSION_OUT);
             user = new User();
-            user.setUserId(1);
+            user.setUserId(longTwo);
         }
 
         return friendUrlDealService.addFriendUrl(user, friendUrlName, friendUrlAddress,  friendUrlTag);
@@ -60,13 +67,12 @@ public class FriendUrlController {
     @ResponseBody
     public ResultBean deleteFriendUrl(@RequestParam(value = "friendUrlId",  required = true) long friendUrlId,
                                       HttpServletRequest request, HttpServletResponse response) {
-//        User user = getUserIdFromSession(request);
+
         System.out.println(friendUrlId);
-        User user = null;
+        User user = getUserIdFromSession(request);
         if (user == null) {
-            //return new ResultBean(ResultCode.SESSION_OUT);
             user = new User();
-            user.setUserId(2);
+            user.setUserId(longTwo);
         }
 
         return friendUrlDealService.deleteFriendUrl(user, friendUrlId);
@@ -81,7 +87,6 @@ public class FriendUrlController {
                                       @RequestParam(value = "friendUrlTag", required = true) String friendUrlTag,
                                       @RequestParam(value = "createTime", required = true) String createTime,
                                       HttpServletRequest request, HttpServletResponse response) {
-//        User user = getUserIdFromSession(request);
         System.out.println("xierenyi " + createTime);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
@@ -91,11 +96,10 @@ public class FriendUrlController {
         }
 
         System.out.println(friendUrlName + " " + friendUrlAddress + " " + friendUrlTag + " " + createTime);
-        User user = null;
+        User user = getUserIdFromSession(request);
         if (user == null) {
-            //return new ResultBean(ResultCode.SESSION_OUT);
             user = new User();
-            user.setUserId(3);
+            user.setUserId(longTwo);
         }
 
         return friendUrlDealService.updateFriendUrl(user, friendUrlId, friendUrlName, friendUrlAddress, friendUrlTag, createTime);
@@ -111,13 +115,12 @@ public class FriendUrlController {
                                       @RequestParam(value = "pageNum", defaultValue = "1", required = false) int pageNum,
                                       @RequestParam(value = "pageSize", defaultValue="10", required = false) int pageSize,
                                       HttpServletRequest request, HttpServletResponse response) {
-//        User user = getUserIdFromSession(request);
-        System.out.println(friendUrlName + " " + aOrs + " " + pageNum + " " + order + " " + pageSize);
-        User user = null;
+        User user = getUserIdFromSession(request);
+        //System.out.println(friendUrlName + " " + aOrs + " " + pageNum + " " + order + " " + pageSize);
         if (user == null) {
-            //return new ResultBean(ResultCode.SESSION_OUT);
+            // 如果忘记传头部信息过来, 默认设置为超级管理员的改动
             user = new User();
-            user.setUserId(4);
+            user.setUserId(longTwo);
         }
 
         return friendUrlDealService.selectFriendUrl(friendUrlName, aOrs,  order,  pageNum,  pageSize);
@@ -128,13 +131,12 @@ public class FriendUrlController {
     @ResponseBody
     public ResultBean detailFriendUrl(@RequestParam(value = "friendUrlId",  required = true) long friendUrlId,
                                       HttpServletRequest request, HttpServletResponse response) {
-//        User user = getUserIdFromSession(request);
+        User user = getUserIdFromSession(request);
         System.out.println(friendUrlId);
-        User user = null;
         if (user == null) {
-            //return new ResultBean(ResultCode.SESSION_OUT);
+            // 如果忘记传头部信息过来, 默认设置为超级管理员的改动
             user = new User();
-            user.setUserId(2);
+            user.setUserId(longTwo);
         }
 
         return friendUrlDealService.detailFriendUrl(user, friendUrlId);

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace用于绑定Dao接口 -->
+<mapper namespace="com.example.acm.mapper.FeedbackMapper">
+    <!-- 查询初始所有Url -->
+    <select id="selectAll" resultType="com.example.acm.entity.Feedback">
+        SELECT * FROM feedback;
+    </select>
+
+    <sql id="feedback_table">
+		tt.feedbackId,
+		tt.feedbackAvatar,
+		tt.feedbackUser,
+		tt.feedbackBody,
+		tt.feedbackTime,
+		tt.isEffective
+	</sql>
+
+    <!-- 添加反馈 -->
+    <insert id="addFeedback" useGeneratedKeys="true">
+        INSERT INTO feedback
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="feedback.feedbackId != null">feedbackId,</if>
+            <if test="feedback.feedbackAvatar != null">feedbackAvatar,</if>
+            <if test="feedback.feedbackUser != null">feedbackUser,</if>
+            <if test="feedback.feedbackBody != null">feedbackBody,</if>
+            <if test="feedback.feedbackTime != null">feedbackTime,</if>
+            <if test="feedback.isEffective != null">isEffective,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="feedback.feedbackId != null">#{feedback.feedbackId},</if>
+            <if test="feedback.feedbackAvatar != null">#{feedback.feedbackAvatar},</if>
+            <if test="feedback.feedbackUser != null">#{feedback.feedbackUser},</if>
+            <if test="feedback.feedbackBody != null">#{feedback.feedbackBody},</if>
+            <if test="feedback.feedbackTime != null">#{feedback.feedbackTime},</if>
+            <if test="feedback.isEffective != null">#{feedback.isEffective},</if>
+        </trim>
+    </insert>
+
+    <!-- 更新反馈 -->
+    <update id="updateFeedback" >
+        UPDATE feedback
+        <set>
+            <if test="feedback.feedbackId != null">feedbackId=#{feedback.feedbackId},</if>
+            <if test="feedback.feedbackAvatar != null">feedbackAvatar=#{feedback.feedbackAvatar},</if>
+            <if test="feedback.feedbackUser != null">feedbackUser=#{feedback.feedbackUser},</if>
+            <if test="feedback.feedbackBody != null">feedbackBody=#{feedback.feedbackBody},</if>
+            <if test="feedback.feedbackTime != null">feedbackTime=#{feedback.feedbackTime},</if>
+            <if test="feedback.isEffective != null">isEffective=#{feedback.isEffective},</if>
+        </set>
+        WHERE feedbackId = #{feedback.feedbackId};
+    </update>
+
+    <!-- 通过很多限制条件查询满足的Url的总数 -->
+    <select id="countFeedbackMapListByQuery" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+            feedback tt
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.feedbackId != null ">
+                AND tt.feedbackId like CONCAT ('%', #{map.feedbackId}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND tt.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的Url -->
+    <select id="findFeedbackListByQueryMap" resultType="com.example.acm.entity.Feedback">
+        SELECT
+        <include refid="feedback_table"/>
+        FROM
+            feedback tt
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.feedbackId != null ">
+                AND tt.feedbackId=#{map.feedbackId}
+            </if>
+            <if test="map.feedbackUser != null ">
+                AND tt.feedbackUser=#{map.feedbackUser}
+            </if>
+            <if test="map.feedbackBody != null ">
+                AND tt.feedbackUser like CONCAT ('%', #{map.feedbackBody}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND tt.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+                tt.${map.order} ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start}, #{map.limit}
+        </if>
+    </select>
+
+
+    <!-- 通过很多限制条件查询满足的Url(和上面那个唯一的不一样就是返回结果的形式) -->
+    <select id="findFeedbackListMapByQueryMap" resultType="java.util.Map">
+        SELECT
+        <include refid="feedback_table"/>
+        FROM
+            feedback tt
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.feedbackId != null ">
+                AND tt.feedbackId=#{map.feedbackId}
+            </if>
+            <if test="map.feedbackUser != null ">
+                AND tt.feedbackUser=#{map.feedbackUser}
+            </if>
+            <if test="map.feedbackBody != null ">
+                AND tt.feedbackUser like CONCAT ('%', #{map.feedbackBody}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND tt.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            tt.${map.order} ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start}, #{map.limit}
+        </if>
+    </select>
+</mapper>

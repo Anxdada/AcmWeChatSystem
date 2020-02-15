@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace用于绑定Dao接口 -->
+<mapper namespace="com.example.acm.mapper.FeedbackCountMapper">
+    <!-- 查询初始所有Url -->
+    <select id="selectAll" resultType="com.example.acm.entity.FeedbackCount">
+        SELECT * FROM feedbackCount;
+    </select>
+
+    <sql id="feedback_count_table">
+		tt.feedbackCountId,
+		tt.feedbackId,
+		tt.userId,
+		tt.type,
+		tt.isEffective
+	</sql>
+
+    <!-- 添加一个操作 -->
+    <insert id="addFeedbackCount" useGeneratedKeys="true">
+        INSERT INTO feedbackCount
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="feedbackCount.feedbackCountId != null">feedbackCountId,</if>
+            <if test="feedbackCount.feedbackId != null">feedbackId,</if>
+            <if test="feedbackCount.userId != null">userId,</if>
+            <if test="feedbackCount.operateTime != null">operateTime,</if>
+            <if test="feedbackCount.type != null">type,</if>
+            <if test="feedbackCount.isEffective != null">isEffective,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="feedbackCount.feedbackCountId != null">#{feedbackCount.feedbackCountId},</if>
+            <if test="feedbackCount.feedbackId != null">#{feedbackCount.feedbackId},</if>
+            <if test="feedbackCount.userId != null">#{feedbackCount.userId},</if>
+            <if test="feedbackCount.operateTime != null">#{feedbackCount.operateTime},</if>
+            <if test="feedbackCount.type != null">#{feedbackCount.type},</if>
+            <if test="feedbackCount.isEffective != null">#{feedbackCount.isEffective},</if>
+        </trim>
+    </insert>
+
+    <!-- 更新一个操作 -->
+    <update id="updateFeedbackCount" >
+        UPDATE feedbackCount
+        <set>
+            <if test="feedbackCount.feedbackCountId != null">feedbackCountId=#{feedbackCount.feedbackCountId},</if>
+            <if test="feedbackCount.feedbackId != null">feedbackId=#{feedbackCount.feedbackId},</if>
+            <if test="feedbackCount.userId != null">userId=#{feedbackCount.userId},</if>
+            <if test="feedbackCount.operateTime != null">operateTime=#{feedbackCount.operateTime},</if>
+            <if test="feedbackCount.type != null">type=#{feedbackCount.type},</if>
+            <if test="feedbackCount.isEffective != null">isEffective=#{feedbackCount.isEffective},</if>
+        </set>
+        WHERE feedbackCountId = #{feedbackCount.feedbackCountId};
+    </update>
+
+
+    <!-- 通过很多限制条件查询满足的反馈操作 -->
+    <select id="findFeedbackCountListByQueryMap" resultType="com.example.acm.entity.FeedbackCount">
+        SELECT
+        <include refid="feedback_count_table"/>
+        FROM
+            feedbackCount tt
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.feedbackId != null ">
+                AND tt.feedbackId like CONCAT ('%', #{map.feedbackId}, '%')
+            </if>
+            <if test="map.userId != null ">
+                AND tt.userId=#{map.userId}
+            </if>
+            <if test="map.isEffective != null ">
+                AND tt.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            tt.${map.order} ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start}, #{map.limit}
+        </if>
+    </select>
+
+
+    <!-- 通过很多限制条件查询满足的反馈数量 -->
+    <select id="countFeedbackCountByQueryMap" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM
+            feedbackCount tt
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.feedbackId != null ">
+                AND tt.feedbackId like CONCAT ('%', #{map.feedbackId}, '%')
+            </if>
+            <if test="map.type != null ">
+                AND tt.type=#{map.type}
+            </if>
+            <if test="map.isEffective != null ">
+                AND tt.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.start != null ">
+            limit #{map.start}, #{map.limit}
+        </if>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的反馈(和上面那个唯一的不一样就是返回结果的形式) -->
+    <select id="findFeedbackCountListMapByQueryMap" resultType="java.util.Map">
+        SELECT
+        <include refid="feedback_count_table"/>
+        FROM
+            feedbackCount tt
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.feedbackId != null ">
+                AND tt.feedbackId like CONCAT ('%', #{map.feedbackId}, '%')
+            </if>
+            <if test="map.userId != null ">
+                AND tt.userId=#{map.userId}
+            </if>
+            <if test="map.isEffective != null ">
+                AND tt.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            tt.${map.order} ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start}, #{map.limit}
+        </if>
+    </select>
+</mapper>

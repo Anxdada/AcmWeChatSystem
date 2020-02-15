@@ -10,106 +10,114 @@ import java.util.Date;
  */
 public class User implements Serializable {
 
-	private Integer auth;// 0-未通过审核 1-超级管理员 2-管理员 3-队员 4-萌新 5-未完善资料的萌新
-	private Integer classNum;
-	private Date createDay;
-	private Integer grade;
-	private String image;
-	private Integer isEffective;
-	private String mobile;
-	private String openId;
+	private Long userId;
+	private String userName;
 	private String password;
-	private String realname;
-	private Long studentId;
-	private Integer userId;
-	private String username;
-	private String unionid;
+	private Integer auth; // 0-未通过审核 1-超级管理员 2-管理员 3-队员 4-萌新 5-未完善资料的萌新 (后面的1-5是指身份值的数字的二进制的位数)
+	// 比如 anth = 6, 那么这个人既是 管理员 又是 队员
+	private String avatar;  // 头像
+	private Long studentId;  // 学号
+	private Integer grade;   // 年级
+	private Date createTime;  // 申请通过时间, 可以记录加入多久了之类的
+	private String telephone; // 联系电话
+	private String realName;
+	private String openId;   // 微信的用户标识字段
+	private Integer isEffective;
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public Integer getAuth() {
+		return auth;
+	}
 
 	public void setAuth(Integer auth) {
 		this.auth = auth;
 	}
-	public Integer getAuth() {
-		return this.auth;
+
+	public String getAvatar() {
+		return avatar;
 	}
-	public void setClassNum(Integer classNum) {
-		this.classNum = classNum;
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
 	}
-	public Integer getClassNum() {
-		return this.classNum;
+
+	public Long getStudentId() {
+		return studentId;
 	}
-	public void setCreateDay(Date createDay) {
-		this.createDay = createDay;
-	}
-	public Date getCreateDay() {
-		return this.createDay;
-	}
-	public void setGrade(Integer grade) {
-		this.grade = grade;
-	}
-	public Integer getGrade() {
-		return this.grade;
-	}
-	public void setImage(String image) {
-		this.image = image;
-	}
-	public String getImage() {
-		return this.image;
-	}
-	public void setIsEffective(Integer isEffective) {
-		this.isEffective = isEffective;
-	}
-	public Integer getIsEffective() {
-		return this.isEffective;
-	}
-	public void setMobile(String mobile) {
-		this.mobile = mobile;
-	}
-	public String getMobile() {
-		return this.mobile;
-	}
-	public void setOpenId(String openId) {
-		this.openId = openId;
-	}
-	public String getOpenId() {
-		return this.openId;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	public String getPassword() {
-		return this.password;
-	}
-	public void setRealname(String realname) {
-		this.realname = realname;
-	}
-	public String getRealname() {
-		return this.realname;
-	}
+
 	public void setStudentId(Long studentId) {
 		this.studentId = studentId;
 	}
-	public Long getStudentId() {
-		return this.studentId;
-	}
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
-	public Integer getUserId() {
-		return this.userId;
-	}
-	public void setUsername(String username) {
-		this.username = username;
-	}
-	public String getUsername() {
-		return this.username;
+
+	public Integer getGrade() {
+		return grade;
 	}
 
-	public void setUnionid(String unionid) {
-		this.unionid = unionid;
+	public void setGrade(Integer grade) {
+		this.grade = grade;
 	}
 
-	public String getUnionid() {
-		return unionid;
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public String getTelephone() {
+		return telephone;
+	}
+
+	public void setTelephone(String telephone) {
+		this.telephone = telephone;
+	}
+
+	public String getRealName() {
+		return realName;
+	}
+
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
+
+	public String getOpenId() {
+		return openId;
+	}
+
+	public void setOpenId(String openId) {
+		this.openId = openId;
+	}
+
+	public Integer getIsEffective() {
+		return isEffective;
+	}
+
+	public void setIsEffective(Integer isEffective) {
+		this.isEffective = isEffective;
 	}
 }
 

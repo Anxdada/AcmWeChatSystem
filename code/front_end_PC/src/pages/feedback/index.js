@@ -1,21 +1,20 @@
 import React from 'react';
 import './index.less';
-import { Comment, Avatar, Form, Button, List, Input, Alert, Tooltip, Icon } from 'antd';
+import { Comment, Avatar, Form, Button, List, Input, Alert, Tooltip, Icon, message, notification, Skeleton, Empty, Spin, Modal, Popconfirm, Divider} from 'antd';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
+import { AddFeedback, DeleteFeedback, UpdateFeedback, SelectFeedback, AddFeedbackCount, DeleteFeedbackCount, UpdateFeedbackCount } from './../../config/dataAddress';
+import cookie from 'react-cookies';
+import { EventEmitter2 } from 'eventemitter2';
 
+
+
+var emitter = new EventEmitter2();
 moment.locale('zh-cn');
 const { TextArea } = Input;
 
 class FeedbackView extends React.Component {
-    state = {
-        comments: [],
-        submitting: false,
-        value: '',
-        likes: 0,
-        dislikes: 0,
-        action: null,
-    };
+    
 
     like = () => {
         this.setState({
@@ -33,114 +32,182 @@ class FeedbackView extends React.Component {
         });
     };
 
-    handleSubmit = () => {
-        if (!this.state.value) {
+    constructor(props) {
+        super(props);
+        this.state = {
+            comments: [],
+            submitting: false,
+            feedbackLoading: true,
+            feedbackId: '',
+            feedbackBody: '',
+        };
+
+        emitter.on("refresh", this.refresh.bind(this)); 
+    }
+
+    componentWillMount() {
+        this.getFeedbackData();
+    }
+
+    refresh(msg) {
+        // 注册emit, 这样触发emit就会刷新界面了.
+        this.getFeedbackData();
+    }
+
+    getFeedbackData() {
+        fetch(SelectFeedback, {
+            method: 'GET',
+            headers: {
+                'Authorization': cookie.load('token'),
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+            }
+        }).then( res => res.json() ).then (
+            data => {
+                if (data.status == 0) {
+                    this.setState({
+                        comments: data.resultBean
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+                this.setState({
+                    feedbackLoading: false,
+                });
+            }
+        )
+    }
+
+    addFeedbackData() {
+        fetch(AddFeedback, {
+            method: 'POST',
+            headers: {
+                'Authorization': cookie.load('token'),
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+            },
+            body: 'feedbackBody='+this.state.feedbackBody
+        }).then( res => res.json() ).then (
+            data => {
+                if (data.status == 0) {
+                    this.setState({
+                        feedbackBody: '',
+                    });
+                    emitter.emit('refresh', '添加'); // 通知react需要刷新该页面
+                    message.success("添加成功");
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+                this.setState({
+                    submitting: false,
+                });
+            }
+        )
+    }
+
+    deleteFeedbackData() {
+        fetch(DeleteFeedback, {
+            method: 'POST',
+            headers: {
+                'Authorization': cookie.load('token'),
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+            },
+            body: 'feedbackId='+this.state.feedbackId
+        }).then( res => res.json() ).then (
+            data => {
+                if (data.status == 0) {
+                    emitter.emit('refresh', '删除');
+                    message.success("删除成功");
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        )
+    }
+
+    handleSubmitFeedback = () => {
+        if (!this.state.feedbackBody) {
             return;
         }
 
         this.setState({
             submitting: true,
-        });
+        }, () => this.addFeedbackData());
 
-        const { likes, dislikes, action } = this.state;
-
-        const actions = [
-            <span key="comment-basic-like">
-                <Tooltip title="Like">
-                <Icon
-                    type="like"
-                    theme={action === 'liked' ? 'filled' : 'outlined'}
-                    onClick={this.like}
-                />
-                </Tooltip>
-                <span style={{ paddingLeft: 8, cursor: 'auto' }}>{likes}</span>
-            </span>,
-            <span key=' key="comment-basic-dislike"'>
-                <Tooltip title="Dislike">
-                <Icon
-                    type="dislike"
-                    theme={action === 'disliked' ? 'filled' : 'outlined'}
-                    onClick={this.dislike}
-                />
-                </Tooltip>
-                <span style={{ paddingLeft: 8, cursor: 'auto' }}>{dislikes}</span>
-            </span>
-        ];
-
-        setTimeout(() => {
-            this.setState({
-            submitting: false,
-            value: '',
-            comments: [
-                {
-                    actions: {actions},
-                    author: <Tooltip title='就不告诉你~'>
-                                <span>匿名用户</span>
-                            </Tooltip>,
-                    avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-                    content: <p>{this.state.value}</p>,
-                    datetime: <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
-                                <span>{moment().fromNow()}</span>
-                            </Tooltip>,
-                },
-                ...this.state.comments,
-            ],
-            });
-            }, 1000);
     };
     
-    handleChange = e => {
+    handleEditChange = (e) => {
         this.setState({
-          value: e.target.value,
+            feedbackBody: e.target.value,
         });
     };
+
+    handleDeleteFeedback = (feedbackId) => {
+        console.log(feedbackId);
+        this.setState({
+            feedbackId: feedbackId,
+        }, () => this.deleteFeedbackData());
+    }
     
     render() {
-        const { comments, submitting, value } = this.state;
+        const { comments, submitting, feedbackLoading, feedbackBody } = this.state;
         return (
             <div>
             <div>
-            <Alert
-                message="给出你最真实的反馈"
-                description="可以是对系统的功能建议有或者是Bug反馈再或者是冒个泡也行~"
-                type="info"
-            />
+                <Alert
+                    message="给出你对本后台系统最真实的反馈"
+                    description="可以是对本后台系统的功能建议有或者是Bug反馈等(禁止灌水!)"
+                    type="info"
+                />
             </div>
             <div className="commentArea">
                 <div className="commentStyle">
                 <Comment
                     avatar={
                         <Avatar
-                        src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-                        alt="Han Solo"
+                            src="/images/acm.jpg"
+                            alt="Han Solo"
                         />
                     }
                     content={
                         <Editor
-                            onChange={this.handleChange}
-                            onSubmit={this.handleSubmit}
+                            onChange={this.handleEditChange}
+                            onSubmit={this.handleSubmitFeedback}
                             submitting={submitting}
-                            value={value}
+                            value={feedbackBody}
                         />
                     }
                 />
-                {comments.length > 0 && <CommentList comments={comments} />}
+                {   
+                    comments.length > 0 ? 
+                    <CommentList comments={comments} feedbackLoading={feedbackLoading} handleDeleteFeedback={this.handleDeleteFeedback}/> 
+                    : <Empty /> 
+                }
                 </div>
             </div>
             </div>
         );
     }
 }
-
-
-const CommentList = ({ comments }) => (
-    <List
-        dataSource={comments}
-        header={`${comments.length} ${comments.length > 1 ? 'replies' : 'reply'}`}
-        itemLayout="horizontal"
-        renderItem={props => <Comment {...props} />}
-    />
-);
 
 const Editor = ({ onChange, onSubmit, submitting, value }) => (
     <div>
@@ -154,6 +221,309 @@ const Editor = ({ onChange, onSubmit, submitting, value }) => (
         </Form.Item>
     </div>
 );
+
+class CommentList extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            feedbackId: '',
+            type: '',
+            visible: false,
+            modifyLoading: false,
+            feedbackBody: '',
+        }
+    }
+
+    addFeedbackCountData() {
+        console.log(this.state.feedbackId);
+        console.log(this.state.type);
+        fetch(AddFeedbackCount, {
+            method: 'POST',
+            headers: {
+                'Authorization': cookie.load('token'),
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+            },
+            body: 'feedbackId='+this.state.feedbackId+'&type='+this.state.type
+        }).then( res => res.json() ).then (
+            data => {
+                if (data.status == 0) {
+                    emitter.emit('refresh', '添加操作');
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        )
+    }
+
+    deleteFeedbackCountData() {
+        fetch(DeleteFeedbackCount, {
+            method: 'POST',
+            headers: {
+                'Authorization': cookie.load('token'),
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+            },
+            body: 'feedbackId='+this.state.feedbackId
+        }).then( res => res.json() ).then(
+            data => {
+                if (data.status == 0) {
+                    emitter.emit('refresh', '删除操作');
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        )
+    }
+
+    updateFeedbackCountData() {
+        fetch(UpdateFeedbackCount, {
+            method: 'POST',
+            headers: {
+                'Authorization': cookie.load('token'),
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+            },
+            body: 'feedbackId='+this.state.feedbackId+'&type='+this.state.type
+        }).then( res => res.json() ).then (
+            data => {
+                if (data.status == 0) {
+                    emitter.emit('refresh', '更新操作');
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        )
+    }
+
+    handleClickLike = (item) => {
+        console.log(item.type);
+        if (item.type == -1) {
+            this.setState({
+                feedbackId: item.feedbackId,
+                type: 1,
+            }, () => this.updateFeedbackCountData());
+        } else if (item.type == 0) {
+            this.setState({
+                feedbackId: item.feedbackId,
+                type: 1,
+            }, () => this.addFeedbackCountData());
+        } else {
+            this.setState({
+                feedbackId: item.feedbackId,
+            }, () => this.deleteFeedbackCountData());
+        }
+    }
+
+    handleClickDislike = (item) => {
+        console.log(item.type);
+        if (item.type == -1) {
+            this.setState({
+                feedbackId: item.feedbackId,
+            }, () => this.deleteFeedbackCountData());
+        } else if (item.type == 0) {
+            this.setState({
+                feedbackId: item.feedbackId,
+                type: -1,
+            }, () => this.addFeedbackCountData());
+        } else {
+            this.setState({
+                feedbackId: item.feedbackId,
+                type: -1,
+            }, () => this.updateFeedbackCountData());
+        }
+    }
+
+
+    // 下面的修改的
+    updateFeedbackData() {
+
+        if (this.state.feedbackBody == "") {
+            message.error("反馈内容不能为空!");
+            return ;
+        }
+
+        this.setState({
+            modifyLoading: true,
+        })
+
+        fetch(UpdateFeedback, {
+            method: 'POST',
+            headers: {
+                'Authorization': cookie.load('token'),
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+            },
+            body: 'feedbackId='+this.state.feedbackId+'&feedbackBody='+this.state.feedbackBody
+        }).then( res => res.json() ).then (
+            data => {
+                if (data.status == 0) {
+                    emitter.emit('refresh', '修改反馈');
+                    this.setState({
+                        visible: false,
+                    })
+                    message.success("修改成功");
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+                this.setState({
+                    modifyLoading: false,
+                })
+            }
+        )
+    }
+
+    handleShowModal = (item) => {
+        this.setState({
+            visible: true,
+            feedbackId: item.feedbackId,
+            feedbackBody: item.feedbackBody,
+        })
+    }
+
+    handleOkModal = (e) => {
+        this.updateFeedbackData();
+    }
+
+    handleCancelModal = (e) => {
+        this.setState({
+            visible: false,
+        });
+    }
+
+    handleModalTextArea = (e) => {
+        this.setState({
+            feedbackBody: e.target.value,
+        })
+    }
+    // 修改
+
+
+    render() {
+        const listData = this.props.comments;
+        return (
+            <div className="demo-loadmore-list">
+                <List
+                    className="comment-list"
+                    itemLayout="horizontal"
+                    header={`${listData.length} ${listData.length > 1 ? 'replies' : 'reply'}`}
+                    size="large"
+                    pagination={{
+                        onChange: page => {
+                            console.log(page);
+                        },
+                        pageSize: 5,
+                    }}
+                    dataSource={listData}
+                    renderItem={item => (
+                        <li key="item.feedbackId">
+                            <Spin spinning={this.props.feedbackLoading} size="large">
+                            <Comment
+                                actions={
+                                    [
+                                        <span key="comment-basic-like">
+                                            <Tooltip title="喜欢">
+                                            <Icon
+                                                type="like"
+                                                theme={item.type == 1 ? 'filled' : 'outlined'}
+                                                onClick={() => this.handleClickLike(item)}
+                                            />
+                                            </Tooltip>
+                                            <span style={{ paddingLeft: 8, cursor: 'auto' }}>{item.like}</span>
+                                        </span>,
+                                        <span key=' key="comment-basic-dislike"'>
+                                            <Tooltip title="不喜欢">
+                                            <Icon
+                                                type="dislike"
+                                                theme={item.type == -1 ? 'filled' : 'outlined'}
+                                                onClick={() => this.handleClickDislike(item)}
+                                            />
+                                            </Tooltip>
+                                            <span style={{ paddingLeft: 8, cursor: 'auto' }}>{item.dislike}</span>
+                                        </span>,
+                                        <span>
+                                            {
+                                                item.nowUser == item.feedbackUser ? 
+                                                <span><a onClick={() => this.handleShowModal(item)}>修改</a></span>
+                                                : null
+                                            } 
+                                        </span>,
+                                        <span>
+                                            {
+                                                (item.nowUserAuth & 1) || (item.nowUser == item.feedbackUser) ? 
+                                                <Popconfirm title="确定删除?" onConfirm={() => this.props.handleDeleteFeedback(item.feedbackId)} okText="确定" cancelText="取消">
+                                                    <a className="deleteHerf">删除</a>
+                                                </Popconfirm> : null
+                                            }
+                                            {/* 记住身份号是二进制的! */}
+                                        </span>
+                                    ]
+                                }
+                                author={item.feedbackUserRealName}
+                                avatar={item.feedbackAvatar}
+                                content={item.feedbackBody}
+                                datetime={
+                                    <Tooltip title={moment(item.feedbackTime).format('YYYY-MM-DD HH:mm:ss')}>
+                                        <span>{moment(item.feedbackTime).fromNow()}</span>
+                                    </Tooltip>
+                                }
+                            />
+                            </Spin>
+                        </li>
+                    )}
+                />
+                <Modal
+                    title="修改反馈内容"
+                    visible={this.state.visible}
+                    onOk={this.handleOkModal}
+                    onCancel={this.handleCancelModal}
+                    okText="确认修改"
+                    cancelText="取消"
+                    okButtonProps={{
+                        loading: this.state.modifyLoading,
+                    }}
+                    cancelButtonProps={{
+                        disabled: this.state.modifyLoading,
+                    }}
+                >
+                    反馈内容:&nbsp;&nbsp;
+                    <TextArea rows={4} value={this.state.feedbackBody} onChange={this.handleModalTextArea} />
+                </Modal>
+            </div>
+        );
+    }
+}
+
+
+// 本来是修改是单独写了一个组件, 但是不满足样式需求, 只能不分开写了.
+class FeedbackModify extends React.Component {
+
+}
 
 export default class Feedback extends React.Component {
     render() {

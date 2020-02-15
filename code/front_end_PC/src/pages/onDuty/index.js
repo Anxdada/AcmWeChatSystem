@@ -51,11 +51,12 @@ class OnDutyTable extends React.Component {
     dateCellRender = (value) => {
         // 该同步的时候还是得同步!
         const staffInfo = this.getInfoData(value);
+        
         return (
-          <div className="events">
+            <div className="events">
                 <Badge color="#108ee9" text={staffInfo.name} />
                 <Badge color='#87d068' text={staffInfo.telephone} />
-          </div>
+            </div>
         );
     }
 

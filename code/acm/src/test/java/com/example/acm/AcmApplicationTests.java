@@ -5,7 +5,14 @@ import com.example.acm.common.ResultCode;
 import com.example.acm.common.SysConst;
 import com.example.acm.utils.StringUtil;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
 class AcmApplicationTests {
@@ -32,6 +39,36 @@ class AcmApplicationTests {
 //        StringUtil.isConnect("http://acm.hdu.edu.cn");
 //        StringUtil.isConnect("acm.hdu.edu.cn");
         StringUtil.isConnect("www.google.com");
+    }
+
+    @Test
+    void testUUID() {
+        UUID uid = UUID.randomUUID();
+        System.out.println(uid);
+    }
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Test
+    void testRedis() {
+//        stringRedisTemplate.opsForValue().set("test", "11", 100, TimeUnit.SECONDS);
+        String va = stringRedisTemplate.opsForValue().get("test"); //根据key获取缓存中的val
+
+        System.out.println(va);
+        System.out.println(stringRedisTemplate.opsForValue().get("tt"));
+    }
+
+    @Test
+    void testTime() {
+        try {
+            URL url = new URL("www.baidu.com");
+            HttpURLConnection urlCon = (HttpURLConnection) url.openConnection();
+            urlCon.setConnectTimeout(30000);
+            urlCon.setReadTimeout(30000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

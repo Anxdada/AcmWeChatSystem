@@ -16,7 +16,7 @@ export default class Temple extends React.Component {
 
 fetch(DetailFriendUrl, {
     method: 'POST',
-    headers:{
+    headers: {
         'Authorization': cookie.load('token'),
         'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
     },

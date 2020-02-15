@@ -1,6 +1,6 @@
 import React from 'react';
 import './index.less';
-import { notification, Table, Divider, Tag, Button, Card, Pagination, Input, Modal, Select, message, ConfigProvider, Empty, DatePicker, Popconfirm } from 'antd';
+import { notification, Table, Divider, Tag, Button, Card, Pagination, Input, Modal, Select, message, Spin, ConfigProvider, Empty, DatePicker, Popconfirm } from 'antd';
 import { tagsColorList, urlTags } from '../../config/urlTagsAbout';
 import Util from './../../utils/utils';
 import moment from 'moment';
@@ -38,7 +38,10 @@ class UrlColorTag extends React.Component {
 
 // 修改modal中的数据
 class UrlModifyAction extends React.Component {
-    state = { visible: false }
+    state = { 
+        visible: false,
+        submitLoading: false,
+    }
 
     constructor(props) {
         super(props);
@@ -118,8 +121,8 @@ class UrlModifyAction extends React.Component {
         }
 
         this.setState({
-            visible: false,
-        });
+            submitLoading: true,
+        })
         
         const createTime = new Date();
         console.log(createTime);
@@ -139,6 +142,9 @@ class UrlModifyAction extends React.Component {
                 if (data.status == 0) {
                     message.success('修改成功');
                     emitter.emit('refresh', '修改')
+                    this.setState({
+                        visible: false,
+                    });
                 } else {
                     if (data.status < 100) {
                         message.error(data.msg);
@@ -149,6 +155,9 @@ class UrlModifyAction extends React.Component {
                         });
                     }
                 }
+                this.setState({
+                    submitLoading: false,
+                })
             }
         )
     } 
@@ -220,6 +229,12 @@ class UrlModifyAction extends React.Component {
                 onCancel={this.handleCancelModal}
                 okText="确认修改"
                 cancelText="取消"
+                okButtonProps={{
+                    loading: this.state.submitLoading,
+                }}
+                cancelButtonProps={{
+                    disabled: this.state.submitLoading,
+                }}
             >
             <div>
                 友链名称：<Input size="small" value={this.state.friendUrlName} style={{ height:30 , width:300 }} 
@@ -284,7 +299,10 @@ const data2 = [];
   
 // 友链属性那个是添加需要填写的
 class FriendUrlTable extends React.Component {
-    state = { visible: false }
+    state = { 
+        visible: false,
+        submitLoading: false,
+    }
 
     constructor(props) {
         super(props);
@@ -323,13 +341,19 @@ class FriendUrlTable extends React.Component {
                 )
             },
             {
-                title: '创建时间',
-                dataIndex: 'createTime',
-                key: 'createTime',
+                title: '最近一次更新时间',
+                dataIndex: 'updateTime',
+                key: 'updateTime',
                 align: 'center',
-                sorter: (a, b) => a.createTime < b.createTime
+                sorter: (a, b) => a.updateTime < b.updateTime
                 // sorter: (a, b) => moment(a.createTime).isAfter(moment(b.createTime)) || moment(a.createTime).isBefore(moment(b.createTime))
                 // defaultSortOrder: 'descend'
+            },
+            {
+                title: '更新人',
+                dataIndex: 'updateUser',
+                key: 'updateUser',
+                align: 'center',
             },
             {
                 title: '操作',
@@ -459,6 +483,10 @@ class FriendUrlTable extends React.Component {
             return ;
         }
 
+        this.setState({
+            submitLoading: true
+        })
+
         let arrayStr = this.state.friendUrlAddress.split("//");
         let url = arrayStr[0];
         if (arrayStr.length > 1) url = arrayStr[1];
@@ -495,6 +523,9 @@ class FriendUrlTable extends React.Component {
                         });
                     }
                 }
+                this.setState({
+                    submitLoading: false,
+                })
             }
         )
     }
@@ -568,6 +599,12 @@ class FriendUrlTable extends React.Component {
                         onCancel={this.handleCancelModal}
                         okText="确认添加"
                         cancelText="取消"
+                        okButtonProps={{
+                            loading: this.state.submitLoading,
+                        }}
+                        cancelButtonProps={{
+                            disabled: this.state.submitLoading,
+                        }}
                     >
                     <div>
                         友链名称：<Input size="small" value={this.state.friendUrlName} style={{height:30 , width:300}} 
