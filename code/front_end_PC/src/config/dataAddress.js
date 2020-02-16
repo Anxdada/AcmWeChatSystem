@@ -26,10 +26,18 @@ export const UpdateFriendUrl = localhost+"/friendUrl/updateFriendUrl";
 export const SelectFriendUrl = localhost+"/friendUrl/selectFriendUrl";
 export const DetailFriendUrl = localhost+"/friendUrl/detailFriendUrl";
 
+
+
 // 值日相关
-// export const select
-// export const AddFriendUrl = localhost+"/friendUrl/addFriendUrl";
-// export const DeleteFriendUrl = localhost+"/friendUrl/deleteFriendUrl";
+export const AddOnDuty = localhost+"/onduty/addOnDuty";
+export const DeleteOnDuty = localhost+"/onduty/deleteOnDuty";
+export const UpdateOnDuty = localhost+"/onduty/updateOnDuty";
+export const SelectOnDuty = localhost+"/onduty/selectOnDuty";
+export const DetailOnDuty = localhost+"/onduty/detailOnDuty";
+// 选择队员
+export const GetTeamStaff = localhost+"/onduty/getOnDutyStaff";
+
+
 
 // 反馈相关
 export const AddFeedback = localhost+"/feedback/addFeedback";

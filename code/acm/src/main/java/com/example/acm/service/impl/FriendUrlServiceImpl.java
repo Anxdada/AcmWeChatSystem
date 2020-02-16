@@ -31,8 +31,8 @@ public class FriendUrlServiceImpl implements FriendUrlService {
         friendUrlMapper.addFriendUrl(friendUrl);
     }
 
-    public void updateFriendUrlByFriendUrlId(FriendUrl friendUrl) {
-        friendUrlMapper.updateFriendUrlByFriendUrlId(friendUrl);
+    public void updateFriendUrl(FriendUrl friendUrl) {
+        friendUrlMapper.updateFriendUrl(friendUrl);
     }
 
     public Integer countFriendUrlListByQuery(Map<String, Object> map) {

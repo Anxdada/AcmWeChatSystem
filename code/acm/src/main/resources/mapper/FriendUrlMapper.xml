@@ -36,7 +36,7 @@
     </insert>
 
     <!-- 更新URL -->
-    <update id="updateFriendUrlByFriendUrlId">
+    <update id="updateFriendUrl">
         UPDATE friendUrl
         <set>
             <if test="friendUrl.friendUrlId != null">friendUrlId=#{friendUrl.friendUrlId},</if>

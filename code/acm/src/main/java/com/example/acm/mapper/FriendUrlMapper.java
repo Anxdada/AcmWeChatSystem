@@ -35,7 +35,7 @@ public interface FriendUrlMapper {
      *
      * @param friendUrl 新的友链信息
      */
-    public void updateFriendUrlByFriendUrlId(@Param("friendUrl") FriendUrl friendUrl);
+    public void updateFriendUrl(@Param("friendUrl") FriendUrl friendUrl);
 
     /**
      * 查询友链

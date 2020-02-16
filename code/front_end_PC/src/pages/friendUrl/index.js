@@ -198,7 +198,7 @@ class UrlModifyAction extends React.Component {
         // console.log(date.format('YYYY-MM-DD'));
         // console.log(dateString);
         this.setState({
-            createTime: date.format('YYYY-MM-DD HH:mm:ss'),
+            createTime: date,
         })
     }
 
@@ -250,10 +250,6 @@ class UrlModifyAction extends React.Component {
                     onChange={this.handleModalTags} >
                     { this.state.urlTagsModal }
                 </Select>
-            </div>
-            <div className="modalInput">
-                创建时间：<DatePicker defaultValue={ moment(this.state.friendUrlCreateTime) } placeholder="请选择日期"
-                            disabledDate={this.disabledDate} onChange={ this.handleModalUrlCreateTime } />
             </div>
             </Modal>
         </span>
@@ -311,6 +307,7 @@ class FriendUrlTable extends React.Component {
             totalPage: 1,
             pageSize: 10,
             friendUrlName:'',
+            addFriendUrlName: '',
             friendUrlAddress:'',
             friendUrlTag: '个人博客',
             allUrl: '',
@@ -415,7 +412,10 @@ class FriendUrlTable extends React.Component {
 
     refresh(msg) {
         // 注册emit, 这样触发emit就会刷新界面了.
-        this.getUrlData();
+        this.setState({
+            friendUrlName: '',
+            addFriendUrlName: '',
+        }, () => this.getUrlData());
     }
 
     renderUrlTagsModal = (data) => {
@@ -497,7 +497,7 @@ class FriendUrlTable extends React.Component {
                 'Authorization': cookie.load('token'),
                 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
             },
-            body: 'friendUrlName='+this.state.friendUrlName+'&friendUrlAddress='+url
+            body: 'friendUrlName='+this.state.addFriendUrlName+'&friendUrlAddress='+url
                     +'&friendUrlTag='+this.state.friendUrlTag
         }).then( res => res.json() ).then (
             data => {
@@ -560,7 +560,7 @@ class FriendUrlTable extends React.Component {
     handleModalUrlName = (e) => {
         console.log(e)
         this.setState({
-            friendUrlName: e.target.value
+            addFriendUrlName: e.target.value
         });
     }
 
@@ -588,7 +588,7 @@ class FriendUrlTable extends React.Component {
         return (
         <div style={{ flex: 1, padding: "10px" }}>
             <Card title="友情链接" >
-                <Input size="small" onChange={this.handleSearchText} placeholder="友链名称" style={{ height:30 , width:150 }}/>
+                <Input size="small" value={this.state.friendUrlName} onChange={this.handleSearchText} placeholder="友链名称" style={{ height:30 , width:150 }}/>
                 &nbsp;&nbsp;<Button type="primary" shape="circle" icon="search" onClick={ this.handleSearchBtn }/>
                 <div className="addUrlBtn">
                     <Button type="primary" onClick={this.handleShowModal}>+添加</Button>
@@ -607,7 +607,7 @@ class FriendUrlTable extends React.Component {
                         }}
                     >
                     <div>
-                        友链名称：<Input size="small" value={this.state.friendUrlName} style={{height:30 , width:300}} 
+                        友链名称：<Input size="small" value={this.state.addFriendUrlName} style={{height:30 , width:300}} 
                                     onChange={this.handleModalUrlName} />
                     </div>
                     <div className="modalInput">

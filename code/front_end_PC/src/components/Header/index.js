@@ -35,7 +35,7 @@ class Header extends React.Component {
                 console.log(data);
                 if (data.status == 0) {
                     this.setState({
-                        userName: data.resultBean.realName,
+                        userName: data.resultBean,
                     });
                 } else {
                     if (data.status < 100) {

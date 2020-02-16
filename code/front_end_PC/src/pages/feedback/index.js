@@ -227,10 +227,8 @@ class CommentList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            feedbackId: '',
             type: '',
-            visible: false,
-            modifyLoading: false,
+            feedbackId: '',
             feedbackBody: '',
         }
     }
@@ -354,76 +352,6 @@ class CommentList extends React.Component {
     }
 
 
-    // 下面的修改的
-    updateFeedbackData() {
-
-        if (this.state.feedbackBody == "") {
-            message.error("反馈内容不能为空!");
-            return ;
-        }
-
-        this.setState({
-            modifyLoading: true,
-        })
-
-        fetch(UpdateFeedback, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'feedbackId='+this.state.feedbackId+'&feedbackBody='+this.state.feedbackBody
-        }).then( res => res.json() ).then (
-            data => {
-                if (data.status == 0) {
-                    emitter.emit('refresh', '修改反馈');
-                    this.setState({
-                        visible: false,
-                    })
-                    message.success("修改成功");
-                } else {
-                    if (data.status < 100) {
-                        message.error(data.msg);
-                    } else {
-                        notification.error({
-                            message: data.error,
-                            description: data.message
-                        });
-                    }
-                }
-                this.setState({
-                    modifyLoading: false,
-                })
-            }
-        )
-    }
-
-    handleShowModal = (item) => {
-        this.setState({
-            visible: true,
-            feedbackId: item.feedbackId,
-            feedbackBody: item.feedbackBody,
-        })
-    }
-
-    handleOkModal = (e) => {
-        this.updateFeedbackData();
-    }
-
-    handleCancelModal = (e) => {
-        this.setState({
-            visible: false,
-        });
-    }
-
-    handleModalTextArea = (e) => {
-        this.setState({
-            feedbackBody: e.target.value,
-        })
-    }
-    // 修改
-
-
     render() {
         const listData = this.props.comments;
         return (
@@ -468,9 +396,7 @@ class CommentList extends React.Component {
                                         </span>,
                                         <span>
                                             {
-                                                item.nowUser == item.feedbackUser ? 
-                                                <span><a onClick={() => this.handleShowModal(item)}>修改</a></span>
-                                                : null
+                                                item.nowUser == item.feedbackUser ? <FeedbackModify item={item}/> : null
                                             } 
                                         </span>,
                                         <span>
@@ -497,7 +423,100 @@ class CommentList extends React.Component {
                         </li>
                     )}
                 />
-                <Modal
+                
+            </div>
+        );
+    }
+}
+
+
+class FeedbackModify extends React.Component {
+
+    state = {
+        visible: false,
+        modifyLoading: false,
+    }
+
+    constructor(props) {
+        super(props);
+
+        console.log(this.props.item.feedbackBody);
+        this.state = {
+            feedbackId: this.props.item.feedbackId,
+            feedbackBody: this.props.item.feedbackBody,
+        }
+    }
+
+    updateFeedbackData() {
+
+        if (this.state.feedbackBody == "") {
+            message.error("反馈内容不能为空!");
+            return ;
+        }
+
+        this.setState({
+            modifyLoading: true,
+        })
+
+        fetch(UpdateFeedback, {
+            method: 'POST',
+            headers: {
+                'Authorization': cookie.load('token'),
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+            },
+            body: 'feedbackId='+this.state.feedbackId+'&feedbackBody='+this.state.feedbackBody
+        }).then( res => res.json() ).then (
+            data => {
+                if (data.status == 0) {
+                    emitter.emit('refresh', '修改反馈');
+                    this.setState({
+                        visible: false,
+                    })
+                    message.success("修改成功");
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+                this.setState({
+                    modifyLoading: false,
+                })
+            }
+        )
+    }
+
+    handleShowModal = () => {
+        this.setState({
+            visible: true,
+        })
+    }
+
+    handleOkModal = (e) => {
+        this.updateFeedbackData();
+    }
+
+    handleCancelModal = (e) => {
+        this.setState({
+            visible: false,
+        });
+    }
+
+    handleModalTextArea = (e) => {
+        this.setState({
+            feedbackBody: e.target.value,
+        })
+    }
+
+    render() {
+        return (
+        <span>
+            <a onClick={this.handleShowModal}> 修改 </a>
+            <Modal
                     title="修改反馈内容"
                     visible={this.state.visible}
                     onOk={this.handleOkModal}
@@ -511,18 +530,11 @@ class CommentList extends React.Component {
                         disabled: this.state.modifyLoading,
                     }}
                 >
-                    反馈内容:&nbsp;&nbsp;
                     <TextArea rows={4} value={this.state.feedbackBody} onChange={this.handleModalTextArea} />
                 </Modal>
-            </div>
-        );
+        </span>
+        )
     }
-}
-
-
-// 本来是修改是单独写了一个组件, 但是不满足样式需求, 只能不分开写了.
-class FeedbackModify extends React.Component {
-
 }
 
 export default class Feedback extends React.Component {

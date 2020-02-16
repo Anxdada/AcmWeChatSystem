@@ -3,6 +3,9 @@ package com.example.acm;
 import com.example.acm.common.ResultBean;
 import com.example.acm.common.ResultCode;
 import com.example.acm.common.SysConst;
+import com.example.acm.entity.OnDuty;
+import com.example.acm.entity.User;
+import com.example.acm.service.UserService;
 import com.example.acm.utils.StringUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -68,6 +73,25 @@ class AcmApplicationTests {
             urlCon.setReadTimeout(30000);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testOnduty() {
+        OnDuty onDuty = new OnDuty();
+        onDuty.setOnDutyUserName("!!!");
+        System.out.println(onDuty.getOnDutyUserName());
+    }
+
+    @Autowired
+    UserService userService;
+
+    @Test
+    void testFindAuth() {
+        List<Map<String,Object>> list = userService.findSatisfyAuthUser(4);
+        for (Map<String, Object> u : list) {
+            System.out.println(u.get("realName"));
+            System.out.println(u.get("userId"));
         }
     }
 

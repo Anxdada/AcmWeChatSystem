@@ -87,7 +87,7 @@ public class FriendUrlController extends BaseController {
                                       @RequestParam(value = "friendUrlTag", required = true) String friendUrlTag,
                                       @RequestParam(value = "createTime", required = true) String createTime,
                                       HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("xierenyi " + createTime);
+//        System.out.println("xierenyi " + createTime);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             System.out.println(sdf.parse(createTime));
@@ -95,7 +95,7 @@ public class FriendUrlController extends BaseController {
             e.printStackTrace();
         }
 
-        System.out.println(friendUrlName + " " + friendUrlAddress + " " + friendUrlTag + " " + createTime);
+//        System.out.println(friendUrlName + " " + friendUrlAddress + " " + friendUrlTag + " " + createTime);
         User user = getUserIdFromSession(request);
         if (user == null) {
             user = new User();
@@ -132,7 +132,7 @@ public class FriendUrlController extends BaseController {
     public ResultBean detailFriendUrl(@RequestParam(value = "friendUrlId",  required = true) long friendUrlId,
                                       HttpServletRequest request, HttpServletResponse response) {
         User user = getUserIdFromSession(request);
-        System.out.println(friendUrlId);
+//        System.out.println(friendUrlId);
         if (user == null) {
             // 如果忘记传头部信息过来, 默认设置为超级管理员的改动
             user = new User();

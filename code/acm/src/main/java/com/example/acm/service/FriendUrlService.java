@@ -38,7 +38,7 @@ public interface FriendUrlService {
      *
      * @param friendUrl 新的友链信息
      */
-    public void updateFriendUrlByFriendUrlId(FriendUrl friendUrl);
+    public void updateFriendUrl(FriendUrl friendUrl);
 
     /**
      * 根据查询条件获取友链个数(Map)

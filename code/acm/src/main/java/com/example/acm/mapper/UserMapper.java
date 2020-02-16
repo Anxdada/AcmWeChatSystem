@@ -3,7 +3,7 @@ package com.example.acm.mapper;
 
 import com.example.acm.entity.User;
 import org.apache.ibatis.annotations.Param;
-import org.mapstruct.Mapper;
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -113,4 +113,15 @@ public interface UserMapper {
     public Integer countUserByLectureId(@Param("map") Map<String, Object> map);
 
     public  List<Map<String,Object>> findUserBuImpressionSort(@Param("map") Map<String, Object> map);
+
+
+    // xiexie
+
+    /**
+     * 找到符合身份的人
+     *
+     * @param auth 身份
+     * @return 人员
+     */
+    public List<Map<String,Object>> findSatisfyAuthUser(@Param("auth") int auth);
 }

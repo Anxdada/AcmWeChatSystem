@@ -1,6 +1,7 @@
 package com.example.acm.service;
 
 import com.example.acm.entity.User;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -109,4 +110,12 @@ public interface UserService{
     public List<Map<String,Object>> findUserByLectureId(Map<String, Object> map);
 
     public Integer countUserByLectureId(Map<String, Object> map);
+
+    /**
+     * 找到符合身份的人
+     *
+     * @param auth 身份
+     * @return 人员
+     */
+    public List<Map<String,Object>> findSatisfyAuthUser(int auth);
 }

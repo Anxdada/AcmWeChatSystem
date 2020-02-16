@@ -8,6 +8,10 @@ const FormItem = Form.Item;
 
 class FormLogin extends React.Component {
 
+    state = {
+        loading: false,
+    }
+
     constructor(props) {
         super(props);
         this.state = {
@@ -44,6 +48,9 @@ class FormLogin extends React.Component {
                         });
                     }
                 }
+                this.setState({
+                    loading: false,
+                })
             }
         )
     }
@@ -57,6 +64,7 @@ class FormLogin extends React.Component {
                 this.setState({
                     userName: values.userName,
                     password: values.password,
+                    loading: true,
                 }, () => this.getData());
                 // this.props.history.push('/admin/home');
                 // this.props.history.push(`${this.props.match.url.replace(/\/[^/]+$/, '')}/admin/home`);
@@ -124,7 +132,7 @@ class FormLogin extends React.Component {
                             initialValue: true,
                         })(<Checkbox>Remember me</Checkbox>) } */}
                         <div className="btn">
-                        <Button type="primary" htmlType="submit" className="login-form-button" >
+                        <Button type="primary" htmlType="submit" className="login-form-button" loading={this.state.loading} >
                             Log in
                         </Button>
                         </div>

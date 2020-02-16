@@ -183,7 +183,8 @@
 			</if>
 		</trim>
 	</select>
-	
+
+	<!-- map 条件 -->
 	<select id="findUserListByQueryMap" resultType="com.example.acm.entity.User">
 		SELECT
 		<include refid="user_table"/>
@@ -357,72 +358,84 @@
                         		</trim>
 
             	</select>
-     <select id="findUserByLectureId" resultType="java.util.Map">
-         		SELECT
-         		a.*, b.createDate, b.LectureId, c.lectureTitle
-         		FROM
-         			(user a inner join applylecture b on a.userId=b.joinUser)
-                     INNER JOIN lecture c on c.lectureId=b.lectureId
-         		<trim prefix="WHERE" prefixOverrides="AND|OR">
-                                 <if test="map.lectureId != null ">
-                                      AND c.lectureId=#{map.lectureId}
-                                 </if>
-                     			<if test="map.isEffective != null ">
-                     				AND a.isEffective=#{map.isEffective}
-                     			</if>
-                     			<if test="map.isEffective != null ">
-                                     AND b.isEffective=#{map.isEffective}
-                                 </if>
-                                 <if test="map.isEffective != null ">
-                                     AND c.isEffective=#{map.isEffective}
-                                 </if>
-                     		</trim>
-                     		<if test="map.order != null ">
-                     		ORDER BY
-                     			b.${map.order} ${map.aOrS}
-                     		</if>
-                     		<if test="map.start != null ">
-                     		limit #{map.start},#{map.limit}
-                     		</if>
-     </select>
-     <select id="countUserByLectureId" resultType="java.lang.Integer">
-                 		SELECT
-                 		count(*)
-                 		FROM
-                 			(user a inner join applylecture b on a.userId=b.joinUser)
-                                                 INNER JOIN lecture c on c.lectureId=b.LectureId
-                 		<trim prefix="WHERE" prefixOverrides="AND|OR">
-                                         <if test="map.lectureId != null ">
-                                              AND c.lectureId=#{map.lectureId}
-                                         </if>
-                             			<if test="map.isEffective != null ">
-                             				AND a.isEffective=#{map.isEffective}
-                             			</if>
-                             			<if test="map.isEffective != null ">
-                                             AND b.isEffective=#{map.isEffective}
-                                         </if>
-                                         <if test="map.isEffective != null ">
-                                             AND c.isEffective=#{map.isEffective}
-                                         </if>
-                             		</trim>
+	<select id="findUserByLectureId" resultType="java.util.Map">
+		SELECT
+		a.*, b.createDate, b.LectureId, c.lectureTitle
+		FROM
+			(user a inner join applylecture b on a.userId=b.joinUser)
+			 INNER JOIN lecture c on c.lectureId=b.lectureId
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<if test="map.lectureId != null ">
+				AND c.lectureId=#{map.lectureId}
+			</if>
+			<if test="map.isEffective != null ">
+				AND a.isEffective=#{map.isEffective}
+			</if>
+			<if test="map.isEffective != null ">
+				AND b.isEffective=#{map.isEffective}
+			</if>
+			<if test="map.isEffective != null ">
+				AND c.isEffective=#{map.isEffective}
+			</if>
+		</trim>
+		<if test="map.order != null ">
+			ORDER BY
+			b.${map.order} ${map.aOrS}
+		</if>
+		<if test="map.start != null ">
+			limit #{map.start},#{map.limit}
+		</if>
+	</select>
+	<select id="countUserByLectureId" resultType="java.lang.Integer">
+		SELECT
+		count(*)
+		FROM
+		(user a inner join applylecture b on a.userId=b.joinUser)
+							 INNER JOIN lecture c on c.lectureId=b.LectureId
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			 <if test="map.lectureId != null ">
+				  AND c.lectureId=#{map.lectureId}
+			 </if>
+			<if test="map.isEffective != null ">
+				AND a.isEffective=#{map.isEffective}
+			</if>
+			<if test="map.isEffective != null ">
+				 AND b.isEffective=#{map.isEffective}
+			 </if>
+		 	<if test="map.isEffective != null ">
+				 AND c.isEffective=#{map.isEffective}
+			</if>
+		</trim>
+	</select>
+
+	<select id="findUserBuImpressionSort" resultType="java.util.Map">
+		select aa.* from user aa LEFT JOIN impression bb on aa.userId=bb.imUser
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<if test="map.isEffective != null ">
+				AND aa.isEffective=#{map.isEffective}
+			</if>
+			<if test="map.username != null ">
+			AND aa.username like CONCAT ('%', #{map.username}, '%')
+			</if>
+
+	 	</trim>
+		group by aa.userId order by (COALESCE(sum(bb.agreeNum),0)+count(bb.agreeNum)*0.1) DESC
+		<if test="map.start != null ">
+			limit #{map.start},#{map.limit}
+		</if>
+	</select>
 
 
-                 	</select>
-
-       <select id="findUserBuImpressionSort" resultType="java.util.Map">
-               		select aa.* from user aa LEFT JOIN impression bb on aa.userId=bb.imUser
-               		<trim prefix="WHERE" prefixOverrides="AND|OR">
-                                                             <if test="map.isEffective != null ">
-                                                                  AND aa.isEffective=#{map.isEffective}
-                                                             </if>
-                                                 			<if test="map.username != null ">
-                                                 				AND aa.username like CONCAT ('%', #{map.username}, '%')
-                                                 			</if>
-
-                     </trim>
-                    group by aa.userId order by (COALESCE(sum(bb.agreeNum),0)+count(bb.agreeNum)*0.1) DESC
-                    <if test="map.start != null ">
-                                         		limit #{map.start},#{map.limit}
-                    </if>
-           </select>
+	<!-- 找满足身份的人 -->
+	<select id="findSatisfyAuthUser" resultType="java.util.Map">
+		SELECT
+		tt.realName, tt.telephone
+		FROM
+			user tt
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<if test="auth != null">
+				AND tt.auth &amp; #{auth} != 0
+			</if>
+		</trim>
+	</select>
 </mapper>

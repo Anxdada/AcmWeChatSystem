@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace用于绑定Dao接口 -->
+<mapper namespace="com.example.acm.mapper.OnDutyMapper">
+    <!-- 查询初始所有OnDuty -->
+    <select id="selectAll" resultType="com.example.acm.entity.OnDuty">
+        SELECT * FROM onDuty;
+    </select>
+
+    <sql id="on_duty_table">
+		tt.onDutyId,
+		tt.onDutyUserName,
+		tt.onDutyTelephone,
+		tt.onDutyStartTime,
+		tt.onDutyEndTime,
+		tt.createUser,
+        tt.createTime,
+		tt.updateUser,
+		tt.updateTime,
+		tt.isEffective
+	</sql>
+
+    <!-- 添加OnDuty -->
+    <insert id="addOnDuty" useGeneratedKeys="true">
+        INSERT INTO onDuty
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="onDuty.onDutyId != null">onDutyId,</if>
+            <if test="onDuty.onDutyUserName != null">onDutyUserName,</if>
+            <if test="onDuty.onDutyTelephone != null">onDutyTelephone,</if>
+            <if test="onDuty.onDutyStartTime != null">onDutyStartTime,</if>
+            <if test="onDuty.onDutyEndTime != null">onDutyEndTime,</if>
+            <if test="onDuty.createUser != null">createUser,</if>
+            <if test="onDuty.createTime != null">createTime,</if>
+            <if test="onDuty.updateUser != null">updateUser,</if>
+            <if test="onDuty.updateTime != null">updateTime,</if>
+            <if test="onDuty.isEffective != null">isEffective,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="onDuty.onDutyId != null">#{onDuty.onDutyId},</if>
+            <if test="onDuty.onDutyUserName != null">#{onDuty.onDutyUserName},</if>
+            <if test="onDuty.onDutyTelephone != null">#{onDuty.onDutyTelephone},</if>
+            <if test="onDuty.onDutyStartTime != null">#{onDuty.onDutyStartTime},</if>
+            <if test="onDuty.onDutyEndTime != null">#{onDuty.onDutyEndTime},</if>
+            <if test="onDuty.createUser != null">#{onDuty.createUser},</if>
+            <if test="onDuty.createTime != null">#{onDuty.createTime},</if>
+            <if test="onDuty.updateUser != null">#{onDuty.updateUser},</if>
+            <if test="onDuty.updateTime != null">#{onDuty.updateTime},</if>
+            <if test="onDuty.isEffective != null">#{onDuty.isEffective},</if>
+        </trim>
+    </insert>
+
+    <!-- 更新URL -->
+    <update id="updateOnDuty">
+        UPDATE onDuty
+        <set>
+            <if test="onDuty.onDutyId != null">onDutyId=#{onDuty.onDutyId},</if>
+            <if test="onDuty.onDutyUserName != null">onDutyUserName=#{onDuty.onDutyUserName},</if>
+            <if test="onDuty.onDutyTelephone != null">onDutyTelephone=#{onDuty.onDutyTelephone},</if>
+            <if test="onDuty.onDutyStartTime != null">onDutyStartTime=#{onDuty.onDutyStartTime},</if>
+            <if test="onDuty.onDutyEndTime != null">onDutyEndTime=#{onDuty.onDutyEndTime},</if>
+            <if test="onDuty.createUser != null">createUser=#{onDuty.createUser},</if>
+            <if test="onDuty.createTime != null">createTime=#{onDuty.createTime},</if>
+            <if test="onDuty.updateUser != null">updateUser=#{onDuty.updateUser},</if>
+            <if test="onDuty.updateTime != null">updateTime=#{onDuty.updateTime},</if>
+            <if test="onDuty.isEffective != null">isEffective=#{onDuty.isEffective},</if>
+        </set>
+        WHERE onDutyId = #{onDuty.onDutyId};
+    </update>
+
+    <!-- 查询单条OnDuty -->
+    <select id="findOnDutyListByOnDutyId" resultType="com.example.acm.entity.OnDuty">
+        SELECT
+        *
+        FROM onDuty tt
+        <where>
+            <if test="onDutyId != null">
+                tt.onDutyId = #{onDutyId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的OnDuty的总数 -->
+    <select id="countOnDutyMapListByQuery" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        onDuty tt
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.onDutyUserName != null ">
+                AND tt.onDutyUserName like CONCAT ('%', #{map.onDutyUserName}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND tt.isEffective=#{map.isEffective}
+            </if>
+            <if test="map.onDutyStartTime != null ">
+                AND ( tt.onDutyStartTime between #{map.onDutyStartTime} and #{map.onDutyEndTime}
+                OR tt.onDutyEndTime between #{map.onDutyStartTime} and #{map.onDutyEndTime} )
+            </if>
+        </trim>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的OnDuty -->
+    <select id="findOnDutyMapListByQuery" resultType="java.util.Map">
+        SELECT
+        <include refid="on_duty_table"/>
+        FROM
+        onDuty tt
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.onDutyUserName != null ">
+                AND tt.onDutyUserName like CONCAT ('%', #{map.onDutyUserName}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND tt.isEffective=#{map.isEffective}
+            </if>
+            <if test="map.onDutyStartTime != null ">
+                AND ( tt.onDutyStartTime between #{map.onDutyStartTime} and #{map.onDutyEndTime}
+                    OR tt.onDutyEndTime between #{map.onDutyStartTime} and #{map.onDutyEndTime} )
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            tt.${map.order} ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start},#{map.limit}
+        </if>
+    </select>
+</mapper>

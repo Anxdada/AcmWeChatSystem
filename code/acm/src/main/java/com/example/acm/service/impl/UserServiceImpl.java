@@ -4,6 +4,7 @@ package com.example.acm.service.impl;
 import com.example.acm.entity.User;
 import com.example.acm.mapper.UserMapper;
 import com.example.acm.service.UserService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,12 +19,11 @@ import java.util.Map;
  * @version 1.0
  * @date 2020-02-13 01:40
  */
-@Service("userService")
-@Transactional
+@Service
 public class UserServiceImpl implements UserService {
 	
 	@Autowired
-	private UserMapper  userMapper;	
+	private UserMapper userMapper;
     
     /** 
      * 添加user
@@ -156,5 +156,15 @@ public class UserServiceImpl implements UserService {
 
     public Integer countUserByLectureId(Map<String, Object> map){
         return userMapper.countUserByLectureId(map);
+    }
+
+    /**
+     * 找到符合身份的人
+     *
+     * @param auth 身份
+     * @return 人员
+     */
+    public List<Map<String,Object>> findSatisfyAuthUser(int auth) {
+        return userMapper.findSatisfyAuthUser(auth);
     }
 }
