@@ -4,10 +4,13 @@ package com.example.acm.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * @Author xierenyi
- * @Description: 讨论帖子实体类
- * @Date: Created in 15:27 2019-12-22
+import org.springframework.format.annotation.DateTimeFormat;
+
+/** 
+ * 讨论实体
+ * 
+ * @author guanyiting
+ * @date 2019-02-05 16:05:40
  */
 public class Invitation implements Serializable {
 

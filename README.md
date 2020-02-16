@@ -1,9 +1,7 @@
 # 微信公众号
 前端手机页面
 前端后台页面
-后台管理系统2
-
-test master
+后台管理系统
 
 # Based On
  ![在这里插入图片描述](https://img-blog.csdnimg.cn/20191214173318266.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0FueGRhZGE=,size_16,color_FFFFFF,t_70)
@@ -26,3 +24,8 @@ test master
   - **数据库:** [Mysql](https://reactjs.org/), [Redis](https://redis.io/)
   - **网络:** [Fetch](https://developer.mozilla.org/zh-CN/docs/Web/API/Fetch_API/Using_Fetch)
   - **富文本编辑器:** [wangeditor](http://www.wangeditor.com/)
+
+静态资源保存在本地, document -> images
+
+后期可能会接入线上练练这方面的能力
+
