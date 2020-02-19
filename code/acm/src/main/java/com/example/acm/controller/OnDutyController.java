@@ -158,7 +158,7 @@ public class OnDutyController extends BaseController {
     public ResultBean detailOnDuty(@RequestParam(value = "onDutyId",  required = true) long onDutyId,
                                       HttpServletRequest request, HttpServletResponse response) {
 
-        System.out.println(onDutyId);
+//        System.out.println(onDutyId);
 
         return onDutyDealService.detailFriendUrl(onDutyId);
 

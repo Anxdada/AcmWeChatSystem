@@ -9,6 +9,10 @@ public interface SysConst {
     final String TOKEN = "Authorization";
     final String localhost="localhost:9999";
 
+    final String FILE_MAP="/image/photo/**";
+    final String FILE_PATH="file:/Users/xierenyi/xiexie/private/AcmWeChatSystem/image/photo/";
+
+
     int TOKEN_TIME = 24*60*60;
 
     int SUPER_ADMIN = 5;

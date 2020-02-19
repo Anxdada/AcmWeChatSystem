@@ -24,7 +24,7 @@ import java.util.List;
 // 注解可以支持配置跨域问题, 只不过我全局配好了的, 所以用不用注解都可
 @Controller
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-@RequestMapping("/friendUrl")
+@RequestMapping("/friendurl")
 public class FriendUrlController extends BaseController {
 
     private Logger LOG = LoggerFactory.getLogger(this.getClass());
