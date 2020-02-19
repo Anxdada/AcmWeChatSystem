@@ -60,8 +60,6 @@ class UrlModifyAction extends React.Component {
         this.setState({
             urlTagsModal,
         })
-
-        this.getSingleUrlData();
     }
 
     renderUrlTagsModal = (data) => {
@@ -218,7 +216,7 @@ class UrlModifyAction extends React.Component {
 
 
     render(){
-        console.log(this.props.modifyUrlId)
+        // console.log(this.props.modifyUrlId)
         return (
         <span>
             <a onClick={ this.handleShowModal }> 修改 </a>

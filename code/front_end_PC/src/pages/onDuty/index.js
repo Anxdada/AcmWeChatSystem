@@ -112,7 +112,7 @@ class Modify extends React.Component {
             return ;
         }
 
-        if (this.state.startTime == 0) {
+        if (this.state.startTime == null) {
             message.error("请输入值班周期!");
             return ;
         }
@@ -188,6 +188,14 @@ class Modify extends React.Component {
     }
 
     handleModalRangeTime = (dates) => {
+        console.log(dates);
+        if (dates.length < 1) {
+            this.setState({
+                startTime: null,
+                endTime: null,
+            })
+            return ;
+        }
         this.setState({
             startTime: dates[0],
             endTime: dates[1],
@@ -195,10 +203,13 @@ class Modify extends React.Component {
     }
 
     render() {
-        const rangeTime = [moment(this.state.startTime), moment(this.state.endTime)];
-        console.log(this.state.t1);
-        console.log(typeof this.state.t1);
-        console.log(typeof this.state.startTime);
+        let rangeTime;
+        if (this.state.startTime != null)
+            rangeTime = [moment(this.state.startTime), moment(this.state.endTime)];
+        else rangeTime = [null, null];
+        // console.log(this.state.t1);
+        // console.log(typeof this.state.t1);
+        // console.log(typeof this.state.startTime);
         return (
             <span>
                 <a onClick={this.handleShowModal}>修改</a>
@@ -387,8 +398,8 @@ class OnDutyView extends React.Component {
             searchUserName: '',
             onDutyUserName: '',
             telephone: '',
-            startTime: '',
-            endTime: '',
+            startTime: null,
+            endTime: null,
             staff: [],
         }
         emitter.on("refresh", this.refresh.bind(this)); 
@@ -401,10 +412,11 @@ class OnDutyView extends React.Component {
 
     refresh(msg) {
         // 注册emit, 这样触发emit就会刷新界面了.
+        console.log("!!!!!!!!!!!")
         this.setState({
             searchUserName: '',
-            startTime: '',
-            endTime: '',
+            startTime: null,
+            endTime: null,
         }, () => this.getOnDutyData());
     }
 
@@ -443,12 +455,12 @@ class OnDutyView extends React.Component {
         console.log("!!!xiegetData");
 
         let startTime = '';
-        if (this.state.startTime != 0) {
+        if (this.state.startTime != null) {
             startTime = moment(this.state.startTime).format('YYYY-MM-DD');
         }
 
         let endTime = '';
-        if (this.state.endTime != 0) {
+        if (this.state.endTime != null) {
             endTime = moment(this.state.endTime).format('YYYY-MM-DD');
         }
 
@@ -500,7 +512,7 @@ class OnDutyView extends React.Component {
             return ;
         }
 
-        if (this.state.startTime == 0) {
+        if (this.state.startTime == null) {
             message.error("请输入值班周期!");
             return ;
         }
@@ -555,6 +567,7 @@ class OnDutyView extends React.Component {
     }
 
     handleSearchRangeTime = (dates) => {
+        console.log(dates.length);
         if (dates.length < 1) {
             this.setState({
                 startTime: '',
@@ -562,9 +575,9 @@ class OnDutyView extends React.Component {
             }, () => this.getOnDutyData());
             return ;
         }
-        console.log(dates.length);
-        console.log(dates[0].format('YYYY-MM-DD'));
-        console.log(dates[1].format('YYYY-MM-DD'));
+        // console.log(dates.length);
+        // console.log(dates[0].format('YYYY-MM-DD'));
+        // console.log(dates[1].format('YYYY-MM-DD'));
         this.setState({
             startTime: dates[0].format('YYYY-MM-DD'),
             endTime: dates[1].format('YYYY-MM-DD'),
@@ -627,6 +640,13 @@ class OnDutyView extends React.Component {
     }
 
     handleModalAddRangeTime = (dates) => {
+        if (dates.length < 1) {
+            this.setState({
+                startTime: null,
+                endTime: null,
+            })
+            return ;
+        }
         this.setState({
             startTime: dates[0],
             endTime: dates[1],
@@ -634,14 +654,17 @@ class OnDutyView extends React.Component {
     }
 
     render() {
-        const rangeTime = [this.state.startTime, this.state.endTime];
+        let rangeTime;
+        if (this.state.startTime != null)
+            rangeTime = [moment(this.state.startTime), moment(this.state.endTime)];
+        else rangeTime = [null, null];
         return(
             <div style={{ flex: 1, padding: "10px" }}>
                 <Card title="值班管理" >
                     <Input placeholder="值班人姓名" value={this.state.searchUserName} onChange={this.handleSearchUserNameText} 
                         style={{ height: 30, width: 150}} className="searchF" />
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <RangePicker onChange={this.handleSearchRangeTime} placeholder={["开始时间", "结束时间"]} />
+                    <RangePicker value={rangeTime} onChange={this.handleSearchRangeTime} placeholder={["开始时间", "结束时间"]} />
                     <Button type="primary" shape="circle" icon="search" onClick={this.handleSearchRangeTimeBtn}/>
                     <div className="addUrlBtn">
                         <Button type="primary" onClick={this.handleShowModal}> 安排值班 </Button>
