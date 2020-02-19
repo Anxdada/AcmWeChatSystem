@@ -19,12 +19,29 @@ export const UpdateNewsMain = localhost+"/news/updateNewMain";
 export const SelectNewsMain = localhost+"/news/selectNewsMain";
 export const NewsDetail = localhost+"/news/detail";
 
+
+
+// 公告的分类
+export const AddAnnouncementTag = localhost+"/announcementtag/addAnnouncementTag";
+export const DeleteAnnouncementTag = localhost+"/announcementtag/deleteAnnouncementTag";
+export const UpdateAnnouncementTag = localhost+"/announcementtag/updateAnnouncementTag";
+export const SelectAnnouncementTag = localhost+"/announcementtag/selectAnnouncementTag";
+export const DetailAnnouncementTag = localhost+"/announcementtag/detailAnnouncementTag";
+// 公告
+export const AddAnnouncement = localhost+"/announcement/addAnnouncement";
+export const DeleteAnnouncement = localhost+"/announcement/deleteAnnouncement";
+export const UpdateAnnouncement = localhost+"/announcement/updateAnnouncement";
+export const SelectAnnouncement = localhost+"/announcement/selectAnnouncement";
+export const DetailAnnouncementUrl = localhost+"/announcement/detailAnnouncement";
+
+
+
 // 友链相关
-export const AddFriendUrl = localhost+"/friendUrl/addFriendUrl";
-export const DeleteFriendUrl = localhost+"/friendUrl/deleteFriendUrl";
-export const UpdateFriendUrl = localhost+"/friendUrl/updateFriendUrl";
-export const SelectFriendUrl = localhost+"/friendUrl/selectFriendUrl";
-export const DetailFriendUrl = localhost+"/friendUrl/detailFriendUrl";
+export const AddFriendUrl = localhost+"/friendurl/addFriendUrl";
+export const DeleteFriendUrl = localhost+"/friendurl/deleteFriendUrl";
+export const UpdateFriendUrl = localhost+"/friendurl/updateFriendUrl";
+export const SelectFriendUrl = localhost+"/friendurl/selectFriendUrl";
+export const DetailFriendUrl = localhost+"/friendurl/detailFriendUrl";
 
 
 
@@ -50,9 +67,13 @@ export const DeleteFeedbackCount = localhost+"/feedbackCount/deleteFeedbackCount
 export const UpdateFeedbackCount = localhost+"/feedbackCount/updateFeedbackCount";
 
 
+// 图片
+export const UploadImg = localhost+"/uploadImg";
 
 // 测试
-export const TestFriendUrl = localhost+"/friendUrl/selectAll";
+export const TestFriendUrl = localhost+"/friendurl/selectAll";
+
+export const AddPhoto = localhost+"/photo/addPhoto";
 
 
 

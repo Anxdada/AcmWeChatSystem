@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.acm.mapper.AnnouncementTagMapper">
+
+    <!-- 多了和类别的字段 -->
+    <sql id="announcement_tag_table">
+		a.announcementTagId,
+		a.announcementTagName,
+		a.announcementTagColor,
+		a.createUser,
+        a.createTime,
+		a.updateUser,
+		a.updateTime,
+		a.isEffective,
+	</sql>
+
+    <!-- 添加announcementTag -->
+    <insert id="addAnnouncementTag" useGeneratedKeys="true">
+        INSERT INTO announcementTag
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="announcementTag.announcementTagId != null">announcementTagId,</if>
+            <if test="announcementTag.announcementTagName != null">announcementTagName,</if>
+            <if test="announcementTag.announcementTagColor != null">announcementTagColor,</if>
+            <if test="announcementTag.createUser != null">createUser,</if>
+            <if test="announcementTag.createTime != null">createTime,</if>
+            <if test="announcementTag.updateUser != null">updateUser,</if>
+            <if test="announcementTag.updateTime != null">updateTime,</if>
+            <if test="announcementTag.isEffective != null">isEffective,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="announcementTag.announcementTagId != null">#{announcementTag.announcementTagId},</if>
+            <if test="announcementTag.announcementTagName != null">#{announcementTag.announcementTagName},</if>
+            <if test="announcementTag.announcementTagColor != null">#{announcementTag.announcementTagColor},</if>
+            <if test="announcementTag.createUser != null">#{announcementTag.createUser},</if>
+            <if test="announcementTag.createTime != null">#{announcementTag.createTime},</if>
+            <if test="announcementTag.updateUser != null">#{announcementTag.updateUser},</if>
+            <if test="announcementTag.updateTime != null">#{announcementTag.updateTime},</if>
+            <if test="announcementTag.isEffective != null">#{announcementTag.isEffective},</if>
+        </trim>
+    </insert>
+
+
+    <!-- 更新公告类别announcementTag -->
+    <update id="updateAnnouncementTag">
+        UPDATE announcementTag
+        <set>
+            <if test="announcementTag.announcementTagId != null">announcementTagId=#{announcementTag.announcementTagId},</if>
+            <if test="announcementTag.announcementTagName != null">announcementTagName=#{announcementTag.announcementTagName},</if>
+            <if test="announcementTag.announcementTagColor != null">announcementTagColor=#{announcementTag.announcementTagColor},</if>
+            <if test="announcementTag.createUser != null">createUser=#{announcementTag.createUser},</if>
+            <if test="announcementTag.createTime != null">createTime=#{announcementTag.createTime},</if>
+            <if test="announcementTag.updateUser != null">updateUser=#{announcementTag.updateUser},</if>
+            <if test="announcementTag.updateTime != null">updateTime=#{announcementTag.updateTime},</if>
+            <if test="announcementTag.isEffective != null">isEffective=#{announcementTag.isEffective},</if>
+        </set>
+        WHERE announcementTagId = #{announcementTag.announcementTagId};
+    </update>
+
+
+    <!-- 查询满足AnnouncementTag的总数(暂时没用到就不管了) -->
+    <select id="countAnnouncementTagListByQuery" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            announcementTag a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.announcementTagName != null ">
+                AND a.announcementTagName like CONCAT ('%', #{map.announcementTagName}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的announcementTag, 返回值为实体类-->
+    <select id="findAnnouncementTagListByAnnouncementTagId" resultType="com.example.acm.entity.AnnouncementTag">
+        SELECT
+            a.*
+        FROM
+            announcementTag a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="announcementTagId != null ">
+                AND a.announcementTagId=#{announcementTagId}
+            </if>
+        </trim>
+    </select>
+
+
+    <!-- 通过很多限制条件查询满足的AnnouncementTag的总数 -->
+    <select id="countAnnouncementTagMapListByQuery" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            announcementTag a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.announcementTagName != null ">
+                AND a.announcementTagName like CONCAT ('%', #{map.announcementTagName}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的announcementTag-->
+    <select id="findAnnouncementTagMapListByQuery" resultType="java.util.Map">
+        SELECT
+            a.*
+        FROM
+            announcementTag a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.announcementTagName != null ">
+                AND a.announcementTagName like CONCAT ('%', #{map.announcementTagName}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            a.${map.order} ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start},#{map.limit}
+        </if>
+    </select>
+
+</mapper>
