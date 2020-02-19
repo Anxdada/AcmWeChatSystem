@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Table, Popconfirm, Divider, Select, Input, DatePicker, Card, Button, Pagination , message, notification} from 'antd';
+import { Modal, Table, Popconfirm, Divider, Select, Input, DatePicker, Card, Button, Pagination , message, notification, Spin} from 'antd';
 import { SketchPicker } from 'react-color';
 import './index.less';
 import { AddAnnouncementTag, DeleteAnnouncementTag, UpdateAnnouncementTag, SelectAnnouncementTag, DetailAnnouncementTag } from './../../config/dataAddress';
@@ -196,7 +196,6 @@ class TagsTable extends React.Component {
                 dataIndex: 'updateTime',
                 key: 'updateTime',
             },
-
             {
                 title: '更新人',
                 dataIndex: 'updateUser',
@@ -277,7 +276,9 @@ class TagsTable extends React.Component {
     render() {
         return (
             <div>
-                <Table columns={this.columns} dataSource={this.props.allTagData} pagination={false} />
+                <Spin spinning={this.props.loading}>
+                    <Table columns={this.columns} dataSource={this.props.allTagData} pagination={false} />
+                </Spin>
             </div>
         );
     }
@@ -289,6 +290,7 @@ class TagsView extends React.Component {
     state = {
         visibleColorPicker: false,
         submitting: false,
+        loading: true,
     }
 
     constructor(props) {
@@ -356,6 +358,9 @@ class TagsView extends React.Component {
                         });
                     }
                 }
+                this.setState({
+                    loading: false,
+                })
             }
         )
     }
@@ -450,7 +455,7 @@ class TagsView extends React.Component {
                                 :null
                         }
                     </div>
-                    <TagsTable allTagData={this.state.allTagData} />
+                    <TagsTable allTagData={this.state.allTagData} loading={this.state.loading} />
                     <div className="tablePage">
                         <Pagination size="small" simple onChange={this.handlePageChange} total={this.state.totalPage*this.state.pageSize}
                         pageSize={this.state.pageSize} defaultCurrent={this.state.nowPage} showQuickJumper />

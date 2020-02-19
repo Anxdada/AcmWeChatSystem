@@ -186,7 +186,11 @@ public class OnDutyDealServiceImpl implements OnDutyDealService {
 
 //            System.out.println("xierenyi " + list.size());
 
-            if (list.size() >0) {
+            if (list.size() < 1) {
+                return new ResultBean(ResultCode.SYSTEM_FAILED);
+            }
+
+            if (list.size() > 0) {
                 for (Map<String, Object> mapTemp : list) {
                     List<User> listUsers = userService.findUserListByUserId((Long)mapTemp.get("updateUser"));
                     User tUs = null;
@@ -195,8 +199,14 @@ public class OnDutyDealServiceImpl implements OnDutyDealService {
                     mapTemp.put("onDutyStartTime", DateUtil.convDateToStr((Date) mapTemp.get("onDutyStartTime"), "yyyy-MM-dd"));
                     mapTemp.put("onDutyEndTime", DateUtil.convDateToStr((Date) mapTemp.get("onDutyEndTime"), "yyyy-MM-dd"));
                     mapTemp.put("updateTime", DateUtil.convDateToStr((Date) mapTemp.get("updateTime"), "yyyy-MM-dd HH:mm:ss"));
+
+                    if ((Long) mapTemp.get("onDutyId") == 1 ) {
+                        System.out.println(mapTemp.get("onDutyStartTime"));
+                        System.out.println(mapTemp.get("onDutyEndTime"));
+                    }
                 }
             }
+
 
 
             int allNum = onDutyService.countOnDutyMapListByQuery(map);

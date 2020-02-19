@@ -14,12 +14,12 @@ public interface FriendUrlDealService {
     /**
      * 添加友链
      * @param user 添加的人
-     * @param friendUrlName 当条值班人姓名
-     * @param onDutyStartTime 值班周期开始时间
-     * @param onDutyEndTime 值班周期结束时间
+     * @param friendUrlName 友链名称
+     * @param friendUrlAddress 友链地址
+     * @param friendUrlTag 友链分类
      * @return 结果
      */
-    public ResultBean addFriendUrl(User user, String friendUrlName, String onDutyStartTime, String onDutyEndTime);
+    public ResultBean addFriendUrl(User user, String friendUrlName, String friendUrlAddress, String friendUrlTag);
 
     /**
      *

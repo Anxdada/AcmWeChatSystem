@@ -4,8 +4,6 @@ package com.example.acm.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 /** 
  * 讨论实体
  * 

@@ -27,3 +27,5 @@ INSERT INTO `user` VALUES ('4', 'fold', '123456', '3', 'http://image.biaobaiju.c
 INSERT INTO `user` VALUES ('5', 'yanguolong', '123456', '4', 'http://img3.imgtn.bdimg.com/it/u=3783120155,1061441906&fm=26&gp=0.jpg', '2017081175', '2017', '2020-02-09 23:09', '13467859101', '陈旭', '', '1');
 INSERT INTO `user` VALUES ('6', 'qiqi', '123456', '5', 'http://img2.imgtn.bdimg.com/it/u=1678948314,1083480950&fm=26&gp=0.jpg', '2016033012', '2016', '2020-02-13 23:09', '18064955179', '张伟', '', '1');
 INSERT INTO `user` VALUES ('7', 'xixi', '123456', '0', 'http://img0.imgtn.bdimg.com/it/u=2841648446,236398816&fm=26&gp=0.jpg', '2019011198', '2019', '2020-05-31 08:08', '18299830012', '路人', 'olD4e0_cnxwigLLZSJiK2r7scYdc', '1');
+
+INSERT INTO `user` VALUES ('1', 'admin', '123456', '1', 'https://b-ssl.duitang.com/uploads/item/201608/21/20160821194924_UCvFZ.jpeg', '6666666666', '1000', '1978-01-01 00:00', '66666666666', '超级管理员', '', '1');
