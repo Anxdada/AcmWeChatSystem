@@ -3,7 +3,8 @@ import './index.less';
 import { Card, Timeline, Result, Button, Icon, Upload, Modal, message, notification } from 'antd';
 import cookie from 'react-cookies';
 import { EventEmitter2 } from 'eventemitter2';
-import { AddPhoto } from './../../config/dataAddress';
+import { AddPhoto, GetLoginUserName, DetailAnnouncementTag } from './../../config/dataAddress';
+import Fetch from './../../fetch';
 
 
 
@@ -115,15 +116,31 @@ class AddPhotoView extends React.Component{
 
 class AboutView extends React.Component {
 
+    handleLinkBtn = () => {
+        Fetch.requestPost({
+            url: DetailAnnouncementTag,
+            info: 'announcementTagId='+2+'&announcementTagName='+'111'
+            +'&announcementTagColor='+'222'
+        }).then( 
+            res => {
+                console.log(res);
+            }
+        ).catch(err => {
+            console.log("err", err);
+        });
+    }
+
     render() {
         return (
             <div>
                 <Card title={<span>CUIT-ACM实验室大事件</span>} className="timeLineFormat">
 
+                    <Button type="primary" onClick={this.handleLinkBtn} >点击</Button>
+
                     <AddPhotoView />
                     <br ></br>
 
-                    <img alt="example" style={{ width: '100%' }} src="http://localhost:9999/image/photo/6bd2149d-f860-4353-94a8-e020bd074fd9.jpg"/>
+                    {/* <img alt="example" style={{ width: '100%' }} src="http://localhost:9999/image/photo/6bd2149d-f860-4353-94a8-e020bd074fd9.jpg"/> */}
         
 
                     <Timeline pending="等你续写传奇..." reverse="true">

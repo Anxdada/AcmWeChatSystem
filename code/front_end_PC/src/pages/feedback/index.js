@@ -6,6 +6,7 @@ import 'moment/locale/zh-cn';
 import { AddFeedback, DeleteFeedback, UpdateFeedback, SelectFeedback, AddFeedbackCount, DeleteFeedbackCount, UpdateFeedbackCount } from './../../config/dataAddress';
 import cookie from 'react-cookies';
 import { EventEmitter2 } from 'eventemitter2';
+import Fetch from './../../fetch';
 
 
 
@@ -55,13 +56,11 @@ class FeedbackView extends React.Component {
     }
 
     getFeedbackData() {
-        fetch(SelectFeedback, {
-            method: 'GET',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            }
-        }).then( res => res.json() ).then (
+
+        Fetch.requestGet({
+            url: SelectFeedback,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     this.setState({
@@ -77,22 +76,24 @@ class FeedbackView extends React.Component {
                         });
                     }
                 }
-                this.setState({
-                    feedbackLoading: false,
-                });
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+
+        this.setState({
+            feedbackLoading: false,
+        });
     }
 
     addFeedbackData() {
-        fetch(AddFeedback, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'feedbackBody='+this.state.feedbackBody
-        }).then( res => res.json() ).then (
+
+        Fetch.requestPost({
+            url: AddFeedback,
+            info: 'feedbackBody='+this.state.feedbackBody,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     this.setState({
@@ -114,18 +115,19 @@ class FeedbackView extends React.Component {
                     submitting: false,
                 });
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     deleteFeedbackData() {
-        fetch(DeleteFeedback, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'feedbackId='+this.state.feedbackId
-        }).then( res => res.json() ).then (
+
+        Fetch.requestPost({
+            url: DeleteFeedback,
+            info: 'feedbackId='+this.state.feedbackId,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     emitter.emit('refresh', '删除');
@@ -141,7 +143,10 @@ class FeedbackView extends React.Component {
                     }
                 }
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     handleSubmitFeedback = () => {
@@ -234,16 +239,12 @@ class CommentList extends React.Component {
     }
 
     addFeedbackCountData() {
-        console.log(this.state.feedbackId);
-        console.log(this.state.type);
-        fetch(AddFeedbackCount, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'feedbackId='+this.state.feedbackId+'&type='+this.state.type
-        }).then( res => res.json() ).then (
+
+        Fetch.requestPost({
+            url: AddFeedbackCount,
+            info: 'feedbackId='+this.state.feedbackId+'&type='+this.state.type,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     emitter.emit('refresh', '添加操作');
@@ -258,18 +259,18 @@ class CommentList extends React.Component {
                     }
                 }
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     deleteFeedbackCountData() {
-        fetch(DeleteFeedbackCount, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'feedbackId='+this.state.feedbackId
-        }).then( res => res.json() ).then(
+        Fetch.requestPost({
+            url: DeleteFeedbackCount,
+            info: 'feedbackId='+this.state.feedbackId,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     emitter.emit('refresh', '删除操作');
@@ -284,18 +285,19 @@ class CommentList extends React.Component {
                     }
                 }
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     updateFeedbackCountData() {
-        fetch(UpdateFeedbackCount, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'feedbackId='+this.state.feedbackId+'&type='+this.state.type
-        }).then( res => res.json() ).then (
+
+        Fetch.requestPost({
+            url: UpdateFeedbackCount,
+            info: 'feedbackId='+this.state.feedbackId+'&type='+this.state.type,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     emitter.emit('refresh', '更新操作');
@@ -310,7 +312,10 @@ class CommentList extends React.Component {
                     }
                 }
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     handleClickLike = (item) => {
@@ -458,14 +463,11 @@ class FeedbackModify extends React.Component {
             modifyLoading: true,
         })
 
-        fetch(UpdateFeedback, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'feedbackId='+this.state.feedbackId+'&feedbackBody='+this.state.feedbackBody
-        }).then( res => res.json() ).then (
+        Fetch.requestPost({
+            url: UpdateFeedback,
+            info: 'feedbackId='+this.state.feedbackId+'&feedbackBody='+this.state.feedbackBody,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     emitter.emit('refresh', '修改反馈');
@@ -483,11 +485,15 @@ class FeedbackModify extends React.Component {
                         });
                     }
                 }
-                this.setState({
-                    modifyLoading: false,
-                })
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+
+        this.setState({
+            modifyLoading: false,
+        })
     }
 
     handleShowModal = () => {

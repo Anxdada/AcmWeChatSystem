@@ -3,8 +3,10 @@ package com.example.acm;
 import com.example.acm.common.ResultBean;
 import com.example.acm.common.ResultCode;
 import com.example.acm.common.SysConst;
+import com.example.acm.entity.Label;
 import com.example.acm.entity.OnDuty;
 import com.example.acm.entity.User;
+import com.example.acm.service.LabelService;
 import com.example.acm.service.UserService;
 import com.example.acm.utils.StringUtil;
 import org.junit.jupiter.api.Test;
@@ -14,9 +16,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
@@ -93,6 +93,43 @@ class AcmApplicationTests {
             System.out.println(u.get("realName"));
             System.out.println(u.get("userId"));
         }
+    }
+
+    @Autowired
+    private LabelService labelService;
+
+    @Test
+    void testSort() {
+        List<Label> list = labelService.findLabelListByLabelId(null);
+        List<Label> list2 = list;
+
+        Collections.sort(list2, new Comparator<Label>() {
+            @Override
+            public int compare(Label a, Label b) {
+                Long ans = a.getFlag() - b.getFlag();
+                return ans.intValue();
+            }
+        });
+
+        for (int i = 0 ; i < list2.size() ; ++ i) {
+            System.out.println(list2.get(i).getFlag());
+        }
+
+        list.sort(new Comparator<Label>() {
+            @Override
+            public int compare(Label a, Label b) {
+                Long ans = a.getFlag() - b.getFlag();
+                return ans.intValue();
+            }
+        });
+        long flag = list.size();
+        for (int i = 0 ; i < list.size() ; ++ i) {
+            System.out.println(list.get(i).getFlag());
+        }
+
+
+
+
     }
 
 }

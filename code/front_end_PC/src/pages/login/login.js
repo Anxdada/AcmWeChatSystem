@@ -3,6 +3,7 @@ import { Card, Form, Input, Button, Icon, Col, Checkbox, message, notification }
 import './index.less';
 import cookie from 'react-cookies';
 import { LoginUrl } from './../../config/dataAddress';
+import Fetch from './../../fetch';
 
 const FormItem = Form.Item;
 
@@ -21,19 +22,14 @@ class FormLogin extends React.Component {
     }
 
     getData() {
-        const expires = new Date();
-        expires.setDate(Date.now() + 1000 * 60);
-        fetch(LoginUrl, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'userName='+this.state.userName+'&password='+this.state.password
-        }).then( res => res.json() ).then (
+        Fetch.requestPost({
+            url: LoginUrl,
+            info: 'userName='+this.state.userName+'&password='+this.state.password,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
-                    cookie.save('token', data.resultBean.token, { expires });
+                    cookie.save('token', data.resultBean.token);
                     console.log(cookie.load('token'));
                     message.success("登录成功!");
                     this.props.history.push(`${this.props.match.url.replace(/\/[^/]+$/, '')}/admin/home`);
@@ -52,7 +48,13 @@ class FormLogin extends React.Component {
                     loading: false,
                 })
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+            this.setState({
+                loading: false,
+            })
+        });
     }
 
     handleSubmit = (e) => {

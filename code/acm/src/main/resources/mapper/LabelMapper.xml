@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.acm.mapper.LabelMapper">
+
+    <!-- 多了和类别的字段 -->
+    <sql id="label_table">
+		a.labelId,
+		a.labelName,
+		a.labelColor,
+        a.flag,
+		a.createUser,
+        a.createTime,
+		a.updateUser,
+		a.updateTime,
+		a.isEffective,
+	</sql>
+
+    <!-- 添加label -->
+    <insert id="addLabel" useGeneratedKeys="true">
+        INSERT INTO label
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="label.labelId != null">labelId,</if>
+            <if test="label.labelName != null">labelName,</if>
+            <if test="label.labelColor != null">labelColor,</if>
+            <if test="label.flag != null">flag,</if>
+            <if test="label.createUser != null">createUser,</if>
+            <if test="label.createTime != null">createTime,</if>
+            <if test="label.updateUser != null">updateUser,</if>
+            <if test="label.updateTime != null">updateTime,</if>
+            <if test="label.isEffective != null">isEffective,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="label.labelId != null">#{label.labelId},</if>
+            <if test="label.labelName != null">#{label.labelName},</if>
+            <if test="label.labelColor != null">#{label.labelColor},</if>
+            <if test="label.flag != null">#{label.flag},</if>
+            <if test="label.createUser != null">#{label.createUser},</if>
+            <if test="label.createTime != null">#{label.createTime},</if>
+            <if test="label.updateUser != null">#{label.updateUser},</if>
+            <if test="label.updateTime != null">#{label.updateTime},</if>
+            <if test="label.isEffective != null">#{label.isEffective},</if>
+        </trim>
+    </insert>
+
+
+    <!-- 更新公告类别label -->
+    <update id="updateLabel">
+        UPDATE label
+        <set>
+            <if test="label.labelId != null">labelId=#{label.labelId},</if>
+            <if test="label.labelName != null">labelName=#{label.labelName},</if>
+            <if test="label.labelColor != null">labelColor=#{label.labelColor},</if>
+            <if test="label.flag != null">flag=#{label.flag},</if>
+            <if test="label.createUser != null">createUser=#{label.createUser},</if>
+            <if test="label.createTime != null">createTime=#{label.createTime},</if>
+            <if test="label.updateUser != null">updateUser=#{label.updateUser},</if>
+            <if test="label.updateTime != null">updateTime=#{label.updateTime},</if>
+            <if test="label.isEffective != null">isEffective=#{label.isEffective},</if>
+        </set>
+        WHERE labelId = #{label.labelId};
+    </update>
+
+
+    <!-- 查询满足label的总数(暂时没用到就不管了) -->
+    <select id="countLabelListByQuery" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        label a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.labelName != null ">
+                AND a.labelName like CONCAT ('%', #{map.labelName}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的label, 返回值为实体类-->
+    <select id="findLabelListByLabelId" resultType="com.example.acm.entity.Label">
+        SELECT
+            a.*
+        FROM
+            label a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="labelId != null ">
+                AND a.labelId=#{labelId}
+            </if>
+            AND a.isEffective = 1
+        </trim>
+    </select>
+
+
+    <!-- 通过很多限制条件查询满足的label的总数 -->
+    <select id="countLabelMapListByQuery" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            label a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.labelName != null ">
+                AND a.labelName like CONCAT ('%', #{map.labelName}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的label-->
+    <select id="findLabelMapListByQuery" resultType="java.util.Map">
+        SELECT
+        a.*
+        FROM
+        label a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.labelName != null ">
+                AND a.labelName like CONCAT ('%', #{map.labelName}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            a.${map.order} ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start},#{map.limit}
+        </if>
+    </select>
+
+</mapper>

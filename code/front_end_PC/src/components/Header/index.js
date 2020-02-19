@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import cookie from 'react-cookies';
 import { connect } from 'react-redux';
 import { GetLoginUserName } from './../../config/dataAddress';
+import Fetch from './../../fetch';
 
 const menu = (
     <Menu>
@@ -24,13 +25,10 @@ class Header extends React.Component {
     };
 
     componentWillMount() {
-        fetch(GetLoginUserName, {
-            method: 'GET',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-        }).then( res => res.json() ).then (
+        Fetch.requestGet({
+            url: GetLoginUserName,
+            timeOut: 3000,
+        }).then (
             data => {
                 console.log(data);
                 if (data.status == 0) {
@@ -48,7 +46,10 @@ class Header extends React.Component {
                     }
                 }
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
         
         // setInterval(() => {
         //     let sysTime = Util.formateDate();

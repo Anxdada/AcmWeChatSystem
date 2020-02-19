@@ -57,7 +57,7 @@ public class FeedbackController extends BaseController {
     public ResultBean deleteFeedback(@RequestParam(value = "feedbackId", required = true) long feedbackId,
                                      HttpServletRequest request, HttpServletResponse response) {
 
-        System.out.println("deleteFeedback " + feedbackId);
+//        System.out.println("deleteFeedback " + feedbackId);
 
         return feedbackDealService.deleteFeedback(feedbackId);
     }
@@ -68,7 +68,7 @@ public class FeedbackController extends BaseController {
                                      @RequestParam(value = "feedbackBody", defaultValue = "空值", required = false) String feedbackBody,
                                      HttpServletRequest request, HttpServletResponse response) {
 
-        System.out.println("updateFeedback " + feedbackId + " " + feedbackBody);
+//        System.out.println("updateFeedback " + feedbackId + " " + feedbackBody);
 
         return feedbackDealService.updateFeedback(feedbackId, feedbackBody);
     }

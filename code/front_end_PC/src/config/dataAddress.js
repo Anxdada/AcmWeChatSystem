@@ -36,6 +36,15 @@ export const UpdateAnnouncement = localhost+"/announcement/updateAnnouncement";
 export const SelectAnnouncement = localhost+"/announcement/selectAnnouncement";
 export const DetailAnnouncementUrl = localhost+"/announcement/detailAnnouncement";
 
+// 帖子标签
+export const AddLabel = localhost+"/label/addLabel";
+export const DeleteLabel = localhost+"/label/deleteLabel";
+export const UpdateLabel = localhost+"/label/updateLabel";
+export const SelectLabel = localhost+"/label/selectLabel";
+export const DetailLabel = localhost+"/label/detailLabel";
+// 讨论区帖子相关
+
+
 
 
 // 友链相关

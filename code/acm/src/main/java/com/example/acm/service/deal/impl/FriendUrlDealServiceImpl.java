@@ -45,7 +45,7 @@ public class FriendUrlDealServiceImpl implements FriendUrlDealService {
 
         try {
             if (!URLUtil.isAvailable(friendUrlAddress, 2000, 2)) {
-                return new ResultBean(ResultCode.PARAM_ERROR, "连接超时! 请尝试自己能否访问后再次尝试");
+                return new ResultBean(ResultCode.PARAM_ERROR, "连接网址超时! 请尝试自己能否访问该URL后再次尝试");
             }
 
             FriendUrl friendUrl = new FriendUrl();
@@ -111,7 +111,7 @@ public class FriendUrlDealServiceImpl implements FriendUrlDealService {
                                       String friendUrlTag, String createTime) {
         try {
             if (!URLUtil.isAvailable(friendUrlAddress, 2000, 2)) {
-                return new ResultBean(ResultCode.PARAM_ERROR, "连接超时! 请尝试自己能否访问后再次尝试");
+                return new ResultBean(ResultCode.PARAM_ERROR, "连接网址超时! 请尝试自己能否访问该URL后再次尝试");
             }
 
             List<FriendUrl> friendUrls = friendUrlService.findFriendUrlListByFriendUrlId(friendUrlId);

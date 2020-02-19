@@ -13,8 +13,8 @@ public class User implements Serializable {
 	private Long userId;
 	private String userName;
 	private String password;
-	private Integer auth; // 0-未通过审核 1-超级管理员 2-管理员 3-队员 4-萌新 5-未完善资料的萌新 (后面的1-5是指身份值的数字的二进制的位数)
-	// 比如 anth = 6, 那么这个人既是 管理员 又是 队员
+	private Integer auth; // 0-未通过审核 0-超级管理员 1-管理员 2-队员 3-萌新 4-未完善资料的萌新 (后面的0-4是指身份值的数字的二进制的位数)
+	// 比如 anth = 6, 那么这个人既是 管理员 又是 队员 (第多少位上是1, 代表他就具有该种身份)
 	private String avatar;  // 头像
 	private Long studentId;  // 学号
 	private Integer grade;   // 年级

@@ -200,10 +200,10 @@ public class OnDutyDealServiceImpl implements OnDutyDealService {
                     mapTemp.put("onDutyEndTime", DateUtil.convDateToStr((Date) mapTemp.get("onDutyEndTime"), "yyyy-MM-dd"));
                     mapTemp.put("updateTime", DateUtil.convDateToStr((Date) mapTemp.get("updateTime"), "yyyy-MM-dd HH:mm:ss"));
 
-                    if ((Long) mapTemp.get("onDutyId") == 1 ) {
-                        System.out.println(mapTemp.get("onDutyStartTime"));
-                        System.out.println(mapTemp.get("onDutyEndTime"));
-                    }
+//                    if ((Long) mapTemp.get("onDutyId") == 1 ) {
+//                        System.out.println(mapTemp.get("onDutyStartTime"));
+//                        System.out.println(mapTemp.get("onDutyEndTime"));
+//                    }
                 }
             }
 

@@ -8,6 +8,7 @@ import 'moment/locale/zh-cn';
 import { AddFriendUrl, DeleteFriendUrl, UpdateFriendUrl, SelectFriendUrl, DetailFriendUrl, TestFriendUrl } from './../../config/dataAddress';
 import cookie from 'react-cookies';
 import { EventEmitter2 } from 'eventemitter2';
+import Fetch from './../../fetch';
 
 var emitter = new EventEmitter2();
 // 用于刷新react, 从一个页面返回时出发最有用, on 注册, emit 修改触发
@@ -69,14 +70,11 @@ class UrlModifyAction extends React.Component {
     }
 
     getSingleUrlData() {
-        fetch(DetailFriendUrl, {
-            method: 'POST',
-            headers:{
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body:'friendUrlId='+this.props.modifyUrlId
-        }).then(res => res.json()).then(
+        Fetch.requestPost({
+            url: DetailFriendUrl,
+            info: 'friendUrlId='+this.props.modifyUrlId,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     this.setState({
@@ -97,7 +95,10 @@ class UrlModifyAction extends React.Component {
                     }
                 }
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     updateSingleUrlData() {
@@ -126,16 +127,13 @@ class UrlModifyAction extends React.Component {
         console.log(createTime);
         console.log(this.state.createTime);
 
-        fetch(UpdateFriendUrl, {
-            method: 'POST',
-            headers : {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body:'friendUrlId='+this.state.friendUrlId+'&friendUrlName='+this.state.friendUrlName
+        Fetch.requestPost({
+            url: UpdateFriendUrl,
+            info: 'friendUrlId='+this.state.friendUrlId+'&friendUrlName='+this.state.friendUrlName
                     +'&friendUrlAddress='+this.state.friendUrlAddress+'&friendUrlTag='+this.state.friendUrlTag
-                    +'&createTime='+moment(this.state.createTime).format('YYYY-MM-DD HH:mm:ss')
-        }).then(res => res.json()).then(
+                    +'&createTime='+moment(this.state.createTime).format('YYYY-MM-DD HH:mm:ss'),
+            timeOut: 10000
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     message.success('修改成功');
@@ -157,7 +155,10 @@ class UrlModifyAction extends React.Component {
                     submitLoading: false,
                 })
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     } 
 
     handleShowModal = () => {
@@ -296,6 +297,7 @@ class FriendUrlTable extends React.Component {
     state = { 
         visible: false,
         submitLoading: false,
+        tableLoading: false,
     }
 
     constructor(props) {
@@ -371,14 +373,11 @@ class FriendUrlTable extends React.Component {
     handleDeleteFriendUrl = (friendUrlId) => {
         console.log(friendUrlId);
 
-        fetch(DeleteFriendUrl, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'friendUrlId='+friendUrlId
-        }).then( res => res.json() ).then (
+        Fetch.requestPost({
+            url: DeleteFriendUrl,
+            info: 'friendUrlId='+friendUrlId,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     message.success('删除成功');
@@ -394,7 +393,10 @@ class FriendUrlTable extends React.Component {
                     }
                 }
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     componentWillMount() {
@@ -423,20 +425,21 @@ class FriendUrlTable extends React.Component {
     }
 
     getUrlData() {
-        console.log("从后台重新读取数据渲染");
+        // console.log("从后台重新读取数据渲染");
 
-        fetch(SelectFriendUrl, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'friendUrlName='+this.state.friendUrlName+'&pageNum='+this.state.nowPage
-                    +'&pageSize='+this.state.pageSize
-        }).then( res => res.json() ).then (
+        this.setState({
+            tableLoading: true,
+        })
+
+        Fetch.requestPost({
+            url: SelectFriendUrl,
+            info: 'friendUrlName='+this.state.friendUrlName+'&pageNum='+this.state.nowPage
+                    +'&pageSize='+this.state.pageSize,
+            timeOut: 3000,
+        }).then ( 
             data => {
-                console.log(data);
-                console.log(SelectFriendUrl);
+                // console.log(data);
+                // console.log(SelectFriendUrl);
                 if (data.status == 0) {
                     if (data.resultBean.currentPage > 0) {
                         this.setState({nowPage: data.resultBean.currentPage});
@@ -463,16 +466,23 @@ class FriendUrlTable extends React.Component {
                     }
                 }
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+        
+        this.setState({
+            tableLoading: false,
+        })
     }
 
     addUrlData() {
         console.log("从后台添加数据");
-        if (this.state.friendUrlName == 0) {
+        if (this.state.addFriendUrlName == 0) {
             message.error('请输入友链名称!');
             return ;
         }
-        else if (this.state.friendUrlName>20) {
+        else if (this.state.addFriendUrlName>20) {
             message.error('友链名称过长!');
             return ;
         }
@@ -489,18 +499,14 @@ class FriendUrlTable extends React.Component {
         let url = arrayStr[0];
         if (arrayStr.length > 1) url = arrayStr[1];
 
-        fetch(AddFriendUrl, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'friendUrlName='+this.state.addFriendUrlName+'&friendUrlAddress='+url
-                    +'&friendUrlTag='+this.state.friendUrlTag
-        }).then( res => res.json() ).then (
+        Fetch.requestPost({
+            url: AddFriendUrl,
+            info: 'friendUrlName='+this.state.addFriendUrlName+'&friendUrlAddress='+url
+                    +'&friendUrlTag='+this.state.friendUrlTag,
+            timeOut: 10000,
+        }).then ( 
             data => {
-                console.log(data);
-                console.log(AddFriendUrl);
+                // console.log(data);
                 if (data.status == 0) {
                     message.success('添加成功');
                     this.setState({
@@ -511,7 +517,6 @@ class FriendUrlTable extends React.Component {
                     });
                     emitter.emit('refresh', '添加'); // 通知react需要刷新该页面
                 } else {
-                    console.log(url);
                     if (data.status < 100) {
                         message.error(data.msg);
                     } else {
@@ -521,11 +526,15 @@ class FriendUrlTable extends React.Component {
                         });
                     }
                 }
-                this.setState({
-                    submitLoading: false,
-                })
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+
+        this.setState({
+            submitLoading: false,
+        })
     }
 
     handleSearchText = (e) => {
@@ -539,7 +548,7 @@ class FriendUrlTable extends React.Component {
     }
 
     handleShowModal = () => {
-        console.log(moment.duration(moment('2013-02-08 09:30:26')).seconds());
+        // console.log(moment.duration(moment('2013-02-08 09:30:26')).seconds());
         this.setState({
             visible: true,
         });
@@ -621,12 +630,14 @@ class FriendUrlTable extends React.Component {
                     </div>
                     </Modal>
                 </div>
-                <Table 
-                    bordered
-                    columns={this.columns}
-                    dataSource={this.state.allUrl}
-                    pagination={false}
-                />
+                <Spin spinning={this.state.tableLoading}>
+                    <Table 
+                        bordered
+                        columns={this.columns}
+                        dataSource={this.state.allUrl}
+                        pagination={false}
+                    />
+                </Spin>
                 <div className="tablePage">
                     <Pagination size="small" simple onChange={this.handlePageChange} total={this.state.totalPage*this.state.pageSize}
                     pageSize={this.state.pageSize} defaultCurrent={this.state.nowPage} showQuickJumper />

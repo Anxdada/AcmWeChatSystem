@@ -8,6 +8,7 @@ import staffOnDutyName from '../../config/staffOnDutyInfo';
 import { AddOnDuty, DeleteOnDuty, UpdateOnDuty, SelectOnDuty, DetailOnDuty, GetTeamStaff } from './../../config/dataAddress';
 import cookie from 'react-cookies';
 import { EventEmitter2 } from 'eventemitter2';
+import Fetch from './../../fetch';
 
 
 var emitter = new EventEmitter2();
@@ -16,13 +17,11 @@ const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 const { Option } = Select;
 
 const getTeamStaff = () => {
-    fetch(GetTeamStaff, {
-        method: 'GET',
-        headers: {
-            'Authorization': cookie.load('token'),
-            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-        },
-    }).then( res => res.json() ).then (
+
+    Fetch.requestGet({
+        url: GetTeamStaff,
+        timeOut: 3000,
+    }).then ( 
         data => {
             console.log(data);
 
@@ -41,7 +40,10 @@ const getTeamStaff = () => {
                 }
             }
         }
-    )
+    ).catch( err => {
+        // console.log("err", err);
+        message.error('连接超时! 请检查服务器是否启动.');
+    });
 }
 
 class Modify extends React.Component {
@@ -56,23 +58,18 @@ class Modify extends React.Component {
             onDutyId: '',
             onDutyUserName: '',
             telephone: '',
-            startTime: '',
-            endTime: '',
+            startTime: null,
+            endTime: null,
         }
     }
 
     getSingleDutyData() {  // 注册出发的时间点
 
-        console.log("xiexie" + this.props.onDutyId);
-
-        fetch(DetailOnDuty, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'onDutyId='+this.props.onDutyId
-        }).then( res => res.json() ).then (
+        Fetch.requestPost({
+            url: DetailOnDuty,
+            info: 'onDutyId='+this.props.onDutyId,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     this.setState({
@@ -97,7 +94,10 @@ class Modify extends React.Component {
                     }
                 }
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     updateOnDutyData() {
@@ -117,17 +117,13 @@ class Modify extends React.Component {
             return ;
         }
 
-
-        fetch(UpdateOnDuty, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'onDutyId='+this.state.onDutyId+'&onDutyUserName='+this.state.onDutyUserName
+        Fetch.requestPost({
+            url: UpdateOnDuty,
+            info: 'onDutyId='+this.state.onDutyId+'&onDutyUserName='+this.state.onDutyUserName
                     +'&onDutyTelephone='+this.state.telephone+'&onDutyStartTime='+moment(this.state.startTime).format('YYYY-MM-DD')
-                    +'&onDutyEndTime='+moment(this.state.endTime).format('YYYY-MM-DD')
-        }).then( res=> res.json() ).then (
+                    +'&onDutyEndTime='+moment(this.state.endTime).format('YYYY-MM-DD'),
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     message.success("修改成功");
@@ -146,7 +142,10 @@ class Modify extends React.Component {
                     }
                 }
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     handleShowModal = () => {
@@ -339,14 +338,12 @@ class OnDutyTable extends React.Component {
     }
 
     deleteOnDutyData() {
-        fetch(DeleteOnDuty, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'onDutyId='+this.state.onDutyId
-        }).then( res=> res.json() ).then (
+
+        Fetch.requestPost({
+            url: DeleteOnDuty,
+            info: 'onDutyId='+this.state.onDutyId,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     message.success("删除成功");
@@ -362,7 +359,10 @@ class OnDutyTable extends React.Component {
                     }
                 }
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     handleDelete = (id) => {
@@ -412,7 +412,7 @@ class OnDutyView extends React.Component {
 
     refresh(msg) {
         // 注册emit, 这样触发emit就会刷新界面了.
-        console.log("!!!!!!!!!!!")
+        // console.log("!!!!!!!!!!!")
         this.setState({
             searchUserName: '',
             startTime: null,
@@ -422,13 +422,10 @@ class OnDutyView extends React.Component {
 
     getTeamStaff() {
 
-        fetch(GetTeamStaff, {
-            method: 'GET',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-        }).then( res => res.json() ).then (
+        Fetch.requestGet({
+            url: GetTeamStaff,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 console.log(data);
 
@@ -447,12 +444,15 @@ class OnDutyView extends React.Component {
                     }
                 }
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     getOnDutyData() {
-        console.log("从后台重新读取数据渲染");
-        console.log("!!!xiegetData");
+        // console.log("从后台重新读取数据渲染");
+        // console.log("!!!xiegetData");
 
         let startTime = '';
         if (this.state.startTime != null) {
@@ -464,16 +464,13 @@ class OnDutyView extends React.Component {
             endTime = moment(this.state.endTime).format('YYYY-MM-DD');
         }
 
-        fetch(SelectOnDuty, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'onDutyUserName='+this.state.searchUserName
+        Fetch.requestPost({
+            url: SelectOnDuty,
+            info: 'onDutyUserName='+this.state.searchUserName
                     +'&onDutyStartTime='+startTime+'&onDutyEndTime='+endTime
-                    +'&pageNum='+this.state.nowPage+'&pageSize='+this.state.pageSize
-        }).then( res=> res.json() ).then (
+                    +'&pageNum='+this.state.nowPage+'&pageSize='+this.state.pageSize,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 console.log(data);
                 if (data.status == 0) {
@@ -502,7 +499,10 @@ class OnDutyView extends React.Component {
                     }
                 }
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     addOnDutyData() {
@@ -521,27 +521,22 @@ class OnDutyView extends React.Component {
             submitLoading: true,
         })
 
-        fetch(AddOnDuty, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'onDutyUserName='+this.state.onDutyUserName+'&onDutyTelephone='+this.state.telephone
+        Fetch.requestPost({
+            url: AddOnDuty,
+            info: 'onDutyUserName='+this.state.onDutyUserName+'&onDutyTelephone='+this.state.telephone
                     +'&onDutyStartTime='+moment(this.state.startTime).format('YYYY-MM-DD')
-                    +'&onDutyEndTime='+moment(this.state.endTime).format('YYYY-MM-DD')
-        }).then( res=> res.json() ).then (
+                    +'&onDutyEndTime='+moment(this.state.endTime).format('YYYY-MM-DD'),
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     message.success("添加成功");
-                    emitter.emit("refresh", "添加");
                     this.setState({
                         onDutyUserName: '',
                         telephone: '',
-                        startTime: '',
-                        endTime: '',
                         visible: false,
                     })
+                    emitter.emit("refresh", "添加");
                 } else {
                     if (data.status < 100) {
                         message.error(data.msg);
@@ -552,11 +547,15 @@ class OnDutyView extends React.Component {
                         });
                     }
                 }
-                this.setState({
-                    submitLoading: false,
-                })
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+        
+        this.setState({
+            submitLoading: false,
+        })
     }
 
     handleSearchUserNameText = (e) => {
@@ -570,8 +569,8 @@ class OnDutyView extends React.Component {
         console.log(dates.length);
         if (dates.length < 1) {
             this.setState({
-                startTime: '',
-                endTime: '',
+                startTime: null,
+                endTime: null,
             }, () => this.getOnDutyData());
             return ;
         }

@@ -5,6 +5,7 @@ import './index.less';
 import { AddNewsTag, DeleteNewsTag, UpdateNewsTag, SelectNewsTag, DetailNewsTag } from './../../config/dataAddress';
 import cookie from 'react-cookies';
 import { EventEmitter2 } from 'eventemitter2';
+import Fetch from './../../fetch';
 
 var emitter = new EventEmitter2(); 
 
@@ -46,14 +47,12 @@ class TagsModify extends React.Component {
     }
 
     getSingleTagData() {
-        fetch(DetailNewsTag, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body:'newsTagId='+this.props.tagId
-        }).then(res => res.json()).then(
+
+        Fetch.requestPost({
+            url: DetailNewsTag,
+            info: 'newsTagId='+this.props.tagId,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 console.log(data);
                 if (data.status == 0) {
@@ -73,20 +72,20 @@ class TagsModify extends React.Component {
                     }
                 }
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     updateSingleTagData() {
 
-        fetch(UpdateNewsTag, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body:'newsTagId='+this.state.tagId+'&newsTagName='+this.state.tagName
-                    +'&newsTagColor='+this.state.tagColor
-        }).then(res => res.json()).then(
+        Fetch.requestPost({
+            url: UpdateNewsTag,
+            info: 'newsTagId='+this.state.tagId+'&newsTagName='+this.state.tagName
+                    +'&newsTagColor='+this.state.tagColor,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     this.setState({
@@ -105,11 +104,16 @@ class TagsModify extends React.Component {
                         });
                     }
                 }
-                this.setState({
-                    submitting: false,
-                })
+                
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+
+        this.setState({
+            submitting: false,
+        })
     } 
 
     handleModalTagName = (e) => {
@@ -242,14 +246,11 @@ class TagsTable extends React.Component {
     handleDelete = (newsTagId) => {
         // console.log(newsTagId);
 
-        fetch(DeleteNewsTag, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body:'newsTagId='+newsTagId
-        }).then(res => res.json()).then(
+        Fetch.requestPost({
+            url: DeleteNewsTag,
+            info: 'newsTagId='+newsTagId,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     message.success("删除成功!");
@@ -265,7 +266,10 @@ class TagsTable extends React.Component {
                     }
                 }
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     render() {
@@ -284,8 +288,8 @@ class TagsView extends React.Component {
 
     state = {
         visibleColorPicker: false,
-        submitting: false,
-        loading: true,
+        submitting: true,
+        loading: false,
     }
 
     constructor(props) {
@@ -297,6 +301,7 @@ class TagsView extends React.Component {
             allTagData: [],
             tagSearchName: '',
             tagAddName: '',
+            submitting: false,
             tagAddColor: '#19b8e2', 
         } // 初始值
 
@@ -317,15 +322,16 @@ class TagsView extends React.Component {
 
     getTagData() {
 
-        fetch(SelectNewsTag, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body:'newsTagName='+this.state.tagSearchName
-                    +'&pageNum='+this.state.nowPage+'&pageSize='+this.state.pageSize
-        }).then(res => res.json()).then(
+        this.setState({
+            loading: true,
+        })
+
+        Fetch.requestPost({
+            url: SelectNewsTag,
+            info: 'newsTagName='+this.state.tagSearchName
+                    +'&pageNum='+this.state.nowPage+'&pageSize='+this.state.pageSize,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 // console.log(data);
                 if (data.status == 0) {
@@ -353,11 +359,18 @@ class TagsView extends React.Component {
                         });
                     }
                 }
-                this.setState({
-                    loading: false,
-                })
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+
+        this.setState({
+            loading: false,
+        });
+
+        console.log('xie2222');
+        console.log(this.state.loading);
     }
 
     addTagData() {
@@ -365,15 +378,16 @@ class TagsView extends React.Component {
             message.error("类别名称不能为空!");
             return ;
         }
-        
-        fetch(AddNewsTag, {
-            method: 'POST',
-            headers: {
-                'Authorization': cookie.load('token'),
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body:'newsTagName='+this.state.tagAddName+'&newsTagColor='+this.state.tagAddColor
-        }).then(res => res.json()).then(
+
+        this.setState({
+            submitting: true,
+        });
+
+        Fetch.requestPost({
+            url: AddNewsTag,
+            info: 'newsTagName='+this.state.tagAddName+'&newsTagColor='+this.state.tagAddColor,
+            timeOut: 3000,
+        }).then ( 
             data => {
                 if (data.status == 0) {
                     message.success("添加成功!");
@@ -388,11 +402,15 @@ class TagsView extends React.Component {
                         });
                     }
                 }
-                this.setState({
-                    submitting: false,
-                })
             }
-        )
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+
+        this.setState({
+            submitting: false,
+        })
     }
 
 

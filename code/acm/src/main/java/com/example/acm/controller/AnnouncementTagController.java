@@ -75,8 +75,8 @@ public class AnnouncementTagController extends BaseController {
     public ResultBean deleteAnnouncementTag(@RequestParam(value = "announcementTagId", required = true) long announcementTagId,
                                             HttpServletRequest request, HttpServletResponse response) {
 
-        System.out.println("deleteAnnouncementTag");
-        System.out.println(announcementTagId);
+//        System.out.println("deleteAnnouncementTag");
+//        System.out.println(announcementTagId);
 
         try {
 
@@ -110,8 +110,10 @@ public class AnnouncementTagController extends BaseController {
                                             @RequestParam(value = "announcementTagColor", required = true) String announcementTagColor,
                                             HttpServletRequest request, HttpServletResponse response) {
 
-        System.out.println("updateAnnouncementTag");
-        System.out.println(" " + announcementTagName + " " + announcementTagColor);
+//        System.out.println("updateAnnouncementTag");
+//        System.out.println(announcementTagId + " " + announcementTagName + " " + announcementTagColor);
+//
+//        System.out.println(request.getHeader("Content-Type"));
 
 
         try {
