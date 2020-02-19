@@ -1,13 +1,18 @@
 import React from 'react';
-import { Modal, Table, Popconfirm, Divider, Select, Input, DatePicker, Card, Button, Pagination } from 'antd';
+import { Modal, Table, Popconfirm, Divider, Select, Input, DatePicker, Card, Button, Pagination, message, notification, Spin, Skeleton } from 'antd';
 import { SketchPicker } from 'react-color';
 import './index.less';
+import { AddNewsTag, DeleteNewsTag, UpdateNewsTag, SelectNewsTag, DetailNewsTag } from './../../config/dataAddress';
+import cookie from 'react-cookies';
+import { EventEmitter2 } from 'eventemitter2';
 
+var emitter = new EventEmitter2(); 
 
 class TagsModify extends React.Component {
     state = { 
         visibleModal: false,
         visibleColorPicker: false,
+        submitting: false,
     }
 
     constructor(props) {
@@ -15,95 +20,96 @@ class TagsModify extends React.Component {
         this.state = {
             tagId: '',
             tagName: '',
-            colorInPicker: '',
-            tagColor: ''
+            tagColor: '',
         }
     }
 
     handleShowModal = () => {
         this.setState({
             visibleModal: true,
-        });
+        }, () => this.getSingleTagData());
     }
 
     handleOkModal = (e) => {
         console.log(e);
-        this.updateTagData();
         this.setState({
-            tagColor: this.state.colorInPicker,
-        })
+            submitting: true,
+        }, () => this.updateSingleTagData());
     }
 
     handleCancelModal = (e) => {
         console.log(e);
         this.setState({
             visibleModal: false,
-            colorInPicker: this.state.tagColor,
             visibleColorPicker: false,
         });
     }
 
-    componentDidMount() {
-        this.getTagData();
+    getSingleTagData() {
+        fetch(DetailNewsTag, {
+            method: 'POST',
+            headers: {
+                'Authorization': cookie.load('token'),
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+            },
+            body:'newsTagId='+this.props.tagId
+        }).then(res => res.json()).then(
+            data => {
+                console.log(data);
+                if (data.status == 0) {
+                    this.setState({
+                        tagId: data.resultBean.newsTagId,
+                        tagName: data.resultBean.newsTagName,
+                        tagColor: data.resultBean.newsTagColor,
+                    })
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        )
     }
 
-    getTagData() {
-        this.setState({
-            tagsId: 1,
-            tagName: '样例',
-            tagColor: '#3ce016',
-            colorInPicker: '#3ce016',
-        });
+    updateSingleTagData() {
 
-        // fetch(DetailFriendUrl, {
-        //     method: 'POST',
-        //     headers:{
-        //         'Authorization': cookie.load('token'),
-        //         'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-        //     },
-        //     body:'friendurlId='+this.props.modifyUrlId
-        // }).then(res => res.json()).then(
-        //     data => {
-        //         if (data.code==0) {
-        //             this.setState({
-        //                 fridenUrlId: data.resultBean.friendurlId,
-        //                 friendUrlName: data.resultBean.friendUrlName,
-        //                 friendUrlAddress: data.resultBean.friendUrlAddress,
-        //                 friendUrlTag: data.resultBean.friendUrlTag,
-        //                 friendUrlCreateTime: data.resultBean.friendUrlCreateTime,
-        //             });
-        //         } else {
-        //             message.error(data.msg);
-        //         }
-        //     }
-        // )
-    }
-
-    updateTagData() {
-
-        console.log(this.state.friendUrlCreateTime);
-
-        this.setState({
-            visibleModal: false,
-        });
-        
-        // fetch(UpdateFriendUrl, {
-        //     method: 'POST',
-        //     headers : {
-        //         'Authorization': cookie.load('token'),
-        //         'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-        //     },
-        //     body:'friendurlId='+this.state.friendurlId+'&friendurlTitle='+this.state.friendurlTitle+'&friendurlBody='+this.state.friendurlBody
-        // }).then(res => res.json()).then(
-        //     data => {
-        //         if (data.code==0) {
-        //             message.success('修改成功');
-        //             emitter.emit('changeFirstText', '修改')
-        //         } else {
-        //             message.error(data.msg);
-        //         }
-        //     }
-        // )
+        fetch(UpdateNewsTag, {
+            method: 'POST',
+            headers: {
+                'Authorization': cookie.load('token'),
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+            },
+            body:'newsTagId='+this.state.tagId+'&newsTagName='+this.state.tagName
+                    +'&newsTagColor='+this.state.tagColor
+        }).then(res => res.json()).then(
+            data => {
+                if (data.status == 0) {
+                    this.setState({
+                        visibleModal: false,
+                        visibleColorPicker: false,
+                    })
+                    message.success('更新成功');
+                    emitter.emit("refresh", "更新");
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+                this.setState({
+                    submitting: false,
+                })
+            }
+        )
     } 
 
     handleModalTagName = (e) => {
@@ -123,11 +129,13 @@ class TagsModify extends React.Component {
     handleModalColorPickerChange = (value)=>{
         let colorInPicker = value.hex;
         console.log(colorInPicker);
-        this.setState({ colorInPicker });
+        this.setState({ 
+            tagColor: colorInPicker 
+        });
     }
 
     render(){
-        console.log(this.state.modifyUrlId)
+        // console.log(this.props.tagId)
         return (
         <span>
             <a onClick={ this.handleShowModal }> 修改 </a>
@@ -138,17 +146,23 @@ class TagsModify extends React.Component {
                 onCancel={this.handleCancelModal}
                 okText="确认修改"
                 cancelText="取消"
+                okButtonProps={{
+                    loading: this.state.submitting,
+                }}
+                cancelButtonProps={{
+                    disabled: this.state.submitting,
+                }}
             >
             <div>
-                类别名称：<Input size="small" style={{ height:30 , width:300 }} onChange={this.handleModalTagName} 
+                类别名称：<Input size="small" style={{ height:30 , width:200 }} onChange={this.handleModalTagName} 
                             value={this.state.tagName} />
             </div>
             <div className="modalInput">
-                类别颜色: <Button style={{ width: 100, height: 30, backgroundColor: this.state.colorInPicker }} 
-                            onClick={this.handleModalTagColorBtn} className="modalBtn" />(点击出颜色选择器)
+                类别颜色: <Button style={{ width: 100, height: 30, backgroundColor: this.state.tagColor }} 
+                            onClick={this.handleModalTagColorBtn} className="modalBtn"/><span className="suggestion">(点击出颜色选择器)</span>
                 { 
                     this.state.visibleColorPicker == true ?
-                        <SketchPicker color={this.state.colorInPicker}  onChange={this.handleModalColorPickerChange} />
+                        <SketchPicker color={this.state.tagColor}  onChange={this.handleModalColorPickerChange} />
                         :null
                 }
             </div>
@@ -163,36 +177,38 @@ class TagsTable extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            
-        }
         this.columns = [
             {
                 title: '类别名称',
-                dataIndex: 'tagName',
-                key: 'tagName',
+                dataIndex: 'newsTagName',
+                key: 'newsTagName',
             },
             {
                 title: '类别颜色',
-                dataIndex: 'tagColor',
-                key: 'tagColor',
+                dataIndex: 'newsTagColor',
+                key: 'newsTagColor',
                 render: (text, record) => (
                     <div style={{ width: '100px', height: '30px', backgroundColor: text }} />
                 ),
             },
             {
-                title: '创建人',
-                dataIndex: 'createStaff',
-                key: 'createStaff',
+                title: '最近一次更新时间',
+                dataIndex: 'updateTime',
+                key: 'updateTime',
+            },
+            {
+                title: '更新人',
+                dataIndex: 'updateUser',
+                key: 'updateUser',
             },
             {
                 title: '操作',
                 key: 'action',
                 render: (text, record) => (
                     <span>
-                        <TagsModify tagId={record.tagId} />
+                        <TagsModify tagId={record.newsTagId} />
                         <Divider type="vertical" />
-                        <Popconfirm title="确定删除?" onConfirm={() => this.handleDeleteTag(text)} okText="确定" cancelText="取消">
+                        <Popconfirm title="确定删除?" onConfirm={() => this.handleDelete(record.newsTagId)} okText="确定" cancelText="取消">
                             <a className="deleteHerf">删除</a>
                         </Popconfirm>
                     </span>
@@ -223,14 +239,41 @@ class TagsTable extends React.Component {
         ]
     }
 
-    handleDeleteTag = (value) => {
-        console.log(value);
+    handleDelete = (newsTagId) => {
+        // console.log(newsTagId);
+
+        fetch(DeleteNewsTag, {
+            method: 'POST',
+            headers: {
+                'Authorization': cookie.load('token'),
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+            },
+            body:'newsTagId='+newsTagId
+        }).then(res => res.json()).then(
+            data => {
+                if (data.status == 0) {
+                    message.success("删除成功!");
+                    emitter.emit("refresh", "删除")
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        )
     }
 
     render() {
         return (
             <div>
-                <Table columns={this.columns} dataSource={this.data} pagination={false} />
+                <Spin spinning={this.props.loading}>
+                    <Table columns={this.columns} dataSource={this.props.allTagData} pagination={false} />
+                </Spin>
             </div>
         );
     }
@@ -241,6 +284,8 @@ class TagsView extends React.Component {
 
     state = {
         visibleColorPicker: false,
+        submitting: false,
+        loading: true,
     }
 
     constructor(props) {
@@ -248,23 +293,114 @@ class TagsView extends React.Component {
         this.state = {
             nowPage: 1,
             totalPage: 1,
-            pageSize: 10,
-            tableData: [],
-            tagSearchText: '',
+            pageSize: 5,
+            allTagData: [],
+            tagSearchName: '',
             tagAddName: '',
-            tagAddColor: '#19b8e2',
-        }
+            tagAddColor: '#19b8e2', 
+        } // 初始值
+
+        emitter.on("refresh", this.refresh.bind(this));
     }
 
-    handleSearchText = (e) => {
-        console.log(e);
-        this.setState({ 
-            tagSearchText: e.target.value 
+    componentWillMount() {
+        this.getTagData();
+    }
+
+    refresh = (msg) => {
+        this.setState({
+            tagSearchName: '',
+            tagAddName: '',
+            tagAddColor: '#19b8e2',
         }, () => this.getTagData());
     }
 
-    handleSearchBtn = () => {
-        this.getTagData();
+    getTagData() {
+
+        fetch(SelectNewsTag, {
+            method: 'POST',
+            headers: {
+                'Authorization': cookie.load('token'),
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+            },
+            body:'newsTagName='+this.state.tagSearchName
+                    +'&pageNum='+this.state.nowPage+'&pageSize='+this.state.pageSize
+        }).then(res => res.json()).then(
+            data => {
+                // console.log(data);
+                if (data.status == 0) {
+                    if(data.resultBean.currentPage > 0) {
+                        this.setState({ nowPage: data.resultBean.currentPage });
+                    } else {
+                        this.setState({ nowPage: 1 });
+                    }
+                    this.setState({
+                        totalPage: data.resultBean.totalItems/data.resultBean.pageSize,
+                        allTagData: data.resultBean.items,
+                    });
+                } else {
+                    this.setState({
+                        nowPage: 1,
+                        totalPage: 1,
+                        allTagData: []
+                    });
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+                this.setState({
+                    loading: false,
+                })
+            }
+        )
+    }
+
+    addTagData() {
+        if (this.state.tagAddName == 0) {
+            message.error("类别名称不能为空!");
+            return ;
+        }
+        
+        fetch(AddNewsTag, {
+            method: 'POST',
+            headers: {
+                'Authorization': cookie.load('token'),
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+            },
+            body:'newsTagName='+this.state.tagAddName+'&newsTagColor='+this.state.tagAddColor
+        }).then(res => res.json()).then(
+            data => {
+                if (data.status == 0) {
+                    message.success("添加成功!");
+                    emitter.emit("refresh", "添加")
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+                this.setState({
+                    submitting: false,
+                })
+            }
+        )
+    }
+
+
+    handleSearchTagName = (e) => {
+        // console.log(e.target.value);
+        this.setState({ 
+            tagSearchName: e.target.value 
+        }, () => this.getTagData());
     }
 
     handleAddTagText = (e) => {
@@ -274,12 +410,9 @@ class TagsView extends React.Component {
     }
 
     handleAddTagBtn = () => {
-        this.updateTagData();
-        this.setState({ 
-            tagAddName: '',
-            tagAddColor: '#19b8e2',
-            visibleColorPicker: false,
-        });
+        this.setState({
+            submitting: true,
+        }, () => this.addTagData());
     }
 
     handleAddTagColorBtn = () => {
@@ -299,25 +432,14 @@ class TagsView extends React.Component {
         this.setState({ nowPage: page }, () => this.getTagData());
     }
 
-    getTagData() {
-        console.log('重新后台获取tag数据');
-    }
-
-    updateTagData() {
-        console.log('新增一个tag数据');
-    }
-
-
     render() {
         return (
             <div>
-                <Card title="新闻类别">
+                <Card title="公告类别">
                     <div>
-                        <Input size="small" onChange={this.handleSearchText} placeholder="类别名称" style={{ height:30 , width:150 }}/>
-                        &nbsp;&nbsp;<Button type="primary" shape="circle" icon="search" onClick={ this.handleSearchBtn }/>
+                        <Input size="small" onChange={this.handleSearchTagName} placeholder="类别名称" style={{ height:30 , width:150 }}/>
 
-
-                        <Button type="primary" onClick={ this.handleAddTagBtn } className="addTagBtn">添加</Button>
+                        <Button type="primary" onClick={ this.handleAddTagBtn } className="addTagBtn" loading={this.state.submitting} >添加</Button>
                         <Input size="small" onChange={this.handleAddTagText} placeholder="类别名称" className="addTagInput" value={this.state.tagAddName} />
                         &nbsp;&nbsp;色值
                         <Button style={{ width: 100, height: 30, backgroundColor: this.state.tagAddColor, }} 
@@ -328,7 +450,7 @@ class TagsView extends React.Component {
                                 :null
                         }
                     </div>
-                    <TagsTable tableData={this.state.tableData} />
+                    <TagsTable allTagData={this.state.allTagData} loading={this.state.loading} />
                     <div className="tablePage">
                         <Pagination size="small" simple onChange={this.handlePageChange} total={this.state.totalPage*this.state.pageSize}
                         pageSize={this.state.pageSize} defaultCurrent={this.state.nowPage} showQuickJumper />

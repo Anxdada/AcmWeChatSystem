@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.acm.mapper.NewsTagMapper">
+
+    <!-- 多了和类别的字段 -->
+    <sql id="news_tag_table">
+		a.newsTagId,
+		a.newsTagName,
+		a.newsTagColor,
+		a.createUser,
+        a.createTime,
+		a.updateUser,
+		a.updateTime,
+		a.isEffective,
+	</sql>
+
+    <!-- 添加newsTag -->
+    <insert id="addNewsTag" useGeneratedKeys="true">
+        INSERT INTO newsTag
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="newsTag.newsTagId != null">newsTagId,</if>
+            <if test="newsTag.newsTagName != null">newsTagName,</if>
+            <if test="newsTag.newsTagColor != null">newsTagColor,</if>
+            <if test="newsTag.createUser != null">createUser,</if>
+            <if test="newsTag.createTime != null">createTime,</if>
+            <if test="newsTag.updateUser != null">updateUser,</if>
+            <if test="newsTag.updateTime != null">updateTime,</if>
+            <if test="newsTag.isEffective != null">isEffective,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="newsTag.newsTagId != null">#{newsTag.newsTagId},</if>
+            <if test="newsTag.newsTagName != null">#{newsTag.newsTagName},</if>
+            <if test="newsTag.newsTagColor != null">#{newsTag.newsTagColor},</if>
+            <if test="newsTag.createUser != null">#{newsTag.createUser},</if>
+            <if test="newsTag.createTime != null">#{newsTag.createTime},</if>
+            <if test="newsTag.updateUser != null">#{newsTag.updateUser},</if>
+            <if test="newsTag.updateTime != null">#{newsTag.updateTime},</if>
+            <if test="newsTag.isEffective != null">#{newsTag.isEffective},</if>
+        </trim>
+    </insert>
+
+
+    <!-- 更新公告类别newsTag -->
+    <update id="updateNewsTag">
+        UPDATE newsTag
+        <set>
+            <if test="newsTag.newsTagId != null">newsTagId=#{newsTag.newsTagId},</if>
+            <if test="newsTag.newsTagName != null">newsTagName=#{newsTag.newsTagName},</if>
+            <if test="newsTag.newsTagColor != null">newsTagColor=#{newsTag.newsTagColor},</if>
+            <if test="newsTag.createUser != null">createUser=#{newsTag.createUser},</if>
+            <if test="newsTag.createTime != null">createTime=#{newsTag.createTime},</if>
+            <if test="newsTag.updateUser != null">updateUser=#{newsTag.updateUser},</if>
+            <if test="newsTag.updateTime != null">updateTime=#{newsTag.updateTime},</if>
+            <if test="newsTag.isEffective != null">isEffective=#{newsTag.isEffective},</if>
+        </set>
+        WHERE newsTagId = #{newsTag.newsTagId};
+    </update>
+
+
+    <!-- 查询满足newsTag的总数(暂时没用到就不管了) -->
+    <select id="countNewsTagListByQuery" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        newsTag a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.newsTagName != null ">
+                AND a.newsTagName like CONCAT ('%', #{map.newsTagName}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的newsTag, 返回值为实体类-->
+    <select id="findNewsTagListByNewsTagId" resultType="com.example.acm.entity.NewsTag">
+        SELECT
+            a.*
+        FROM
+            newsTag a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="newsTagId != null ">
+                AND a.newsTagId=#{newsTagId}
+            </if>
+        </trim>
+    </select>
+
+
+    <!-- 通过很多限制条件查询满足的newsTag的总数 -->
+    <select id="countNewsTagMapListByQuery" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        newsTag a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.newsTagName != null ">
+                AND a.newsTagName like CONCAT ('%', #{map.newsTagName}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的newsTag-->
+    <select id="findNewsTagMapListByQuery" resultType="java.util.Map">
+        SELECT
+        a.*
+        FROM
+        newsTag a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.newsTagName != null ">
+                AND a.newsTagName like CONCAT ('%', #{map.newsTagName}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            a.${map.order} ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start},#{map.limit}
+        </if>
+    </select>
+
+</mapper>

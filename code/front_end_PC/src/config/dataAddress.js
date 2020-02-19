@@ -8,11 +8,13 @@ export const GetLoginUserName = localhost+"/user/getLoginUserName";
 export const LoginUrl = localhost+"/user/PCLogin";
 
 
-
+// 新闻的分类
+export const AddNewsTag = localhost+"/newstag/addNewsTag";
+export const DeleteNewsTag = localhost+"/newstag/deleteNewsTag";
+export const UpdateNewsTag = localhost+"/newstag/updateNewsTag";
+export const SelectNewsTag = localhost+"/newstag/selectNewsTag";
+export const DetailNewsTag = localhost+"/newstag/detailNewsTag";
 // 新闻
-export const AddNew = localhost+"/news/addNews";
-export const SelectClass = localhost+"/news/selectClass";
-export const DeleteClass = localhost+"/news/deleteNews";
 export const AddNewsMain = localhost+"/news/addNewMain";
 export const DeleteNewMain = localhost+"/news/deleteNewMain";
 export const UpdateNewsMain = localhost+"/news/updateNewMain";
