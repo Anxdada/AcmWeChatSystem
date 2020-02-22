@@ -5,8 +5,10 @@ import com.example.acm.common.ResultCode;
 import com.example.acm.common.SysConst;
 import com.example.acm.entity.NewsTag;
 import com.example.acm.entity.User;
+import com.example.acm.service.NewsService;
 import com.example.acm.service.NewsTagService;
 import com.example.acm.service.UserService;
+import com.example.acm.service.deal.NewsDealService;
 import com.example.acm.service.deal.NewsTagDealService;
 import com.example.acm.utils.DateUtil;
 import com.example.acm.utils.ListPage;
@@ -28,6 +30,9 @@ public class NewsTagDealServiceImpl implements NewsTagDealService {
 
     @Autowired
     private NewsTagService NewsTagService;
+
+    @Autowired
+    private NewsService newsService;
 
     @Autowired
     private UserService userService;
@@ -74,6 +79,16 @@ public class NewsTagDealServiceImpl implements NewsTagDealService {
             List<NewsTag> list = NewsTagService.findNewsTagListByNewsTagId(newsTagId);
             if (list.size() < 0) {
                 return new ResultBean(ResultCode.SYSTEM_FAILED, "无该条记录, 请检查你的代码!");
+            }
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("newsTagId", newsTagId);
+            map.put("isEffective", SysConst.LIVE);
+
+            List<Map<String, Object>> listMap = newsService.findNewsMapListByQueryJoinTagTable(map);
+
+            if (!listMap.isEmpty()) {
+                return new ResultBean(ResultCode.SYSTEM_FAILED, "还有该类别的新闻存在, 无法删除该类别!");
             }
 
             NewsTag newsTag = list.get(0);

@@ -9,6 +9,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  */
 @Configuration
 public class WebAppConfig extends WebMvcConfigurerAdapter {
+
+    // 配置图片映射
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         /*
@@ -16,9 +18,11 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
          * 用外部的tomcat也有效;所以用到外部的tomcat时不需在tomcat/config下的相应文件配置虚拟路径了,阿里云linux也没问题)
          */
         //Windows下
-        registry.addResourceHandler("/uploads2/**").addResourceLocations("file:D:/uploads2/");
-        //Mac或Linux下(没有CDEF盘符)
+//        registry.addResourceHandler("/uploads2/**").addResourceLocations("file:D:/uploads2/");
         registry.addResourceHandler("/uploads/**").addResourceLocations("file:/Users/xierenyi/Documents/uploads/");
+        registry.addResourceHandler("/avatar/**").addResourceLocations("file:/Users/xierenyi/xiexie/private/AcmWeChatSystem/image/avatar/");
+        registry.addResourceHandler("/post/**").addResourceLocations("file:/Users/xierenyi/xiexie/private/AcmWeChatSystem/image/post/");
+        registry.addResourceHandler("/photo/**").addResourceLocations("file:/Users/xierenyi/xiexie/private/AcmWeChatSystem/image/photo/");
         super.addResourceHandlers(registry);
     }
 }

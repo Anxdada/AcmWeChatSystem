@@ -4,6 +4,7 @@ import { DatePicker, Input, Button, Card, Select, Tag, Modal, Row, Col } from 'a
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import './index.less';
+import { UploadImg } from './../../config/dataAddress';
 
 
 moment.locale('zh-cn');
@@ -45,9 +46,7 @@ class AddAnnouncementPublishView extends React.Component {
         }
     }
 
-    addData() {
-
-        console.log(this.state.friendUrlCreateTime);
+    addAnnouncementData() {
 
         // this.setState({
         //     visible: false,
@@ -161,6 +160,7 @@ class AddAnnouncementPublishView extends React.Component {
                             </span>
                     }
                 </div>
+                <Button type="dashed" onClick={this.handlePublish} loading={this.state.submitLoading}> 存为草稿 </Button>
                 <Button type="primary" onClick={this.handlePublish}>发布</Button>
                 </Card>
             </div>
@@ -192,7 +192,7 @@ class AddAnnouncementEditView extends React.Component {
 
     render() {
         return (
-          <div style={{ flex: 1, padding: "10px" }}>
+        <div style={{ flex: 1, padding: "10px" }}>
             <Card title="添加新闻" >
                 <div>
                 <Input size="small" placeholder="公告标题" style={{ height:30, width: 400 }} onChange={this.handleAddAnnouncementTitle } />
@@ -200,15 +200,15 @@ class AddAnnouncementEditView extends React.Component {
                 <br />
                 <div ref="editorElem" className="toolbar" />
             </Card>
-          </div>
+        </div>
         );
-      }
-      componentDidMount() {
+    }
+    componentDidMount() {
         const elem = this.refs.editorElem
         const editor = new E(elem)
         editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
         editor.customConfig.uploadFileName = 'myFileName';
-        // editor.customConfig.uploadImgServer = UploadImg;
+        editor.customConfig.uploadImgServer = UploadImg;
         editor.customConfig.uploadImgHooks = { 
             customInsert: function (insertImg, result, editor) { 
                 var url =result.data; insertImg(url); 

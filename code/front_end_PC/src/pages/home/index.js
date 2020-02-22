@@ -1,16 +1,50 @@
 import React from 'react';
 import './index.less';
 import axios from 'axios';
-import { Carousel, Timeline, Button, Statistic, Card, Row, Col, Icon } from 'antd';
+import { Carousel, Timeline, Button, Statistic, Card, Row, Col, Icon, message, notification } from 'antd';
+import { GetHomeData} from './../../config/dataAddress';
+import Fetch from './../../fetch';
 
 class HomeView extends React.Component {
 
-    state = {
-        like: 0
+    constructor(props) {
+        super(props);
+        this.state = {
+            like: 0,
+            totData: {},
+        }
     }
 
     componentWillMount() {
-        
+        this.getData();
+    }
+
+    getData() {
+        Fetch.requestGet({
+            url: GetHomeData,
+            timeOut: 3000,
+        }).then(
+            data => {
+                // console.log(data);
+                if (data.status == 0) {
+                    this.setState({
+                        totData: data.resultBean,
+                    })
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     handleClickLike = () => {
@@ -32,17 +66,17 @@ class HomeView extends React.Component {
                         </Card>
                     </Col>
                     <Col span={6}>
-                        <Card title={<span><Icon type="team" /><span>用户个数</span></span>}>
+                        <Card title={<span><Icon type="team" /><span>用户数量</span></span>}>
                             <span className="otherNumber">2</span>
                         </Card>
                     </Col>
                     <Col span={6}>
-                        <Card title={<span><Icon type="paper-clip" /><span>友链个数</span></span>}>
+                        <Card title={<span><Icon type="paper-clip" /><span>友链数量</span></span>}>
                             <span className="otherNumber">6</span>
                         </Card>
                     </Col>
                     <Col span={6}>
-                        <Card title={<span><Icon type="desktop" /><span>帖子个数</span></span>}>
+                        <Card title={<span><Icon type="desktop" /><span>帖子数量</span></span>}>
                             <span className="otherNumber">12</span>
                         </Card>
                     </Col>

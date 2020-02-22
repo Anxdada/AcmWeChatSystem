@@ -1,12 +1,16 @@
 import React from 'react';
 import './index.less';
-import { Card, Tag, Divider, Table, Button, Popconfirm, Pagination, Input, Select } from 'antd';
+import { Card, Tag, Divider, Table, Button, Popconfirm, Pagination, Input, Select, message, notification, Tooltip, DatePicker } from 'antd';
 import { Link } from 'react-router-dom';
 import {EventEmitter2} from 'eventemitter2';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import { connect } from 'react-redux';
 import { switchMenu, addMenu } from './../../redux/actions';
+import { DeleteAnnouncement, SelectAnnouncement, SelectAnnouncementTag } from './../../config/dataAddress';
+import cookie from 'react-cookies';
+import Fetch from './../../fetch';
+
 
 moment.locale('zh-cn');
 
@@ -14,6 +18,7 @@ var emitter = new EventEmitter2()
 var emitter2 = new EventEmitter2()
 const { Option } = Select;
 const { Search } = Input;
+const { RangePicker } = DatePicker;
 
 const tags = [
     {
@@ -38,14 +43,12 @@ class AnnouncementTable extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            isRegister: false,
-        }
         this.columns = [
             {
                 title: '公告标题',
                 dataIndex: 'announcementTitle',
                 key: 'announcementTitle',
+                align: 'center',
                 render: (text, record) => (
                     <span>
                         <a><Link to={'/admin/announcement/detail/'+record.announcementId}>{text}</Link></a>
@@ -54,35 +57,51 @@ class AnnouncementTable extends React.Component {
             }, 
             {
                 title: '类别',
-                dataIndex: 'announcementTag',
-                key: 'announcementTag',
+                dataIndex: 'announcementTagName',
+                key: 'announcementTagName',
+                align: 'center',
                 render: (text, record) => (
                     <span>
-                        <Tag color="red" >{text}</Tag>
+                        <Tag color={record.announcementTagColor} >{text}</Tag>
                     </span>
                 ),
             },
             {
                 title: '创建人',
-                dataIndex: 'userName',
-                key: 'userName',
+                dataIndex: 'createUser',
+                key: 'createUser',
+                align: 'center',
             }, 
             {
                 title: '创建时间',
                 dataIndex: 'createTime',
                 key: 'createTime',
+                align: 'center',
                 sorter: (a, b) => a.createTime < b.createTime
-            },  
+            },
+            {
+                title: '更新人',
+                dataIndex: 'updateUser',
+                key: 'updateUser',
+                align: 'center',
+            }, 
+            {
+                title: '最近一次更新时间',
+                dataIndex: 'updateTime',
+                key: 'updateTime',
+                align: 'center',
+                sorter: (a, b) => a.updateTime < b.updateTime
+            },
             {
                 title: '操作',
                 key: 'action',
+                align: 'center',
                 render: (text, record) => (
                     <span>
                         {
-                            this.state.isRegister == false ? 
+                            record.isRegister == 1 ? 
                             <span><a><Link to={'/admin/announcement/registerPerson/'+record.announcementId}>查看报名用户</Link></a> <Divider type="vertical" /></span>
                             : null
-                            // record.isRegister
                         } 
                         <a><Link to={'/admin/announcement/modifyAnnouncement/'+record.announcementId}>修改</Link></a>
                         <Divider type="vertical" />
@@ -95,13 +114,17 @@ class AnnouncementTable extends React.Component {
             {
                 title: '状态',
                 key: 'stopaction',
+                align: 'center',
                 render: (text, record) => (
                     <span>
                     {
-                        record.isDone == 1 ? record.isDone == 2 ? <a><Tag color="#108ee9" onClick={()=>this.handleDoneAnnouncement(record.announcementId)}>截至报名</Tag></a>:
-                        <Tag color="#f50">已结束</Tag> : <Tag color="green">正在报名</Tag>
-                        //record.isDone==1?<a><Tag color="#108ee9" onClick={()=>this.handleDoneAnnouncement(record.announcementId)}>截至报名</Tag></a>:
-                        //<Tag color="#f50">已结束</Tag>
+                        record.isPublish == 0 ? <Tag color="gray">未发布[草稿]</Tag> :
+                        record.isRegister == 0 ? <Tag color="blue">已发布</Tag> :
+                        moment().isAfter(record.registerEndTime) ? 
+                                            <Tooltip title={`截止时间 ${moment(record.registerEndTime).format('YYYY-MM-DD HH:mm:ss')}`}>
+                                                <Tag color="#f50">报名结束</Tag> 
+                                            </Tooltip>
+                        : <Tag color="green">正在报名</Tag>
                     }
                     
                     </span>
@@ -128,65 +151,45 @@ class AnnouncementTable extends React.Component {
         ]
     }
 
-    handleDoneAnnouncement = (key) => {
-        // fetch(DoneAnnouncementUrl,{   //Fetch方法
-        //         method: 'POST',
-        //         headers: {
-        //           'Authorization': cookie.load('token'),
-        //           'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-        //         },
-        //        body: 'announcementId='+key
-    
-        //     }).then(res => res.json()).then(
-        //         data => {
-        //             if(data.code==0) {
-        //               emitter.emit('changeFirstText', 'Second');
-        //               message.success('操作成功');
-        //             }
-        //             else {
-        //                message.error(data.msg);
-        //             }
-        //         }
-        //     )
-      }
+    handleDelete = (announcementId) => {
 
-      tmp = (key) => {
-        console.log("------"+key);
-        emitter2.emit('changeShow', key);
-    
-      }
-
-      handleDelete = (announcementId) => {
-        console.log("------");
-        // fetch(DeleteAnnouncementUrl,{   //Fetch方法
-        //         method: 'POST',
-        //         headers: {
-        //           'Authorization': cookie.load('token'),
-        //           'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-        //         },
-        //        body: 'announcementId='+announcementId
-    
-        //     }).then(res => res.json()).then(
-        //         data => {
-        //             if(data.code==0) {
-        //               emitter.emit('changeFirstText', 'Second');
-        //               message.success('操作成功');
-        //             }
-        //             else {
-        //                message.error(data.msg);
-        //             }
-        //         }
-        // )
+        Fetch.requestPost({
+            url: DeleteAnnouncement,
+            info: 'announcementId='+announcementId,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    emitter.emit("refresh", "删除");
+                    message.success("删除成功");
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     render() {
         return (
             <div>
-                <Table columns={this.columns} dataSource={this.data} pagination={false} />
+                <Table columns={this.columns} dataSource={this.props.allAnnouncementData} rowKey={record => record.announcementId} 
+                    pagination={false} footer={() => '对于要报名的公告, 细节点请点到公告详情页查看' } />
             </div>
         );
     }
 }
+
+// loading="true"
 
 
 class AnnouncementView extends React.Component {
@@ -196,89 +199,197 @@ class AnnouncementView extends React.Component {
         this.state={
             nowPage: 1,
             totalPage: 1,
-            pageSize: 10,
-            allAnnouncement: '',
+            pageSize: 5,
+            allAnnouncementData: [],
+            allTag: [],
             searchAnnouncementTitle: '',
-            searchTag: '',
+            searchTag: undefined,
+            searchStartTime: null,
+            searchEndTime: null,
         }
+        emitter.on("refresh", this.refresh.bind(this));
     }
 
     componentWillMount() {
-        this.getData();
+        this.getAnnouncementData();
+        this.getTagData();
     }
 
-    changeText = () => {
-        this.getData();
+    refresh = () => {
+        this.setState({
+            searchAnnouncementTitle: '',
+            searchTag: '',
+            searchStartTime: null,
+            searchEndTime: null,
+        }, () => this.getAnnouncementData());
     }
 
-    getData() {
-        //alert(this.state.competitionTitle);
-        // fetch(SelectAnnouncementUrl, {
-        //   method: 'POST',
-        //   headers: {
-        //     'Authorization': cookie.load('token'),
-        //     'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-        //   },
-        //   body: 'AnnouncementTitle='+this.state.AnnouncementTitle+'&pageNum='+this.state.nowPage+'&pageSize='+this.state.pageSize
-        // }).then( res=> res.json()).then(
-        //   data => {
-        //     if (data.code==0) {
-        //       if(data.resultBean.currentPage>0) {
-        //         this.setState({nowPage: data.resultBean.currentPage});
-        //       }else {
-        //         this.setState({nowPage: 1});
-        //       }
-        //       this.setState({totalPage: data.resultBean.totalItems/data.resultBean.pageSize});
-        //       this.setState({allAnnouncement: data.resultBean.items});
-        //     } else {
-        //       this.setState({nowPage: 1});
-        //       this.setState({totalPage: 1});
-        //       this.setState({allAnnouncement: ''});
-        //       message.error(data.msg);
-        //     }
-        //   }
-        // )
+    getTagData() {
+
+        Fetch.requestPost({
+            url: SelectAnnouncementTag,
+            info: 'pageSize=100',
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                // console.log(data);
+                if (data.status == 0) {
+                    this.setState({
+                        allTag: data.resultBean.items
+                    })
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
-    handleSearchTitleBtn = (e) => {
+    getAnnouncementData() {
+
+        let startTime = '';
+        if (this.state.searchStartTime != null) {
+            startTime = moment(this.state.searchStartTime).format('YYYY-MM-DD');
+        }
+
+        let endTime = '';
+        if (this.state.searchEndTime != null) {
+            endTime = moment(this.state.searchEndTime).format('YYYY-MM-DD');
+        }
+
+        // console.log(this.state.searchTag);
+
+        let searchTag = '';
+        if (this.state.searchTag != undefined) {
+            searchTag = this.state.searchTag;
+        }
+
+        Fetch.requestPost({
+            url: SelectAnnouncement,
+            info: 'announcementTitle='+this.state.searchAnnouncementTitle+'&searchTagId='+searchTag
+                    +'&searchStartTime='+startTime+'&searchEndTime='+endTime
+                    +'&pageNum='+this.state.nowPage+'&pageSize='+this.state.pageSize,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                // console.log(data);
+                if (data.status == 0) {
+                    if(data.resultBean.currentPage > 0) {
+                        this.setState({ nowPage: data.resultBean.currentPage });
+                    } else {
+                        this.setState({ nowPage: 1 });
+                    }
+                    this.setState({
+                        totalPage: data.resultBean.totalItems/data.resultBean.pageSize,
+                        allAnnouncementData: data.resultBean.items
+                    });
+                } else {
+                    this.setState({
+                        nowPage: 1,
+                        totalPage: 1,
+                        allAnnouncementData: []
+                    });
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
+    handleSearchTitle = (e) => {
         this.setState({
             searchAnnouncementTitle: e.target.value
-        }, () => this.getData());
+        });
+        // 不再是改变就搜索, 而是三个搜索条件一起后, 再点击button搜索
     }
 
-    handleSearchTags = (value) => {
+    handleSearchTag = (value) => {
+        console.log(value);
+        if (typeof value === "undefined") {
+            this.setState({
+                searchTag: undefined,
+            })
+            return ;
+        }
         this.setState({
             searchTag: value, 
         });
     }
 
-    handleSearchTagBtn() {
-        this.getData();
+    handleSearchRangeTime = (dates) => {
+        console.log(dates);
+        if (dates.length < 1) {
+            this.setState({
+                searchStartTime: null,
+                searchEndTime: null,
+            });
+            return ;
+        }
+        this.setState({
+            searchStartTime: dates[0],
+            searchEndTime: dates[1],
+        })
+    }
+
+    handleSearchBtn = () => {
+        console.log("111");
+        this.getAnnouncementData();
     }
 
     handlePageChange = (page) => {
         console.log(page);
         this.setState({
             nowPage: page 
-        }, () => this.getData());
+        }, () => this.getAnnouncementData());
     }
 
     render() {
+        let rangeTime;
+        if (this.state.searchStartTime != null)
+            rangeTime = [moment(this.state.searchStartTime), moment(this.state.searchEndTime)];
+        else rangeTime = [null, null];
+
+        // console.log(this.state.allTag);
+        // console.log(this.state.allAnnouncementData);
+
         return(
-            <div style={{ flex: 1, padding: "10px" }}>
-                <Card title="公告栏" >
-                    <Search placeholder="公告标题" onSearch={this.handleSearchTitleBtn} style={{ height: 30, width: 150}} className="searchF"/>
+            <div style={{ flex: 1 }}>
+                <Card title="公告管理" >
+                    <Input value={this.state.searchAnnouncementTitle} placeholder="公告标题" allowClear
+                        onChange={this.handleSearchTitle} style={{ height: 30, width: 150}} className="searchF"/>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <Select defaultValue={ this.state.searchTag } style={{ width: 150 }} 
-                        onChange={this.handleSearchTags} >
+                    <Select value={this.state.searchTag} placeholder="类别" style={{ width: 150 }} 
+                        onChange={this.handleSearchTag} allowClear >
                         {
-                            tags.map((item) =>
-                                <Option value={item.tagName}><Tag color={item.tagColor} key={item.tagName} > {item.tagName} </Tag></Option>
+                            this.state.allTag.map((item) =>
+                                <Option key={item.announcementTagId} value={item.announcementTagId}>
+                                    <Tag color={item.announcementTagColor} key={item.announcementTagId} > {item.announcementTagName} </Tag>
+                                </Option>
                             )
                         }
                     </Select>
-                    <Button type="primary" shape="circle" icon="search" onClick={this.handleSearchTagBtn}/>
-                    <AnnouncementTable allAnnouncement={this.state.allAnnouncement}/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <RangePicker value={rangeTime} onChange={this.handleSearchRangeTime} placeholder={["开始时间", "结束时间"]} />
+                    <Button type="primary" shape="circle" icon="search" onClick={this.handleSearchBtn}/>
+                    <AnnouncementTable allAnnouncementData={this.state.allAnnouncementData}/>
                     <div className="tablePage">
                         <Pagination size="small" simple onChange={this.handlePageChange} total={this.state.totalPage*this.state.pageSize}
                             pageSize={this.state.pageSize} defaultCurrent={this.state.nowPage} showQuickJumper />

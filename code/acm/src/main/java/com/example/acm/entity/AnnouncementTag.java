@@ -16,6 +16,7 @@ public class AnnouncementTag {
     private Date createTime;
     private Long updateUser;
     private Date updateTime;
+    private Integer needStartTime;
     private Integer isEffective;
 
     public Long getAnnouncementTagId() {
@@ -72,6 +73,14 @@ public class AnnouncementTag {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Integer getNeedStartTime() {
+        return needStartTime;
+    }
+
+    public void setNeedStartTime(Integer needStartTime) {
+        this.needStartTime = needStartTime;
     }
 
     public Integer getIsEffective() {

@@ -595,7 +595,8 @@ class FriendUrlTable extends React.Component {
         return (
         <div style={{ flex: 1, padding: "10px" }}>
             <Card title="友情链接" >
-                <Input size="small" value={this.state.friendUrlName} onChange={this.handleSearchText} placeholder="友链名称" style={{ height:30 , width:150 }}/>
+                <Input size="small" value={this.state.friendUrlName} allowClear
+                    onChange={this.handleSearchText} placeholder="友链名称" style={{ height:30 , width:150 }}/>
                 &nbsp;&nbsp;<Button type="primary" shape="circle" icon="search" onClick={ this.handleSearchBtn }/>
                 <div className="addUrlBtn">
                     <Button type="primary" onClick={this.handleShowModal}>+添加</Button>

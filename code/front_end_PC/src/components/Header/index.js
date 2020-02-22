@@ -2,10 +2,10 @@ import React from 'react'
 import { Breadcrumb, Menu, Row, Col, Avatar, Dropdown, Icon, message, notification } from 'antd';
 import './index.less';
 import Util from './../../utils/utils';
-import { Link } from 'react-router-dom';
+import {HashRouter as Router, Link, Redirect, Route} from 'react-router-dom';
 import cookie from 'react-cookies';
 import { connect } from 'react-redux';
-import { GetLoginUserName } from './../../config/dataAddress';
+import { GetLoginUser } from './../../config/dataAddress';
 import Fetch from './../../fetch';
 
 const menu = (
@@ -21,19 +21,19 @@ const menu = (
 class Header extends React.Component {
 
     state = {
-        userName: '',
+        nowUser: [],
     };
 
     componentWillMount() {
         Fetch.requestGet({
-            url: GetLoginUserName,
+            url: GetLoginUser,
             timeOut: 3000,
         }).then (
             data => {
-                console.log(data);
+                // console.log(data);
                 if (data.status == 0) {
                     this.setState({
-                        userName: data.resultBean,
+                        nowUser: data.resultBean,
                     });
                 } else {
                     if (data.status < 100) {
@@ -44,6 +44,7 @@ class Header extends React.Component {
                             description: data.message
                         });
                     }
+                    cookie.remove('token');
                 }
             }
         ).catch( err => {
@@ -67,22 +68,22 @@ class Header extends React.Component {
         // cookie.remove('password');
         // console.log(cookie.load('userName'));
         // console.log(cookie.load('password'));
-        console.log(cookie.load('token'));
+        // console.log(cookie.load('token'));
         cookie.remove('token');
     }
 
 
     render() {
-        console.log('xierenyi');
-        console.log(this.props.menuName);
+        // console.log('xierenyi');
+        // console.log(this.props.menuName);
         // console.log(this.props.testArr);
         return (
             <div className="header">
                 <Row className="header-top">
                     <Col span="24">
-                        <Avatar style={{ backgroundColor: '#87d068' }} icon="user" />&nbsp;&nbsp;
+                        <Avatar src={this.state.nowUser.avatar} />&nbsp;&nbsp;
                         <Dropdown overlay={menu}>
-                            <span className="welcome">{this.state.userName}, 欢迎回来<Icon type="down" /></span>
+                            <span className="welcome">{this.state.nowUser.realName}, 欢迎回来<Icon type="down" /></span>
                         </Dropdown>
                     </Col>
                 </Row>

@@ -52,6 +52,19 @@
         WHERE friendUrlId = #{friendUrl.friendUrlId};
     </update>
 
+    <!-- 根据条件查找URL数量 -->
+    <select id="countFriendUrlListByQuery" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            friendUrl tt
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.isEffective != null ">
+                AND tt.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
     <!-- 查询单条URL -->
     <select id="findFriendUrlListByFriendUrlId" resultType="com.example.acm.entity.FriendUrl">
         SELECT

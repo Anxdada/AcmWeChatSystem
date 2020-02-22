@@ -88,7 +88,7 @@ public class OnDutyDealServiceImpl implements OnDutyDealService {
             List<OnDuty> onDutys = onDutyService.findOnDutyListByOnDutyId(onDutyId);
 
             if (onDutys.size() < 1) {
-                return new ResultBean(ResultCode.FEEDBACK_COUNT_NULL_RECODE);
+                return new ResultBean(ResultCode.SQL_NULL_RECODE);
             }
 
             OnDuty onDuty = onDutys.get(0);
@@ -123,7 +123,7 @@ public class OnDutyDealServiceImpl implements OnDutyDealService {
             List<OnDuty> onDutys = onDutyService.findOnDutyListByOnDutyId(onDutyId);
 
             if (onDutys.size() < 1) {
-                return new ResultBean(ResultCode.FEEDBACK_COUNT_NULL_RECODE);
+                return new ResultBean(ResultCode.SQL_NULL_RECODE);
             }
 
             OnDuty onDuty = onDutys.get(0);

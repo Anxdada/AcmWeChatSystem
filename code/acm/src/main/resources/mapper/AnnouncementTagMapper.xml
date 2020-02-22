@@ -11,6 +11,7 @@
         a.createTime,
 		a.updateUser,
 		a.updateTime,
+		a.needStartTime,
 		a.isEffective,
 	</sql>
 
@@ -25,6 +26,7 @@
             <if test="announcementTag.createTime != null">createTime,</if>
             <if test="announcementTag.updateUser != null">updateUser,</if>
             <if test="announcementTag.updateTime != null">updateTime,</if>
+            <if test="announcementTag.needStartTime != null">needStartTime,</if>
             <if test="announcementTag.isEffective != null">isEffective,</if>
         </trim>
         values
@@ -36,6 +38,7 @@
             <if test="announcementTag.createTime != null">#{announcementTag.createTime},</if>
             <if test="announcementTag.updateUser != null">#{announcementTag.updateUser},</if>
             <if test="announcementTag.updateTime != null">#{announcementTag.updateTime},</if>
+            <if test="announcementTag.needStartTime != null">#{announcementTag.needStartTime},</if>
             <if test="announcementTag.isEffective != null">#{announcementTag.isEffective},</if>
         </trim>
     </insert>
@@ -52,6 +55,7 @@
             <if test="announcementTag.createTime != null">createTime=#{announcementTag.createTime},</if>
             <if test="announcementTag.updateUser != null">updateUser=#{announcementTag.updateUser},</if>
             <if test="announcementTag.updateTime != null">updateTime=#{announcementTag.updateTime},</if>
+            <if test="announcementTag.needStartTime != null">needStartTime=#{announcementTag.needStartTime},</if>
             <if test="announcementTag.isEffective != null">isEffective=#{announcementTag.isEffective},</if>
         </set>
         WHERE announcementTagId = #{announcementTag.announcementTagId};

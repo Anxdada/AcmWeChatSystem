@@ -5,6 +5,8 @@ import cookie from 'react-cookies';
 import { EventEmitter2 } from 'eventemitter2';
 import { AddPhoto, GetLoginUserName, DetailAnnouncementTag } from './../../config/dataAddress';
 import Fetch from './../../fetch';
+import UploadMy from './../upload';
+import { TestEditTable } from './../ui/editTable';
 
 
 
@@ -12,6 +14,7 @@ var emitter = new EventEmitter2();
 const { Dragger } = Upload;
 
 const props = {
+    accept: '.xlsx, .xls, .jpg, .png',
     name: 'file',
     multiple: true,
     action: '//jsonplaceholder.typicode.com/posts/',
@@ -135,13 +138,17 @@ class AboutView extends React.Component {
             <div>
                 <Card title={<span>CUIT-ACM实验室大事件</span>} className="timeLineFormat">
 
-                    <Button type="primary" onClick={this.handleLinkBtn} >点击</Button>
+                    <TestEditTable />
+
+                    {/* <Button type="primary" onClick={this.handleLinkBtn} >点击</Button> */}
 
                     <AddPhotoView />
                     <br ></br>
 
-                    {/* <img alt="example" style={{ width: '100%' }} src="http://localhost:9999/image/photo/6bd2149d-f860-4353-94a8-e020bd074fd9.jpg"/> */}
+                    <img alt="example" style={{ width: '100%' }} src="http://localhost:9999/avatar/dali.jpg"/>
         
+
+                    <UploadMy />
 
                     <Timeline pending="等你续写传奇..." reverse="true">
                             <Timeline.Item color="green">2013年 成都信息工程大学ACM校队创办 </Timeline.Item>

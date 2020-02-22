@@ -1,6 +1,7 @@
 package com.example.acm.service;
 
 import com.example.acm.entity.FriendUrl;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,12 @@ public interface FriendUrlService {
      * @param friendUrl 新的友链信息
      */
     public void updateFriendUrl(FriendUrl friendUrl);
+
+    /**
+     * 根据查询条件获取友链个数
+     *
+     */
+    public Integer countFriendUrlListByQuery(Map<String, Object> map);
 
     /**
      * 根据查询条件获取友链个数(Map)

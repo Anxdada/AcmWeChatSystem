@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.acm.mapper.NewsMapper">
+
+    <!-- 添加news -->
+    <insert id="addNews" useGeneratedKeys="true">
+        INSERT INTO news
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="news.newsId != null">newsId,</if>
+            <if test="news.newsTitle != null">newsTitle,</if>
+            <if test="news.newsBody != null">newsBody,</if>
+            <if test="news.newsTagId != null">newsTagId,</if>
+            <if test="news.createUser != null">createUser,</if>
+            <if test="news.createTime != null">createTime,</if>
+            <if test="news.updateUser != null">updateUser,</if>
+            <if test="news.updateTime != null">updateTime,</if>
+            <if test="news.isPublish != null">isPublish,</if>
+            <if test="news.isEffective != null">isEffective,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="news.newsId != null">#{news.newsId},</if>
+            <if test="news.newsTitle != null">#{news.newsTitle},</if>
+            <if test="news.newsBody != null">#{news.newsBody},</if>
+            <if test="news.newsTagId != null">#{news.newsTagId},</if>
+            <if test="news.createUser != null">#{news.createUser},</if>
+            <if test="news.createTime != null">#{news.createTime},</if>
+            <if test="news.updateUser != null">#{news.updateUser},</if>
+            <if test="news.updateTime != null">#{news.updateTime},</if>
+            <if test="news.isPublish != null">#{news.isPublish},</if>
+            <if test="news.isEffective != null">#{news.isEffective},</if>
+        </trim>
+    </insert>
+
+    <!-- 更新公告news -->
+    <update id="updateNews">
+        UPDATE news
+        <set>
+            <if test="news.newsId != null">newsId=#{news.newsId},</if>
+            <if test="news.newsTitle != null">newsTitle=#{news.newsTitle},</if>
+            <if test="news.newsBody != null">newsBody=#{news.newsBody},</if>
+            <if test="news.newsTagId != null">newsTagId=#{news.newsTagId},</if>
+            <if test="news.createUser != null">createUser=#{news.createUser},</if>
+            <if test="news.createTime != null">createTime=#{news.createTime},</if>
+            <if test="news.updateUser != null">updateUser=#{news.updateUser},</if>
+            <if test="news.updateTime != null">updateTime=#{news.updateTime},</if>
+            <if test="news.isPublish != null">isPublish=#{news.isPublish},</if>
+            <if test="news.isEffective != null">isEffective=#{news.isEffective},</if>
+        </set>
+        WHERE newsId = #{news.newsId};
+    </update>
+
+
+    <sql id="news_table">
+		tt.newsId,
+		tt.newsTitle,
+		tt.newsBody,
+		tt.newsTagId,
+		tt.createUser,
+        tt.createTime,
+		tt.updateUser,
+		tt.updateTime,
+		tt.isPublish,
+		tt.isEffective,
+	</sql>
+
+    <!-- 多了和类别的字段 -->
+    <sql id="news_join_tag_table">
+		tt.newsId,
+		tt.newsTitle,
+		tt.newsBody,
+		tt.newsTagId,
+		tt.createUser,
+        tt.createTime,
+		tt.updateUser,
+		tt.updateTime,
+		tt.isPublish,
+		tt.isEffective,
+		tb.newsTagName,
+		tb.newsTagColor
+	</sql>
+
+
+    <!-- 通过Id 返回 返回值不一样, 直接返回实体类 -->
+    <select id="findNewsListByNewsId" resultType="com.example.acm.entity.News">
+        SELECT
+        a.*
+        FROM
+        news a
+        <where>
+            <if test="newsId != null">
+                a.newsId = #{newsId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的OnDuty的总数 -->
+    <select id="countNewsMapListByQuery" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        news a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.newsTitle != null ">
+                AND a.newsTitle like CONCAT ('%', #{map.newsTitle}, '%')
+            </if>
+            <if test="map.searchTagId != null ">
+                AND a.newsTagId=#{map.searchTagId}
+            </if>
+            <if test="map.searchStartTime != null ">
+                AND a.createTime between #{map.searchStartTime} and #{map.searchEndTime}
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的news inner join 没有匹配的行不会列出 -->
+    <select id="findNewsMapListByQueryJoinTagTable" resultType="java.util.Map">
+        SELECT
+            a.*, b.newsTagName, b.newsTagColor
+        FROM
+            news a inner join newsTag b
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            AND a.newsTagId = b.newsTagId
+            <if test="map.newsId != null ">
+                AND a.newsId=#{map.newsId}
+            </if>
+            <if test="map.newsTitle != null ">
+                AND a.newsTitle like CONCAT ('%', #{map.newsTitle}, '%')
+            </if>
+            <if test="map.searchTagId != null ">
+                AND a.newsTagId=#{map.searchTagId}
+            </if>
+            <if test="map.searchStartTime != null ">
+                AND a.createTime between #{map.searchStartTime} and #{map.searchEndTime}
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+                AND b.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+                a.${map.order} ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start},#{map.limit}
+        </if>
+    </select>
+
+</mapper>

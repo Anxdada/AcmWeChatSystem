@@ -12,6 +12,10 @@ public interface SysConst {
     final String FILE_MAP="/image/photo/**";
     final String FILE_PATH="file:/Users/xierenyi/xiexie/private/AcmWeChatSystem/image/photo/";
 
+    final String LOCAL_STORE_AVATAR="/Users/xierenyi/xiexie/private/AcmWeChatSystem/image/avatar/";
+    final String LOCAL_STORE_ADDRESS="/Users/xierenyi/xiexie/private/AcmWeChatSystem/image/photo/";
+    final String LOCAL_STORE_POST="/Users/xierenyi/xiexie/private/AcmWeChatSystem/image/post/";
+
 
     int TOKEN_TIME = 24*60*60;
 

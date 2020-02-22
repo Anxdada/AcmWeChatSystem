@@ -9,7 +9,6 @@ import java.util.Date;
  */
 public class Feedback {
     private Long feedbackId;
-    private String feedbackAvatar;
     private Long feedbackUser;
     private Object feedbackBody;
     private Date feedbackTime;
@@ -23,13 +22,6 @@ public class Feedback {
         this.feedbackId = feedbackId;
     }
 
-    public String getFeedbackAvatar() {
-        return feedbackAvatar;
-    }
-
-    public void setFeedbackAvatar(String feedbackAvatar) {
-        this.feedbackAvatar = feedbackAvatar;
-    }
 
     public Long getFeedbackUser() {
         return feedbackUser;

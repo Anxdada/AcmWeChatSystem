@@ -3,7 +3,7 @@ import './index.less';
 import { Comment, Avatar, Form, Button, List, Input, Alert, Tooltip, Icon, message, notification, Skeleton, Empty, Spin, Modal, Popconfirm, Divider} from 'antd';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
-import { AddFeedback, DeleteFeedback, UpdateFeedback, SelectFeedback, AddFeedbackCount, DeleteFeedbackCount, UpdateFeedbackCount } from './../../config/dataAddress';
+import { GetLoginUser, AddFeedback, DeleteFeedback, UpdateFeedback, SelectFeedback, AddFeedbackCount, DeleteFeedbackCount, UpdateFeedbackCount } from './../../config/dataAddress';
 import cookie from 'react-cookies';
 import { EventEmitter2 } from 'eventemitter2';
 import Fetch from './../../fetch';
@@ -41,6 +41,7 @@ class FeedbackView extends React.Component {
             feedbackLoading: true,
             feedbackId: '',
             feedbackBody: '',
+            nowUser: [],
         };
 
         emitter.on("refresh", this.refresh.bind(this)); 
@@ -48,6 +49,7 @@ class FeedbackView extends React.Component {
 
     componentWillMount() {
         this.getFeedbackData();
+        this.getNowUserData();
     }
 
     refresh(msg) {
@@ -55,11 +57,43 @@ class FeedbackView extends React.Component {
         this.getFeedbackData();
     }
 
+    getNowUserData() {
+        Fetch.requestGet({
+            url: GetLoginUser,
+            timeOut: 3000,
+        }).then (
+            data => {
+                // console.log(data);
+                if (data.status == 0) {
+                    this.setState({
+                        nowUser: data.resultBean,
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
     getFeedbackData() {
+
+        this.setState({
+            feedbackLoading: true,
+        });
 
         Fetch.requestGet({
             url: SelectFeedback,
-            timeOut: 3000,
+            timeOut: 4000,
         }).then ( 
             data => {
                 if (data.status == 0) {
@@ -174,7 +208,7 @@ class FeedbackView extends React.Component {
     }
     
     render() {
-        const { comments, submitting, feedbackLoading, feedbackBody } = this.state;
+        const { nowUser, comments, submitting, feedbackLoading, feedbackBody } = this.state;
         return (
             <div>
             <div>
@@ -189,7 +223,7 @@ class FeedbackView extends React.Component {
                 <Comment
                     avatar={
                         <Avatar
-                            src="/images/acm.jpg"
+                            src={this.state.nowUser.avatar}
                             alt="Han Solo"
                         />
                     }
@@ -204,7 +238,7 @@ class FeedbackView extends React.Component {
                 />
                 {   
                     comments.length > 0 ? 
-                    <CommentList comments={comments} feedbackLoading={feedbackLoading} handleDeleteFeedback={this.handleDeleteFeedback}/> 
+                    <CommentList nowUser={nowUser} comments={comments} feedbackLoading={feedbackLoading} handleDeleteFeedback={this.handleDeleteFeedback}/> 
                     : <Empty /> 
                 }
                 </div>
@@ -217,7 +251,7 @@ class FeedbackView extends React.Component {
 const Editor = ({ onChange, onSubmit, submitting, value }) => (
     <div>
         <Form.Item>
-            <TextArea rows={4} onChange={onChange} value={value} />
+            <TextArea rows={4} onChange={onChange} value={value} allowClear />
         </Form.Item>
         <Form.Item>
             <Button htmlType="submit" loading={submitting} onClick={onSubmit} type="primary">
@@ -338,7 +372,7 @@ class CommentList extends React.Component {
     }
 
     handleClickDislike = (item) => {
-        console.log(item.type);
+        // console.log(item.type);
         if (item.type == -1) {
             this.setState({
                 feedbackId: item.feedbackId,
@@ -401,12 +435,12 @@ class CommentList extends React.Component {
                                         </span>,
                                         <span>
                                             {
-                                                item.nowUser == item.feedbackUser ? <FeedbackModify item={item}/> : null
+                                                this.props.nowUser.userId == item.feedbackUser ? <FeedbackModify item={item}/> : null
                                             } 
                                         </span>,
                                         <span>
                                             {
-                                                (item.nowUserAuth & 1) || (item.nowUser == item.feedbackUser) ? 
+                                                (this.props.nowUser.auth & 1) || (this.props.nowUser.userId == item.feedbackUser) ? 
                                                 <Popconfirm title="确定删除?" onConfirm={() => this.props.handleDeleteFeedback(item.feedbackId)} okText="确定" cancelText="取消">
                                                     <a className="deleteHerf">删除</a>
                                                 </Popconfirm> : null
@@ -445,7 +479,7 @@ class FeedbackModify extends React.Component {
     constructor(props) {
         super(props);
 
-        console.log(this.props.item.feedbackBody);
+        // console.log(this.props.item.feedbackBody);
         this.state = {
             feedbackId: this.props.item.feedbackId,
             feedbackBody: this.props.item.feedbackBody,

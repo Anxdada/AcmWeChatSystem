@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "hap://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace用于绑定Dao接口 -->
+<mapper namespace="com.example.acm.mapper.RegisterMapper">
+
+    <sql id="register_table">
+        a.registerId,
+        a.announcementId,
+        a.registerTime,
+        a.studentId,
+        a.realName,
+        a.updateUser,
+        a.updateTime,
+        a.isEffective
+    </sql>
+
+    <!-- 添加反馈 -->
+    <insert id="addRegister" useGeneratedKeys="true">
+        INSERT INTO register
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="register.registerId != null">registerId,</if>
+            <if test="register.announcementId != null">announcementId,</if>
+            <if test="register.studentId != null">studentId,</if>
+            <if test="register.realName != null">realName,</if>
+            <if test="register.updateUser != null">updateUser,</if>
+            <if test="register.updateTime != null">updateTime,</if>
+            <if test="register.isEffective != null">isEffective,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="register.registerId != null">#{register.registerId},</if>
+            <if test="register.announcementId != null">#{register.announcementId},</if>
+            <if test="register.studentId != null">#{register.studentId},</if>
+            <if test="register.realName != null">#{register.realName},</if>
+            <if test="register.updateUser != null">#{register.updateUser},</if>
+            <if test="register.updateTime != null">#{register.updateTime},</if>
+            <if test="register.isEffective != null">#{register.isEffective},</if>
+        </trim>
+    </insert>
+
+    <!-- 更新反馈 -->
+    <update id="updateRegister" >
+        UPDATE register
+        <set>
+            <if test="register.registerId != null">registerId=#{register.registerId},</if>
+            <if test="register.announcementId != null">announcementId=#{register.announcementId},</if>
+            <if test="register.studentId != null">studentId=#{register.studentId},</if>
+            <if test="register.realName != null">realName=#{register.realName},</if>
+            <if test="register.updateUser != null">updateUser=#{register.updateUser},</if>
+            <if test="register.updateTime != null">updateTime=#{register.updateTime},</if>
+            <if test="register.isEffective != null">isEffective=#{register.isEffective},</if>
+        </set>
+        WHERE registerId = #{register.registerId};
+    </update>
+
+    <!-- 通过很多限制条件查询满足的Register的总数 -->
+    <select id="countRegisterMapListByQuery" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            register a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.studentId != null ">
+                AND a.studentId like CONCAT ('%', #{map.studentId}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 查找相同的比赛报名中是否有Register的学号相同的! -->
+    <select id="findRegisterByStudentId" resultType="com.example.acm.entity.Register">
+        SELECT
+            a.*
+        FROM
+            register a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="studentId != null ">
+                AND a.studentId=#{studentId}
+            </if>
+            AND a.isEffective=1
+        </trim>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的Register -->
+    <select id="findRegisterListByQueryMap" resultType="com.example.acm.entity.Register">
+        SELECT
+            a.*
+        FROM
+            register a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.registerId != null ">
+                AND a.registerId=#{map.registerId}
+            </if>
+            <if test="map.announcementId != null ">
+                AND a.announcementId=#{map.announcementId}
+            </if>
+            <if test="map.studentId != null ">
+                AND a.studentId like CONCAT ('%', #{map.studentId}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            a.${map.order} ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start}, #{map.limit}
+        </if>
+    </select>
+
+
+    <!-- 通过很多限制条件查询满足的Register(和上面那个唯一的不一样就是返回结果的形式) -->
+    <select id="findRegisterListMapByQueryMap" resultType="java.util.Map">
+        SELECT
+            a.*
+        FROM
+            register a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.registerId != null ">
+                AND a.registerId=#{map.registerId}
+            </if>
+            <if test="map.announcementId != null ">
+                AND a.announcementId=#{map.announcementId}
+            </if>
+            <if test="map.studentId != null ">
+                AND a.studentId like CONCAT ('%', #{map.studentId}, '%')
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            a.${map.order} ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start}, #{map.limit}
+        </if>
+    </select>
+</mapper>

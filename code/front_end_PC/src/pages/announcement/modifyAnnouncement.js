@@ -1,11 +1,14 @@
 import React from 'react';
 import E from 'wangeditor';
-import { DatePicker, Input, Button, Card, Select, Tag, Modal, Row, Col, message } from 'antd';
+import { DatePicker, Input, Button, Card, Select, Tag, Modal, Row, Col, message, Tooltip, notification } from 'antd';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import './index.less';
 import { connect } from 'react-redux';
 import { switchMenu, addMenu } from './../../redux/actions';
+import { DetailAnnouncementUrl, SelectAnnouncementTag, UploadImg, UpdateAnnouncement } from './../../config/dataAddress';
+import cookie from 'react-cookies';
+import Fetch from './../../fetch';
 
 
 moment.locale('zh-cn');
@@ -31,75 +34,213 @@ const tags = [
     }
 ]
 
+function getString(s) {
+    s=s.replace(/\+/g, "%2B");
+    s=s.replace(/&/g, "%26");
+
+    return s;
+}
+
 class ModifyAnnouncementPublishView extends React.Component {
 
+    state = { 
+        visible: false,
+        submitLoading: false,
+        submitDisable: false,
+    }
 
     constructor(props) {
         super(props);
         this.state = {
-            publishTag: '',
-            isRegister: false,
-            registerStartTime: '',
-            registerEndTime: '',
-            startTime: '',
+            announcementId: '',
+            announcementTagId: '',
+            announcementTagName: '',
+            createUser: '',
+            createTime: '',
+            isRegister: 0,
+            registerStartTime: null,
+            registerEndTime: null,
+            startTime: null,
             lastTime: '',
+            isPublish: '',
+            needStartTime: '',
+            allTag: [],
         }
     }
 
     componentWillMount() {
-        this.updateData();
+        this.getTagData();
+        this.getSingleAnnouncementData();
     }
 
-    updateData() {
+    getTagData() {
+        Fetch.requestPost({
+            url: SelectAnnouncementTag,
+            info: 'pageSize=100',
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                // console.log(data);
+                if (data.status == 0) {
+                    this.setState({
+                        allTag: data.resultBean.items
+                    })
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
 
-        console.log(this.state.friendUrlCreateTime);
+    getSingleAnnouncementData() {
+
+        Fetch.requestPost({
+            url: DetailAnnouncementUrl,
+            info: 'announcementId='+this.props.id,
+            timeOut: 3000,
+        }).then(
+            data => {
+                // console.log(data);
+                if (data.status == 0) {
+                    this.setState({
+                        announcementId: data.resultBean.announcementId,
+                        announcementTagId: data.resultBean.announcementTagId,
+                        announcementTagName: data.resultBean.announcementTagName,
+                        createUser: data.resultBean.createUser,
+                        createTime: data.resultBean.createTime,
+                        isRegister: data.resultBean.isRegister,
+                        registerStartTime: data.resultBean.registerStartTime,
+                        registerEndTime: data.resultBean.registerEndTime,
+                        startTime: data.resultBean.startTime,
+                        lastTime: data.resultBean.lastTime,
+                        isPublish: data.resultBean.isPublish,
+                        needStartTime: data.resultBean.needStartTime,
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
+    updateSingleAnnouncementData() {
+
+        if (this.props.announcementTitle.length == 0) {
+            message.error('公告标题不能为空!');
+            return ;
+        }
+        if (this.props.announcementTitle.length > 20) {
+            message.error('公告标题过长!');
+            return ;
+        }
+        // wangediter 有个bug就是必须聚焦到内容框才能检测出由内容, 不然里面的内容就是无
+        // 所以这个判断暂时不要, 后面再看有无解决方法.
+        // if (this.props.editorContentText.length == 0) {
+        //     message.error('公告内容不能为空!');
+        //     return ;
+        // }
+
+        let startTime = '';
+        if (this.state.needStartTime == 1) {
+            if (this.state.startTime == null) {
+                message.error(`${this.state.announcementTagName}开始时间不能为空!`);
+                return ;
+            }
+            startTime = moment(this.state.startTime).format('YYYY-MM-DD HH:mm:ss');
+            if (this.state.lastTime == null) {
+                message.error(`${this.state.announcementTagName}持续时间不能为空!`);
+                return ;
+            }
+        }
+
+        let registerStartTime = '', registerEndTime = '';
+        if (this.state.isRegister == 1) {
+            if (this.state.registerStartTime == null) {
+                message.error(`${this.state.announcementTagName}报名注册周期不能为空!`);
+                return ;
+            }
+            registerStartTime = moment(this.state.registerStartTime).format('YYYY-MM-DD HH:mm:ss');
+            registerEndTime = moment(this.state.registerEndTime).format('YYYY-MM-DD HH:mm:ss');
+        }
+
         this.setState({
-            publishTag: '讲座',
-            startTime: moment(),
-            lastTime: '两小时',
-            isRegister: true,
-            registerStartTime:  moment(),
-            registerEndTime:  moment(),
-        })
-        // if (this.state.title.length==0) {
-        //     message.error('帖子标题不为空');
-        //     return;
-        // }
-        // if (this.state.editorContentText.length==0) {
-        //     message.error('帖子内容不为空');
-        //     return;
-        // }
-        // fetch(UpdateInvitation,{   //Fetch方法
-        //     method: 'POST',
-        //     headers: {
-        //         'Authorization': cookie.load('token'),
-        //         'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-        //     },
-        //     body: 'invitationId='+this.state.id+'&invitationTitle='+this.state.title+'&invitationBody='+encodeURI(getString(this.state.editorContent))
-        // }).then(res => res.json()).then(
-        //     data => {
-        //         if(data.code==0) {
-        //             message.success('修改成功');
-        //         }
-        //         else if(data.code==13) {
-        //             message.error(data.msg);
-        //             this.props.history.push('/login');
-        //         }
-        //         else {
-        //             message.error(data.msg);
-        //         }
-            // }
-        // )
+            submitLoading: true,
+            submitDisable: true,
+        });
+
+        Fetch.requestPost({
+            url: UpdateAnnouncement,
+            info: 'announcementId='+this.state.announcementId+'&announcementTitle='+this.props.announcementTitle
+                    +'&announcementBody='+encodeURI(getString(this.props.editorContent))
+                    +'&announcementTagId='+this.state.announcementTagId+'&isRegister='+this.state.isRegister
+                    +'&registerStartTime='+registerStartTime+'&registerEndTime='+registerEndTime
+                    +'&startTime='+startTime+'&lastTime='+this.state.lastTime
+                    +'&isPublish='+this.state.isPublish,
+            timeOut: 3000,
+        }).then(
+            data => {
+                if (data.status == 0) {
+                    message.success('修改成功');
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+
+        this.setState({
+            submitLoading: false,
+            submitDisable: false,
+        });
     }
+    
 
     handlePublishTag = (value) => {
         console.log(value);
-        this.setState({
-            publishTag: value,
-        })
+        const tags = this.state.allTag;
+        for (let i in tags) {
+            if (tags[i].announcementTagName == value) {
+                this.setState({
+                    announcementTagId: tags[i].announcementTagId,
+                    announcementTagName: value,
+                    needStartTime: tags[i].needStartTime,
+                })
+                break;
+            }
+        }
     }
 
     handleStartTime = (value) => {
+        console.log(value);
         this.setState({
             startTime: value,
         })
@@ -122,10 +263,21 @@ class ModifyAnnouncementPublishView extends React.Component {
     handleRegisterRangeTime = (dates) => {
         console.log(dates[0]);
         console.log(dates[1]);
+        if (dates.length < 0) {
+            this.setState({
+                registerStartTime: null,
+                registerEndTime: null,
+            })
+            return ;
+        }
+        this.setState({
+            registerStartTime: dates[0],
+            registerEndTime: dates[1],
+        })
     }
 
     handlePublish = () => {
-        this.updateData();
+        this.updateSingleAnnouncementData();
     }
 
     disabledDate = (current) => {
@@ -134,58 +286,74 @@ class ModifyAnnouncementPublishView extends React.Component {
     }
 
     render() {
-        const registerRangeTime = [this.state.registerStartTime, this.state.registerStartTime];
+
+        let rangeTime;
+        if (this.state.registerStartTime != null)
+            rangeTime = [moment(this.state.registerStartTime), moment(this.state.registerEndTime)];
+        else rangeTime = [null, null];
+
         return (
             <div className="publishViewAnnoun">
                 <Card title="参数配置">
                 <div>
                     &nbsp;&nbsp;&nbsp;类别: &nbsp;&nbsp;
-                    <Select defaultValue={ this.state.publishTag } style={{ width: 150 }} 
+                    <Select value={ this.state.announcementTagName } style={{ width: 150 }} 
                         onChange={this.handlePublishTag} >
                         {
-                            tags.map((item) =>
-                                <Option value={item.tagName}><Tag color={item.tagColor} key={item.tagName} > {item.tagName} </Tag></Option>
+                            this.state.allTag.map((item) =>
+                                <Option value={item.announcementTagName} key={item.announcementTagId}>
+                                    <Tag color={item.announcementTagColor} key={item.announcementTagName} > {item.announcementTagName} </Tag>
+                                </Option>
                             )
                         }
                     </Select>
                     {
-                        this.state.publishTag == "通知" ||  this.state.publishTag == "" ? null : <span>
-                            &nbsp;&nbsp;{this.state.publishTag}开始时间:&nbsp;&nbsp;
+                        this.state.needStartTime == 0 ? null : 
+                        <span>
+                            &nbsp;&nbsp;{this.state.announcementTagName}开始时间:&nbsp;&nbsp;
                             <DatePicker
                                 disabledDate={this.disabledDate}
                                 showTime
-                                defaultValue={this.state.startTime}
                                 format="YYYY-MM-DD HH:mm:ss"
-                                value={this.state.startTime}
+                                value={this.state.startTime == null ? null : moment(this.state.startTime)}
                                 placeholder="Start"
                                 onChange={this.handleStartTime}
                             />
-                            &nbsp;&nbsp;{this.state.publishTag}持续时间:&nbsp;&nbsp;
-                            <Input defaultValue={this.state.lastTime} placeholder="以半小时为最小单位" 
+                            &nbsp;&nbsp;{this.state.announcementTagName}持续时间:&nbsp;&nbsp;
+                            <Input value={this.state.lastTime} placeholder="以半小时为最小单位" 
                                 onChange={this.handleLastTime} style={{ height: 30, width: 200 }} />
                         </span>
                     }
                 </div>
                 <div>
-                    &nbsp;&nbsp;&nbsp;是否报名: &nbsp;&nbsp;
-                    <Select defaultValue={this.state.isRegister} style={{ width: 150 }} onChange={this.handleIsRegister} className="modalInput">
-                        <Option value={true}>是</Option>
-                        <Option value={false}>否</Option>
+                    &nbsp;&nbsp;&nbsp;是否需要报名: &nbsp;&nbsp;
+                    <Select value={this.state.isRegister} style={{ width: 150 }} 
+                        onChange={this.handleIsRegister} className="modalInput">
+                        <Option value={1}>是</Option>
+                        <Option value={0}>否</Option>
                     </Select>
                     {
-                        this.state.isRegister == false ? null :
-                            <span>&nbsp;&nbsp;报名起止时间: 
+                        this.state.isRegister == 0 ? null :
+                            <span>&nbsp;&nbsp;报名起止时间: &nbsp;&nbsp;
                                 <RangePicker 
                                     showTime
                                     format="YYYY-MM-DD HH:mm:ss"
-                                    defaultValue={registerRangeTime}
+                                    value={rangeTime}
                                     onChange={this.handleRegisterRangeTime} 
                                     disabledDate={this.disabledDate} 
                                     style={{ width: 400 }} />
                             </span>
                     }
                 </div>
-                <Button type="primary" onClick={this.handlePublish}>发布</Button>
+                {
+                    this.state.isPublish == 1 ? null : 
+                    <Button type="dashed" onClick={this.handlePublish} loading={this.state.submitLoading}> 存为草稿 </Button>
+                }
+                <Button type="primary" onClick={this.handlePublish} loading={this.state.submitLoading}>
+                {
+                    this.state.isPublish == 1 ? <span>修改提交</span> : <span>修改并发布</span>
+                }
+                </Button>
                 </Card>
             </div>
         );
@@ -195,16 +363,13 @@ class ModifyAnnouncementPublishView extends React.Component {
 
 class ModifyAnnouncementEditView extends React.Component {
 
-    state = {
-        visible: false,
-    }
-
     constructor(props) {
         super(props);
         this.state = {
+            announcementTitle: '',
+            editor: '',
             editorContent: '',
-            editorContentText: '放大镜可根据大快乐十分',
-            publishNewsTitle: '',
+            editorContentText: '',
         }
     }
 
@@ -213,54 +378,88 @@ class ModifyAnnouncementEditView extends React.Component {
     }
 
     getData() {
-        this.setState({
-            editorContent: '111',
-            editorContentText: '放大镜可根据大快乐十分',
-            publishNewsTitle: 'DFS第一次讲座',
-        })
-        
+        Fetch.requestPost({
+            url: DetailAnnouncementUrl,
+            info: 'announcementId='+this.props.id,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                // console.log(data);
+                if (data.status == 0) {
+                    this.setState({
+                        announcementTitle: data.resultBean.announcementTitle,
+                        editorContent: this.state.editor.txt.html(data.resultBean.announcementBody),
+                    });
+                }
+                else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
+    updataData() {
+
     }
 
     handleModifyAnnouncementTitle = (e) => {
         console.log(e);
         this.setState({
-            publishNewsTitle: e.target.value,
+            announcementTitle: e.target.value,
         })
     }
 
     render() {
+
+        // console.log(this.state.resultBean);
+
         return (
-          <div style={{ flex: 1, padding: "10px" }}>
-            <Card title="修改公告" >
-                <div>
-                <Input defaultValue={this.state.publishNewsTitle} size="small" placeholder="公告标题" 
-                    style={{ height:30, width: 400 }} onChange={this.handleModifyAnnouncementTitle } />
-                </div>
-                <br />
-                <div ref="editorElem" className="toolbar" />
-            </Card>
-          </div>
+            <div style={{ flex: 1, padding: "10px" }}>
+                <Card title="修改公告" >
+                    <div>
+                    <Input value={this.state.announcementTitle} size="small" placeholder="公告标题" allowClear
+                        style={{ height:30, width: 400 }} onChange={this.handleModifyAnnouncementTitle } />
+                    </div>
+                    <br />
+                    <div ref="editorElem" className="toolbar" />
+                </Card>
+
+                <ModifyAnnouncementPublishView id={this.props.id} editorContent={this.state.editorContent} 
+                    editorContentText={this.state.editorContentText} announcementTitle={this.state.announcementTitle}
+                />
+            </div>
         );
-      }
-      componentDidMount() {
+    }
+
+    componentDidMount() {
         const elem = this.refs.editorElem
         const editor = new E(elem)
         this.setState({editor:editor})
         editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
         editor.customConfig.uploadFileName = 'myFileName';
-        // editor.customConfig.uploadImgServer = UploadImg;
+        editor.customConfig.uploadImgServer = UploadImg;
         editor.customConfig.uploadImgHooks = { 
             customInsert: function (insertImg, result, editor) { 
                 var url =result.data; insertImg(url); 
             } 
         };
-    
+
         // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
         editor.customConfig.onchange = html => {
             this.setState({
-                editorContent: html
+                editorContent: html,
+                editorContentText: editor.txt.text(),
             })
-            this.setState({editorContentText: editor.txt.text()})
         }
         editor.create()
     }
@@ -268,6 +467,13 @@ class ModifyAnnouncementEditView extends React.Component {
 
 
 class ModifyAnnouncement extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            resultBean: [],
+        }
+    }
 
     componentDidMount() {
         const { dispatch } = this.props;
@@ -288,11 +494,11 @@ class ModifyAnnouncement extends React.Component {
         dispatch(switchMenu(titleArray));
     }
 
+    
     render() {
         return (
             <div>
-                <ModifyAnnouncementEditView />
-                <ModifyAnnouncementPublishView />
+                <ModifyAnnouncementEditView id={this.props.match.params.id} />
             </div>
         );
     }

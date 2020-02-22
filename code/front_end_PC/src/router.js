@@ -47,6 +47,7 @@ import Feedback from './pages/feedback';
 export default class IRouter extends React.Component {
     render() {
         return (
+            <div>
             <HashRouter>
                 <App>
                 <Switch>
@@ -96,6 +97,7 @@ export default class IRouter extends React.Component {
                     {/* <Route path='/order/detail' component={Login} /> */}
                 </App>
             </HashRouter>
+            </div>
         );
     }
 }

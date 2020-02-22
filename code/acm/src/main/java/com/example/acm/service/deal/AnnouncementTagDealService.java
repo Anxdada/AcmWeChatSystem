@@ -16,9 +16,10 @@ public interface AnnouncementTagDealService {
      * @param user 添加的人
      * @param announcementTagName 公告类别名称
      * @param announcementTagColor 公告类别颜色
+     * @param needStartTime 是否需要设置开始时间(因为公告的多样化关系, 还是需要加一个字段)
      * @return 结果
      */
-    public ResultBean addAnnouncementTag(User user, String announcementTagName, String announcementTagColor);
+    public ResultBean addAnnouncementTag(User user, String announcementTagName, String announcementTagColor, int needStartTime);
 
     /**
      *
@@ -34,10 +35,11 @@ public interface AnnouncementTagDealService {
      * @param announcementTagId id
      * @param announcementTagName 公告类别名称
      * @param announcementTagColor 公告类别颜色
+     * @param needStartTime 是否需要设置开始时间
      * @return
      */
     public ResultBean updateAnnouncementTag(User user, long announcementTagId, String announcementTagName,
-                                            String announcementTagColor);
+                                            String announcementTagColor, int needStartTime);
 
 
     /**

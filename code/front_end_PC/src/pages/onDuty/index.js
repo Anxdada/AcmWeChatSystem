@@ -239,7 +239,7 @@ class Modify extends React.Component {
                     <div className="modalInput">
                         值&nbsp;&nbsp;班&nbsp;&nbsp;&nbsp;&nbsp;周&nbsp;&nbsp;期：
                         <RangePicker value={rangeTime} 
-                            onChange={this.handleModalRangeTime} placeholder={["开始时间", "结束时间"]} />
+                            onChange={this.handleModalRangeTime} placeholder={["开始时间", "结束时间"]} allowClear={false} />
                     </div>
                 </Modal>
             </span>
@@ -661,7 +661,7 @@ class OnDutyView extends React.Component {
             <div style={{ flex: 1, padding: "10px" }}>
                 <Card title="值班管理" >
                     <Input placeholder="值班人姓名" value={this.state.searchUserName} onChange={this.handleSearchUserNameText} 
-                        style={{ height: 30, width: 150}} className="searchF" />
+                        style={{ height: 30, width: 150}} className="searchF" allowClear />
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <RangePicker value={rangeTime} onChange={this.handleSearchRangeTime} placeholder={["开始时间", "结束时间"]} />
                     <Button type="primary" shape="circle" icon="search" onClick={this.handleSearchRangeTimeBtn}/>

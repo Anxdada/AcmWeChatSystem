@@ -58,7 +58,7 @@ public class FeedbackCountDealServiceImpl implements FeedbackCountDealService {
 
         List<FeedbackCount> list = feedbackCountService.findFeedbackCountListByQueryMap(map);
 
-        if (list.size() <= 0) return new ResultBean(ResultCode.FEEDBACK_COUNT_NULL_RECODE);
+        if (list.isEmpty()) return new ResultBean(ResultCode.SQL_NULL_RECODE);
 
         list.get(0).setIsEffective(SysConst.NOT_LIVE);
         feedbackCountService.updateFeedbackCount(list.get(0));
@@ -83,7 +83,7 @@ public class FeedbackCountDealServiceImpl implements FeedbackCountDealService {
 
 //        System.out.println(list.size());
 
-        if (list.size() <= 0) return new ResultBean(ResultCode.FEEDBACK_COUNT_NULL_RECODE);
+        if (list.isEmpty()) return new ResultBean(ResultCode.SQL_NULL_RECODE);
 
         list.get(0).setType(type);
 //        System.out.println(list.get(0).getFeedbackCountId());

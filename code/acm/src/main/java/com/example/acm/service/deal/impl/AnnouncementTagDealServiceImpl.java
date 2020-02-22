@@ -5,6 +5,7 @@ import com.example.acm.common.ResultCode;
 import com.example.acm.common.SysConst;
 import com.example.acm.entity.AnnouncementTag;
 import com.example.acm.entity.User;
+import com.example.acm.service.AnnouncementService;
 import com.example.acm.service.AnnouncementTagService;
 import com.example.acm.service.UserService;
 import com.example.acm.service.deal.AnnouncementTagDealService;
@@ -31,6 +32,9 @@ public class AnnouncementTagDealServiceImpl implements AnnouncementTagDealServic
     private AnnouncementTagService announcementTagService;
 
     @Autowired
+    private AnnouncementService announcementService;
+
+    @Autowired
     private UserService userService;
 
     /**
@@ -38,9 +42,10 @@ public class AnnouncementTagDealServiceImpl implements AnnouncementTagDealServic
      * @param user 添加的人
      * @param announcementTagName 公告类别名称
      * @param announcementTagColor 公告类别颜色
+     * @param needStartTime 是否需要设置开始时间
      * @return 结果
      */
-    public ResultBean addAnnouncementTag(User user, String announcementTagName, String announcementTagColor) {
+    public ResultBean addAnnouncementTag(User user, String announcementTagName, String announcementTagColor, int needStartTime) {
         try {
 
             AnnouncementTag announcementTag = new AnnouncementTag();
@@ -50,6 +55,7 @@ public class AnnouncementTagDealServiceImpl implements AnnouncementTagDealServic
             announcementTag.setCreateTime(new Date());
             announcementTag.setUpdateUser(user.getUserId());
             announcementTag.setUpdateTime(new Date());
+            announcementTag.setNeedStartTime(needStartTime);
             announcementTag.setIsEffective(SysConst.LIVE);
 
             announcementTagService.addAnnouncementTag(announcementTag);
@@ -73,9 +79,20 @@ public class AnnouncementTagDealServiceImpl implements AnnouncementTagDealServic
         try {
 
             List<AnnouncementTag> list = announcementTagService.findAnnouncementTagListByAnnouncementTagId(announcementTagId);
-            if (list.size() < 0) {
+            if (list.isEmpty()) {
                 return new ResultBean(ResultCode.SYSTEM_FAILED, "无该条记录, 请检查你的代码!");
             }
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("searchTagId", announcementTagId);
+            map.put("isEffective", SysConst.LIVE);
+
+            List<Map<String, Object>> listMap = announcementService.findAnnouncementMapListByQueryJoinTagTable(map);
+
+            if (!listMap.isEmpty()) {
+                return new ResultBean(ResultCode.SYSTEM_FAILED, "还有该类别的公告存在, 无法删除该类别!");
+            }
+
 
             AnnouncementTag announcementTag = list.get(0);
             announcementTag.setUpdateUser(user.getUserId());
@@ -99,10 +116,11 @@ public class AnnouncementTagDealServiceImpl implements AnnouncementTagDealServic
      * @param announcementTagId id
      * @param announcementTagName 公告类别名称
      * @param announcementTagColor 公告类别颜色
+     * @param needStartTime 是否需要设置开始时间
      * @return
      */
     public ResultBean updateAnnouncementTag(User user, long announcementTagId, String announcementTagName,
-                                            String announcementTagColor) {
+                                            String announcementTagColor, int needStartTime) {
         try {
 
             List<AnnouncementTag> list = announcementTagService.findAnnouncementTagListByAnnouncementTagId(announcementTagId);
@@ -115,6 +133,7 @@ public class AnnouncementTagDealServiceImpl implements AnnouncementTagDealServic
             announcementTag.setAnnouncementTagColor(announcementTagColor);
             announcementTag.setUpdateUser(user.getUserId());
             announcementTag.setUpdateTime(new Date());
+            announcementTag.setNeedStartTime(needStartTime);
 
             announcementTagService.updateAnnouncementTag(announcementTag);
 

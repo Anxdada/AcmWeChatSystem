@@ -1,9 +1,12 @@
 import React from 'react';
-import { Card, DatePicker } from 'antd';
+import { Card, DatePicker, Tag, message, notification } from 'antd';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import { connect } from 'react-redux';
 import { switchMenu, addMenu } from './../../redux/actions'; 
+import { DetailNewsUrl } from './../../config/dataAddress';
+import cookie from 'react-cookies';
+import Fetch from './../../fetch';
 
 moment.locale('zh-cn');
 
@@ -12,10 +15,15 @@ class DetailNews extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            createName: '',
-            createTime: '',
             newsTitle: '',
             newsBody: '',
+            newsTagName: '',
+            newsTagColor: '',
+            createUser: '',
+            createTime:'',
+            updateUser: '',
+            updateTime: '',
+            isPublish: '',
         }
     }
 
@@ -39,50 +47,78 @@ class DetailNews extends React.Component {
     }
 
     componentWillMount() {
-        this.getData();
+        this.getSingleNewsData();
     }
 
-    getData() {
-        this.setState({
-            createName: '超级管理员',
-            createTime: moment(),
-            newsTitle: '我校首获ICPC金牌',
-            newsBody: '未了控股空间的巴萨咖啡酒吧开始的减肥包括节哀顺变就开始打',
-        })
-        // fetch(LectureDetailUrl, {
-        //     method: 'POST',
-        //     headers: {
-        //         'Authorization': cookie.load('token'),
-        //         'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-        //     },
-        //     body: 'lectureId='+this.props.match.params.id
-        // }).then( res => res.json()).then(
-        //     data => {
-        //     //console.log('token'+cookie.load('token'));
-        //    // window.alert(data);
-        //    // window.alert(data.code);
-        //     if (data.code==0) {
-        //         this.setState({title: data.resultBean.lectureTitle});
-        //         this.setState({editorContent: this.state.editor.txt.html(data.resultBean.lectureBody)});
-        //         this.setState({createDate: data.resultBean.createDate});
-        //     } else {
-        //         message.error(data.msg)
-        //     }
-        //   }
-      
-        // )
-      }
+    getSingleNewsData() {
+        // console.log(this.props.match.params.id);
+        Fetch.requestPost({
+            url: DetailNewsUrl,
+            info: 'newsId='+this.props.match.params.id,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                // console.log(data);
+                if (data.status == 0) {
+                    this.setState({
+                        newsId: data.resultBean.newsId,
+                        newsTitle: data.resultBean.newsTitle,
+                        newsBody: data.resultBean.newsBody,
+                        newsTagName: data.resultBean.newsTagName,
+                        newsTagColor: data.resultBean.newsTagColor,
+                        createUser: data.resultBean.createUser,
+                        createTime:data.resultBean.createTime,
+                        updateUser: data.resultBean.updateUser,
+                        updateTime: data.resultBean.updateTime,
+                        isPublish: data.resultBean.isPublish,
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
 
     render() {
+        let rangeTime;
+        if (this.state.registerStartTime != null)
+            rangeTime = [moment(this.state.registerStartTime), moment(this.state.registerEndTime)];
+        else rangeTime = [null, null];
+
         return (
             <Card title={this.state.newsTitle}>
-                <strong>创建人:&nbsp;&nbsp;{this.state.createName}</strong>
+                <strong>创建人:&nbsp;&nbsp;{this.state.createUser}</strong>
                 <br />
                 <strong>创建时间:</strong>&nbsp;&nbsp;
-                <DatePicker format="YYYY-MM-DD" defaultValue={this.state.createTime} disabled />
+                <DatePicker format="YYYY-MM-DD" value={moment(this.state.createTime)} disabled />
                 <br /><br />
-                <strong>内容:</strong>
-                <p> {this.state.newsBody } </p>
+                <strong>更新人:&nbsp;&nbsp;{this.state.updateUser}</strong>
+                <br />
+                <strong>更新时间:</strong>&nbsp;&nbsp;
+                <DatePicker style={{ width: 200 }} format="YYYY-MM-DD HH:mm:ss" value={moment(this.state.updateTime)} disabled />
+                <br /><br />
+                <strong>类别:</strong>&nbsp;&nbsp;
+                <Tag color={this.state.newsTagColor} key={this.state.newsTagName}>{this.state.newsTagName}</Tag>
+                <strong>是否发布:&nbsp;&nbsp;</strong>
+                {
+                    this.state.isPublish == 0 ?
+                        <Tag color="gray">未发布[草稿]</Tag> 
+                        : <Tag color="blue">已发布</Tag>
+                }
+                <br />
+                <br />
+                <strong>内容:</strong>&nbsp;&nbsp;
+                <div dangerouslySetInnerHTML={{__html: this.state.newsBody}} />
             </Card>
         );
     }

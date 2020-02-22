@@ -1,79 +1,197 @@
 import React from 'react';
 import E from 'wangeditor';
 import './index.less';
-import { DatePicker, Row, Col, Input, Button, Card, Select, Tag } from 'antd';
+import { DatePicker, Row, Col, Input, Button, Card, Select, Tag, message, notification, } from 'antd';
 import { connect } from 'react-redux';
 import { switchMenu, addMenu } from './../../redux/actions'; 
+import { DetailNewsUrl, SelectNewsTag, UploadImg, UpdateNews } from './../../config/dataAddress';
+import cookie from 'react-cookies';
+import Fetch from './../../fetch';
+
 
 const { Option } = Select;
 
-const tags = [
-    {
-        tagName: '情感',
-        tagColor: '#3ce016',
-    },
-    {
-        tagName: '时事新闻',
-        tagColor: '#e01639',
-    },
-    {
-        tagName: '获奖',
-        tagColor: '#16e0c4',
-    },
-    {
-        tagName: '其它',
-        tagColor: '#16c4e0',
-    }
-]
+function getString(s) {
+    s=s.replace(/\+/g, "%2B");
+    s=s.replace(/&/g, "%26");
+
+    return s;
+}
 
 class ModifyNewsPublishView extends React.Component {
 
+    state = { 
+        loading: false,
+    }
 
     constructor(props) {
         super(props);
         this.state = {
-            publishTag: '',
+            newsId: '',
+            newsTagId: '',
+            newsTagName: '',
+            isPublish: '',
+            allTag: [],
         }
     }
 
     componentWillMount() {
-        this.getData();
+        this.getTagData();
+        this.getSingleNewsData();
     }
 
-    getData() {
+
+    getTagData() {
+        Fetch.requestPost({
+            url: SelectNewsTag,
+            info: 'pageSize=100',
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                // console.log(data);
+                if (data.status == 0) {
+                    this.setState({
+                        allTag: data.resultBean.items
+                    })
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
+    getSingleNewsData() {
+        Fetch.requestPost({
+            url: DetailNewsUrl,
+            info: 'newsId='+this.props.id,
+            timeOut: 3000,
+        }).then (
+            data => {
+                // console.log(data);
+                if (data.status == 0) {
+                    this.setState({
+                        newsId: data.resultBean.newsId,
+                        newsTagId: data.resultBean.newsTagId,
+                        newsTagName: data.resultBean.newsTagName,
+                        isPublish: data.resultBean.isPublish,
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
+    updateSingleData(type) {
+        
+        if (this.props.newsTitle.length == 0) {
+            message.error('新闻标题不能为空!');
+            return ;
+        }
+        if (this.props.newsTitle.length > 20) {
+            message.error('新闻标题过长!');
+            return ;
+        }
+
+        // wangediter 有个bug就是必须聚焦到内容框才能检测出由内容, 不然里面的内容就是无
+        // 所以这个判断暂时不要, 后面再看有无解决方法.
+        if (this.props.editorContentText.length == 0) {
+            message.error('公告内容不能为空或者未点击主编辑框!');
+            return ;
+        }
+
         this.setState({
-            publishTag: '获奖',
-        })
-    }
+            loading: true,
+        });
 
-    updateData() {
+        Fetch.requestPost({
+            url: UpdateNews,
+            info: 'newsId='+this.state.newsId+'&newsTitle='+this.props.newsTitle
+                    +'&newsBody='+encodeURI(getString(this.props.editorContent))
+                    +'&newsTagId='+this.state.newsTagId+'&isPublish='+type,
+            timeOut: 3000,
+        }).then(
+            data => {
+                if (data.status == 0) {
+                    message.success('修改成功');
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
 
+        this.setState({
+            loading: false,
+        });
     }
 
     handlePublishTag = (value) => {
-        this.setState({
-            publishTag: value,
-        })
+        const tags = this.state.allTag;
+        for (let i in tags) {
+            if (tags[i].newsTagName == value) {
+                this.setState({
+                    newsTagId: tags[i].newsTagId,
+                    newsTagName: value,
+                })
+                break;
+            }
+        }
     }
 
-    handlePublish = () => {
-        this.updateData();
+    handlePublish = (type) => {
+        this.updateSingleData(type);
     }
 
     render() {
         return (
-            <div style={{ padding: 10 }} >
+            <div className="publishView" >
                 <Card title="发布配置" >
                     &nbsp;&nbsp;&nbsp;&nbsp;类别:&nbsp;&nbsp;
-                    <Select defaultValue={ this.state.publishTag } style={{ width: 150 }} 
-                        onChange={this.handlePublishTag} >
+                    <Select value={ this.state.newsTagName } style={{ width: 150 }}
+                        onChange={this.handlePublishTag} palceholder="新闻类别" >
                         {
-                            tags.map((item) =>
-                                <Option value={item.tagName}><Tag color={item.tagColor} key={item.tagName} > {item.tagName} </Tag></Option>
+                            this.state.allTag.map((item) =>
+                                <Option value={item.newsTagName}>
+                                    <Tag color={item.newsTagColor} key={item.newsTagName} > {item.newsTagName} </Tag>
+                                </Option>
                             )
                         }
                     </Select>
-                    <Button type="primary" onClick={this.handlePublish}>发布</Button>
+                    {
+                        this.state.isPublish == 1 ? null :
+                        <Button type="dashed" onClick={() => this.handlePublish(0)} loading={this.state.loading}> 存为草稿 </Button>
+                    }
+                    <Button type="primary" onClick={() => this.handlePublish(1)} loading={this.state.loading}>修改并发布</Button>
                 </Card>
             </div>
         );
@@ -82,12 +200,13 @@ class ModifyNewsPublishView extends React.Component {
 
 class ModifyNewsEditView extends React.Component {
 
-
     constructor(props) {
         super(props);
         this.state = {
-            editorContent: '',
             newsTitle: '',
+            editor: '',
+            editorContent: '',
+            editorContentText: '',
         }
     }
 
@@ -96,10 +215,34 @@ class ModifyNewsEditView extends React.Component {
     }
 
     getData() {
-        this.setState({
-            newsTitle: '我校首获ICPC金牌!',
-            editorContent: '一本本分的腮红佛的撒回复',
-        })
+        Fetch.requestPost({
+            url: DetailNewsUrl,
+            info: 'newsId='+this.props.id,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    this.setState({
+                        newsTitle: data.resultBean.newsTitle,
+                        editorContent: this.state.editor.txt.html(data.resultBean.newsBody),
+                    });
+                }
+                else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            // 可能时不时会出现超时出错的情况, 实际没问题, 等几分钟再试试就行
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     handleModifyNewsTitle = (e) => {
@@ -112,22 +255,35 @@ class ModifyNewsEditView extends React.Component {
     render() {
         return (
           <div style={{ flex: 1, padding: "10px" }}>
-            <Card title="修改新闻" >
-                <div>
-                <Input defaultValue={this.state.newsTitle} size="small" placeholder="新闻标题" 
-                    style={{ height:30, width: 400 }} onChange={this.handleModifyNewsTitle}/>
-                </div><br />
-                <div ref="editorElem" className="toolbar" />
-            </Card>
+            <Row>
+                <Col span={18}>
+                    <Card title="修改新闻" >
+                    <div>
+                    <Input value={this.state.newsTitle} size="small" placeholder="新闻标题" allowClear
+                        style={{ height:30, width: 400 }} onChange={this.handleModifyNewsTitle}/>
+                    </div><br />
+                    <div ref="editorElem" className="toolbar" />
+                    </Card>
+                </Col>
+                <Col span={6} >
+                    <ModifyNewsPublishView id={this.props.id} editorContent={this.state.editorContent} 
+                        editorContentText={this.state.editorContentText} newsTitle={this.state.newsTitle}
+                    />
+                </Col>
+            </Row>
+            
           </div>
         );
       }
       componentDidMount() {
         const elem = this.refs.editorElem
         const editor = new E(elem)
+        this.setState({ 
+            editor: editor,
+        })
         editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
         editor.customConfig.uploadFileName = 'myFileName';
-        // editor.customConfig.uploadImgServer = UploadImg;
+        editor.customConfig.uploadImgServer = UploadImg;
         editor.customConfig.uploadImgHooks = { 
             customInsert: function (insertImg, result, editor) { 
                 var url =result.data; insertImg(url); 
@@ -170,14 +326,7 @@ class ModifyNews extends React.Component {
     render() {
         return (
             <div>
-            <Row>
-                <Col span={18}>
-                    <ModifyNewsEditView />
-                </Col>
-                <Col span={6} >
-                    <ModifyNewsPublishView />
-                </Col>
-            </Row>
+                <ModifyNewsEditView id={this.props.match.params.id} />
             </div>
         );
     }

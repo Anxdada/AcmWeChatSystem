@@ -53,13 +53,12 @@ public class FeedbackDealServiceImpl implements FeedbackDealService {
         try {
 
             Feedback feedback = new Feedback();
-            feedback.setFeedbackAvatar(user.getAvatar());
             feedback.setFeedbackUser(user.getUserId());
             feedback.setFeedbackBody(feedbackBody);
             feedback.setFeedbackTime(new Date());
             feedback.setIsEffective(SysConst.LIVE);
 
-            System.out.println(feedback.getFeedbackBody() + " " + feedback.getFeedbackAvatar());
+            System.out.println(feedback.getFeedbackBody() + " ");
 
             feedbackService.addFeedback(feedback);
             return new ResultBean(ResultCode.SUCCESS);
@@ -87,7 +86,7 @@ public class FeedbackDealServiceImpl implements FeedbackDealService {
 
             List<Feedback> list = feedbackService.findFeedbackListByQueryMap(map);
 
-            if (list.size() < 1) return new ResultBean(ResultCode.FEEDBACK_COUNT_NULL_RECODE);
+            if (list.size() < 1) return new ResultBean(ResultCode.SQL_NULL_RECODE);
 
             list.get(0).setIsEffective(SysConst.NOT_LIVE);
             feedbackService.updateFeedback(list.get(0));
@@ -118,7 +117,7 @@ public class FeedbackDealServiceImpl implements FeedbackDealService {
             List<Feedback> list = feedbackService.findFeedbackListByQueryMap(map);
 
 //            System.out.println(list.size());
-            if (list.size() < 1) return new ResultBean(ResultCode.FEEDBACK_COUNT_NULL_RECODE);
+            if (list.size() < 1) return new ResultBean(ResultCode.SQL_NULL_RECODE);
 
             list.get(0).setFeedbackBody(feedbackBody);
             System.out.println(list.get(0).getFeedbackId());
@@ -154,10 +153,10 @@ public class FeedbackDealServiceImpl implements FeedbackDealService {
                     List<User> listUsers = userService.findUserListByUserId((Long)mapTemp.get("feedbackUser"));
                     User tUs = null;
                     if (listUsers.size() > 0) tUs = listUsers.get(0);
-                    if (tUs != null) mapTemp.put("feedbackUserRealName", tUs.getRealName());
-
-                    mapTemp.put("nowUser", user.getUserId());
-                    mapTemp.put("nowUserAuth", user.getAuth());
+                    if (tUs != null) {
+                        mapTemp.put("feedbackUserRealName", tUs.getRealName());
+                        mapTemp.put("feedbackAvatar", tUs.getAvatar());
+                    }
 
                     Map<String, Object> mapTT = new HashMap<>();
                     mapTT.put("order", "operateTime");

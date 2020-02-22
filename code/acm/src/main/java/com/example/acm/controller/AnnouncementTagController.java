@@ -35,12 +35,14 @@ public class AnnouncementTagController extends BaseController {
      *
      * @param announcementTagName 公告类别名称
      * @param announcementTagColor 公告类别颜色
+     * @param needStartTime 是否需要设置开始时间
      * @return 结果
      */
     @PostMapping("/addAnnouncementTag")
     @ResponseBody
     public ResultBean addAnnouncementTag(@RequestParam(value = "announcementTagName", required = true) String announcementTagName,
                                          @RequestParam(value = "announcementTagColor", required = true) String announcementTagColor,
+                                         @RequestParam(value = "needStartTime", required = true) Integer needStartTime,
                                          HttpServletRequest request, HttpServletResponse response) {
 
 //        System.out.println("addAnnouncementTag");
@@ -55,7 +57,7 @@ public class AnnouncementTagController extends BaseController {
                 user.setUserId(longTwo);
             }
 
-            return announcementTagDealService.addAnnouncementTag(user, announcementTagName, announcementTagColor);
+            return announcementTagDealService.addAnnouncementTag(user, announcementTagName, announcementTagColor, needStartTime);
 
         } catch (Exception e) {
             // log
@@ -101,6 +103,7 @@ public class AnnouncementTagController extends BaseController {
      * @param announcementTagId id
      * @param announcementTagName 公告类别名称
      * @param announcementTagColor 公告类别颜色
+     * @param needStartTime 是否需要设置开始时间
      * @return
      */
     @PostMapping("/updateAnnouncementTag")
@@ -108,6 +111,7 @@ public class AnnouncementTagController extends BaseController {
     public ResultBean updateAnnouncementTag(@RequestParam(value = "announcementTagId", required = true) long announcementTagId,
                                             @RequestParam(value = "announcementTagName", required = true) String announcementTagName,
                                             @RequestParam(value = "announcementTagColor", required = true) String announcementTagColor,
+                                            @RequestParam(value = "needStartTime", required = true) Integer needStartTime,
                                             HttpServletRequest request, HttpServletResponse response) {
 
 //        System.out.println("updateAnnouncementTag");
@@ -125,7 +129,7 @@ public class AnnouncementTagController extends BaseController {
                 user.setUserId(longTwo);
             }
 
-            return announcementTagDealService.updateAnnouncementTag(user, announcementTagId, announcementTagName, announcementTagColor);
+            return announcementTagDealService.updateAnnouncementTag(user, announcementTagId, announcementTagName, announcementTagColor, needStartTime);
 
         } catch (Exception e) {
             // log

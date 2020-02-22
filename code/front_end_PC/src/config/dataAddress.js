@@ -3,8 +3,11 @@
 
 const localhost = "http://localhost:9999"
 
+// 主页的一些数据
+export const GetHomeData = localhost+"/home/getHomeData";
+
 // 用户
-export const GetLoginUserName = localhost+"/user/getLoginUserName";
+export const GetLoginUser = localhost+"/user/getLoginUser";
 export const LoginUrl = localhost+"/user/PCLogin";
 
 
@@ -15,11 +18,11 @@ export const UpdateNewsTag = localhost+"/newstag/updateNewsTag";
 export const SelectNewsTag = localhost+"/newstag/selectNewsTag";
 export const DetailNewsTag = localhost+"/newstag/detailNewsTag";
 // 新闻
-export const AddNewsMain = localhost+"/news/addNewMain";
-export const DeleteNewMain = localhost+"/news/deleteNewMain";
-export const UpdateNewsMain = localhost+"/news/updateNewMain";
-export const SelectNewsMain = localhost+"/news/selectNewsMain";
-export const NewsDetail = localhost+"/news/detail";
+export const AddNewsUrl = localhost+"/news/addNews";
+export const DeleteNews = localhost+"/news/deleteNews";
+export const UpdateNews = localhost+"/news/updateNews";
+export const SelectNews = localhost+"/news/selectNews";
+export const DetailNewsUrl = localhost+"/news/detailNews";
 
 
 
@@ -35,6 +38,13 @@ export const DeleteAnnouncement = localhost+"/announcement/deleteAnnouncement";
 export const UpdateAnnouncement = localhost+"/announcement/updateAnnouncement";
 export const SelectAnnouncement = localhost+"/announcement/selectAnnouncement";
 export const DetailAnnouncementUrl = localhost+"/announcement/detailAnnouncement";
+// 报名相关
+export const AddRegisterTable = localhost+"/register/addRegister"; 
+export const DeleteRegisterTable = localhost+"/register/deleteRegister";
+export const UpdateRegisterTable = localhost+"/register/updateRegister"; 
+export const SelectRegisterTable = localhost+"/register/selectRegister";
+
+
 
 // 帖子标签
 export const AddLabel = localhost+"/label/addLabel";
@@ -43,7 +53,6 @@ export const UpdateLabel = localhost+"/label/updateLabel";
 export const SelectLabel = localhost+"/label/selectLabel";
 export const DetailLabel = localhost+"/label/detailLabel";
 // 讨论区帖子相关
-
 
 
 

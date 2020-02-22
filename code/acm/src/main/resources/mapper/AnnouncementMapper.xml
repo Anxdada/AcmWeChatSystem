@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.acm.mapper.AnnouncementMapper">
+
+    <resultMap type="com.example.acm.entity.Announcement" id="AnnouncementMap">
+        <result property="announcementid" column="announcementId" jdbcType="INTEGER"/>
+        <result property="announcementtitle" column="announcementTitle" jdbcType="VARCHAR"/>
+        <result property="announcementtagid" column="announcementTagId" jdbcType="VARCHAR"/>
+        <result property="createuser" column="createUser" jdbcType="INTEGER"/>
+        <result property="createtime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="updateuser" column="updateUser" jdbcType="INTEGER"/>
+        <result property="updatetime" column="updateTime" jdbcType="TIMESTAMP"/>
+        <result property="isregister" column="isRegister" jdbcType="INTEGER"/>
+        <result property="isdone" column="isDone" jdbcType="INTEGER"/>
+        <result property="iseffective" column="isEffective" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="AnnouncementMap">
+        select
+          announcementId, announcementTitle, announcementTagId, createUser, createTime, updateUser, updateTime, isRegister, isDone, isEffective
+        from acm.announcement
+        where announcementId = #{announcementid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="AnnouncementMap">
+        select
+          announcementId, announcementTitle, announcementTagId, createUser, createTime, updateUser, updateTime, isRegister, isDone, isEffective
+        from acm.announcement
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="AnnouncementMap">
+        select
+          announcementId, announcementTitle, announcementTagId, createUser, createTime, updateUser, updateTime, isRegister, isDone, isEffective
+        from acm.announcement
+        <where>
+            <if test="announcementid != null">
+                and announcementId = #{announcementid}
+            </if>
+            <if test="announcementtitle != null and announcementtitle != ''">
+                and announcementTitle = #{announcementtitle}
+            </if>
+            <if test="announcementtagid != null and announcementtagid != ''">
+                and announcementTagId = #{announcementtagid}
+            </if>
+            <if test="createuser != null">
+                and createUser = #{createuser}
+            </if>
+            <if test="createtime != null">
+                and createTime = #{createtime}
+            </if>
+            <if test="updateuser != null">
+                and updateUser = #{updateuser}
+            </if>
+            <if test="updatetime != null">
+                and updateTime = #{updatetime}
+            </if>
+            <if test="isregister != null">
+                and isRegister = #{isregister}
+            </if>
+            <if test="isdone != null">
+                and isDone = #{isdone}
+            </if>
+            <if test="iseffective != null">
+                and isEffective = #{iseffective}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="announcementid" useGeneratedKeys="true">
+        insert into acm.announcement(announcementTitle, announcementTagId, createUser, createTime, updateUser, updateTime, isRegister, isDone, isEffective)
+        values (#{announcementtitle}, #{announcementtagid}, #{createuser}, #{createtime}, #{updateuser}, #{updatetime}, #{isregister}, #{isdone}, #{iseffective})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update acm.announcement
+        <set>
+            <if test="announcementtitle != null and announcementtitle != ''">
+                announcementTitle = #{announcementtitle},
+            </if>
+            <if test="announcementtagid != null and announcementtagid != ''">
+                announcementTagId = #{announcementtagid},
+            </if>
+            <if test="createuser != null">
+                createUser = #{createuser},
+            </if>
+            <if test="createtime != null">
+                createTime = #{createtime},
+            </if>
+            <if test="updateuser != null">
+                updateUser = #{updateuser},
+            </if>
+            <if test="updatetime != null">
+                updateTime = #{updatetime},
+            </if>
+            <if test="isregister != null">
+                isRegister = #{isregister},
+            </if>
+            <if test="isdone != null">
+                isDone = #{isdone},
+            </if>
+            <if test="iseffective != null">
+                isEffective = #{iseffective},
+            </if>
+        </set>
+        where announcementId = #{announcementid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from acm.announcement where announcementId = #{announcementid}
+    </delete>
+
+    <!-- 下面是自己增加的 -->
+
+    <!-- 添加announcement -->
+    <insert id="addAnnouncement" useGeneratedKeys="true">
+        INSERT INTO announcement
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="announcement.announcementId != null">announcementId,</if>
+            <if test="announcement.announcementTitle != null">announcementTitle,</if>
+            <if test="announcement.announcementBody != null">announcementBody,</if>
+            <if test="announcement.announcementTagId != null">announcementTagId,</if>
+            <if test="announcement.createUser != null">createUser,</if>
+            <if test="announcement.createTime != null">createTime,</if>
+            <if test="announcement.updateUser != null">updateUser,</if>
+            <if test="announcement.updateTime != null">updateTime,</if>
+            <if test="announcement.isRegister != null">isRegister,</if>
+            <if test="announcement.registerStartTime != null">registerStartTime,</if>
+            <if test="announcement.registerEndTime != null">registerEndTime,</if>
+            <if test="announcement.startTime != null">startTime,</if>
+            <if test="announcement.lastTime != null">lastTime,</if>
+            <if test="announcement.isPublish != null">isPublish,</if>
+            <if test="announcement.isEffective != null">isEffective,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="announcement.announcementId != null">#{announcement.announcementId},</if>
+            <if test="announcement.announcementTitle != null">#{announcement.announcementTitle},</if>
+            <if test="announcement.announcementBody != null">#{announcement.announcementBody},</if>
+            <if test="announcement.announcementTagId != null">#{announcement.announcementTagId},</if>
+            <if test="announcement.createUser != null">#{announcement.createUser},</if>
+            <if test="announcement.createTime != null">#{announcement.createTime},</if>
+            <if test="announcement.updateUser != null">#{announcement.updateUser},</if>
+            <if test="announcement.updateTime != null">#{announcement.updateTime},</if>
+            <if test="announcement.isRegister != null">#{announcement.isRegister},</if>
+            <if test="announcement.registerStartTime != null">#{announcement.registerStartTime},</if>
+            <if test="announcement.registerEndTime != null">#{announcement.registerEndTime},</if>
+            <if test="announcement.startTime != null">#{announcement.startTime},</if>
+            <if test="announcement.lastTime != null">#{announcement.lastTime},</if>
+            <if test="announcement.isPublish != null">#{announcement.isPublish},</if>
+            <if test="announcement.isEffective != null">#{announcement.isEffective},</if>
+        </trim>
+    </insert>
+
+    <!-- 更新公告announcement -->
+    <update id="updateAnnouncement">
+        UPDATE announcement
+        <set>
+            <if test="announcement.announcementId != null">announcementId=#{announcement.announcementId},</if>
+            <if test="announcement.announcementTitle != null">announcementTitle=#{announcement.announcementTitle},</if>
+            <if test="announcement.announcementBody != null">announcementBody=#{announcement.announcementBody},</if>
+            <if test="announcement.announcementTagId != null">announcementTagId=#{announcement.announcementTagId},</if>
+            <if test="announcement.createUser != null">createUser=#{announcement.createUser},</if>
+            <if test="announcement.createTime != null">createTime=#{announcement.createTime},</if>
+            <if test="announcement.updateUser != null">updateUser=#{announcement.updateUser},</if>
+            <if test="announcement.updateTime != null">updateTime=#{announcement.updateTime},</if>
+            <if test="announcement.isRegister != null">isRegister=#{announcement.isRegister},</if>
+            <if test="announcement.registerStartTime != null">registerStartTime=#{announcement.registerStartTime},</if>
+            <if test="announcement.registerEndTime != null">registerEndTime=#{announcement.registerEndTime},</if>
+            <if test="announcement.startTime != null">startTime=#{announcement.startTime},</if>
+            <if test="announcement.lastTime != null">lastTime=#{announcement.lastTime},</if>
+            <if test="announcement.isPublish != null">isPublish=#{announcement.isPublish},</if>
+            <if test="announcement.isEffective != null">isEffective=#{announcement.isEffective},</if>
+        </set>
+        WHERE announcementId = #{announcement.announcementId};
+    </update>
+
+
+    <sql id="announcement_table">
+		tt.announcementId,
+		tt.announcementTitle,
+		tt.announcementBody,
+		tt.announcementTagId,
+		tt.createUser,
+        tt.createTime,
+		tt.updateUser,
+		tt.updateTime,
+		tt.isRegister,
+		tt.registerStartTime,
+        tt.registerEndTime,
+		tt.startTime,
+		tt.lastTime,
+		tt.isPublish,
+		tt.isEffective,
+	</sql>
+
+    <!-- 多了和类别的字段 -->
+    <sql id="announcement_join_tag_table">
+		tt.announcementId,
+		tt.announcementTitle,
+		tt.announcementBody,
+		tt.announcementTagId,
+		tt.createUser,
+        tt.createTime,
+		tt.updateUser,
+		tt.updateTime,
+		tt.isRegister,
+		tt.registerStartTime,
+        tt.registerEndTime,
+		tt.startTime,
+		tt.lastTime,
+		tt.isPublish,
+		tt.isEffective,
+		tb.announcementTagName,
+		tb.announcementTagColor
+	</sql>
+
+
+    <!-- 通过Id 返回 返回值不一样, 直接返回实体类 -->
+    <select id="findAnnouncementListByAnnouncementId" resultType="com.example.acm.entity.Announcement">
+        SELECT
+            a.*
+        FROM
+            announcement a
+        <where>
+            <if test="announcementId != null">
+                a.announcementId = #{announcementId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的OnDuty的总数 -->
+    <select id="countAnnouncementMapListByQuery" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            announcement a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.announcementTitle != null ">
+                AND a.announcementTitle like CONCAT ('%', #{map.announcementTitle}, '%')
+            </if>
+            <if test="map.searchTagId != null ">
+                AND a.announcementTagId=#{map.searchTagId}
+            </if>
+            <if test="map.searchStartTime != null ">
+                AND a.createTime between #{map.searchStartTime} and #{map.searchEndTime}
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的announcement inner join 没有匹配的行不会列出 -->
+    <select id="findAnnouncementMapListByQueryJoinTagTable" resultType="java.util.Map">
+        SELECT
+            a.*, b.announcementTagName, b.announcementTagColor, b.needStartTime
+        FROM
+            announcement a inner join announcementTag b
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            AND a.announcementTagId = b.announcementTagId
+            <if test="map.announcementId != null ">
+                AND a.announcementId=#{map.announcementId}
+            </if>
+            <if test="map.announcementTitle != null ">
+                AND a.announcementTitle like CONCAT ('%', #{map.announcementTitle}, '%')
+            </if>
+            <if test="map.searchTagId != null ">
+                AND a.announcementTagId=#{map.searchTagId}
+            </if>
+            <if test="map.searchStartTime != null ">
+                AND a.createTime between #{map.searchStartTime} and #{map.searchEndTime}
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+                AND b.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            a.${map.order} ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start},#{map.limit}
+        </if>
+    </select>
+
+</mapper>

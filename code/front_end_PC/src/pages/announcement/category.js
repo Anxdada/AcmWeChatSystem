@@ -9,6 +9,7 @@ import Fetch from './../../fetch';
 
 
 var emitter = new EventEmitter2(); 
+const { Option } = Select;
 
 class TagsModify extends React.Component {
     state = { 
@@ -23,6 +24,7 @@ class TagsModify extends React.Component {
             tagId: '',
             tagName: '',
             tagColor: '',
+            needStartTime: '',
         }
     }
 
@@ -61,6 +63,7 @@ class TagsModify extends React.Component {
                         tagId: data.resultBean.announcementTagId,
                         tagName: data.resultBean.announcementTagName,
                         tagColor: data.resultBean.announcementTagColor,
+                        needStartTime: data.resultBean.needStartTime == 0 ? "否" : "是",
                     })
                 } else {
                     if (data.status < 100) {
@@ -91,7 +94,7 @@ class TagsModify extends React.Component {
         // console.log(this.state.tagAddColor);
 
         const info = 'announcementTagId='+this.state.tagId+'&announcementTagName='+this.state.tagName
-                    +'&announcementTagColor='+this.state.tagColor
+                        +'&announcementTagColor='+this.state.tagColor+'&needStartTime='+this.state.needStartTime
 
         Fetch.requestPost({
             url: UpdateAnnouncementTag,
@@ -132,6 +135,12 @@ class TagsModify extends React.Component {
         });
     }
 
+    handleModalNeedStartTime = (value) => {
+        this.setState({
+            needStartTime: value
+        });
+    }
+
     handleModalTagColorBtn = (value) => {
         console.log(value);
         this.setState({
@@ -167,11 +176,18 @@ class TagsModify extends React.Component {
                 }}
             >
             <div>
-                类别名称：<Input size="small" style={{ height:30 , width:200 }} onChange={this.handleModalTagName} 
+                类&nbsp;&nbsp;别&nbsp;&nbsp;名&nbsp;&nbsp;称&nbsp;&nbsp;: <Input size="small" style={{ height:30 , width:200 }} onChange={this.handleModalTagName} 
                             value={this.state.tagName} />
             </div>
             <div className="modalInput">
-                类别颜色: <Button style={{ width: 100, height: 30, backgroundColor: this.state.tagColor }} 
+                设置开始时间: <Select placeholder="是否需要开始时间" onChange={this.handleModalNeedStartTime} 
+                                style={{ height:30 , width:100 }} value={this.state.needStartTime}>
+                            <Option value={0}>否</Option>
+                            <Option value={1}>是</Option>
+                        </Select>
+            </div>
+            <div className="modalInput">
+                类&nbsp;&nbsp;别&nbsp;&nbsp;颜&nbsp;&nbsp;色: <Button style={{ width: 100, height: 30, backgroundColor: this.state.tagColor }} 
                             onClick={this.handleModalTagColorBtn} className="modalBtn"/><span className="suggestion">(点击出颜色选择器)</span>
                 { 
                     this.state.visibleColorPicker == true ?
@@ -205,18 +221,31 @@ class TagsTable extends React.Component {
                 ),
             },
             {
+                title: '需要开始时间',
+                dataIndex: 'needStartTime',
+                key: 'needStartTime',
+                align: 'center',
+                width: 100,
+                render: (text) => (
+                    <span>{ text == 0 ? "否" : "是" }</span>
+                )
+            },
+            {
                 title: '最近一次更新时间',
                 dataIndex: 'updateTime',
                 key: 'updateTime',
+                align: 'center',
             },
             {
                 title: '更新人',
                 dataIndex: 'updateUser',
                 key: 'updateUser',
+                align: 'center',
             },
             {
                 title: '操作',
                 key: 'action',
+                align: 'center',
                 render: (text, record) => (
                     <span>
                         <TagsModify tagId={record.announcementTagId} />
@@ -316,6 +345,7 @@ class TagsView extends React.Component {
             tagSearchName: '',
             tagAddName: '',
             tagAddColor: '#19b8e2', 
+            needStartTime: null,
         } // 初始值
 
         emitter.on("refresh", this.refresh.bind(this));
@@ -330,6 +360,7 @@ class TagsView extends React.Component {
             tagSearchName: '',
             tagAddName: '',
             tagAddColor: '#19b8e2',
+            needStartTime: null,
         }, () => this.getTagData());
     }
 
@@ -384,13 +415,19 @@ class TagsView extends React.Component {
             return ;
         }
 
+        if (this.state.needStartTime == null) {
+            message.error("请选择是否需要开始时间!");
+            return ;
+        }
+
         this.setState({
             submitting: true,
         });
 
         Fetch.requestPost({
             url: AddAnnouncementTag,
-            info: 'announcementTagName='+this.state.tagAddName+'&announcementTagColor='+this.state.tagAddColor,
+            info: 'announcementTagName='+this.state.tagAddName+'&announcementTagColor='+this.state.tagAddColor
+                    +'&needStartTime='+this.state.needStartTime,
             timeOut: 3000,
         }).then ( 
             data => {
@@ -432,6 +469,13 @@ class TagsView extends React.Component {
         });
     }
 
+    handleNeedStartTime = (value) => {
+        console.log(value);
+        this.setState({
+            needStartTime: value,
+        })
+    }
+
     handleAddTagBtn = () => {
         this.addTagData();
     }
@@ -462,6 +506,12 @@ class TagsView extends React.Component {
 
                         <Button type="primary" onClick={ this.handleAddTagBtn } className="addTagBtn" loading={this.state.submitting} >添加</Button>
                         <Input size="small" onChange={this.handleAddTagText} placeholder="类别名称" className="addTagInput" value={this.state.tagAddName} />
+                        &nbsp;&nbsp;
+                        <Select placeholder="是否需要开始时间" onChange={this.handleNeedStartTime} 
+                                style={{ height:30 , width:160 }} allowClear >
+                            <Option value={0}>否</Option>
+                            <Option value={1}>是</Option>
+                        </Select>
                         &nbsp;&nbsp;色值
                         <Button style={{ width: 100, height: 30, backgroundColor: this.state.tagAddColor, }} 
                             onClick={this.handleAddTagColorBtn} />

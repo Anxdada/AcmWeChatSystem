@@ -30,12 +30,12 @@ class AdminPage extends React.Component {
 export default class Admin extends React.Component {
 
     constructor(props) {
-        console.log(props);
+        // console.log(props);
         super(props);
         this.state = {
             singup: cookie.load('token'),
         }
-        console.log(cookie.load('token'));
+        // console.log(cookie.load('token'));
         // console.log(cookie.load('userName'));
         // console.log(cookie.load('password'));
         // console.log(cookie.load('passwor'));

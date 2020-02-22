@@ -61,8 +61,8 @@ class FormLogin extends React.Component {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                console.log('Received values of form: ', values);
-                console.log(values.userName);
+                // console.log('Received values of form: ', values);
+                // console.log(values.userName);
                 this.setState({
                     userName: values.userName,
                     password: values.password,

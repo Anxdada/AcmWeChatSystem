@@ -9,7 +9,6 @@
 
     <sql id="feedback_table">
 		tt.feedbackId,
-		tt.feedbackAvatar,
 		tt.feedbackUser,
 		tt.feedbackBody,
 		tt.feedbackTime,
@@ -21,7 +20,6 @@
         INSERT INTO feedback
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="feedback.feedbackId != null">feedbackId,</if>
-            <if test="feedback.feedbackAvatar != null">feedbackAvatar,</if>
             <if test="feedback.feedbackUser != null">feedbackUser,</if>
             <if test="feedback.feedbackBody != null">feedbackBody,</if>
             <if test="feedback.feedbackTime != null">feedbackTime,</if>
@@ -30,7 +28,6 @@
         values
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="feedback.feedbackId != null">#{feedback.feedbackId},</if>
-            <if test="feedback.feedbackAvatar != null">#{feedback.feedbackAvatar},</if>
             <if test="feedback.feedbackUser != null">#{feedback.feedbackUser},</if>
             <if test="feedback.feedbackBody != null">#{feedback.feedbackBody},</if>
             <if test="feedback.feedbackTime != null">#{feedback.feedbackTime},</if>
@@ -43,7 +40,6 @@
         UPDATE feedback
         <set>
             <if test="feedback.feedbackId != null">feedbackId=#{feedback.feedbackId},</if>
-            <if test="feedback.feedbackAvatar != null">feedbackAvatar=#{feedback.feedbackAvatar},</if>
             <if test="feedback.feedbackUser != null">feedbackUser=#{feedback.feedbackUser},</if>
             <if test="feedback.feedbackBody != null">feedbackBody=#{feedback.feedbackBody},</if>
             <if test="feedback.feedbackTime != null">feedbackTime=#{feedback.feedbackTime},</if>
