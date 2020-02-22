@@ -1,81 +1,192 @@
 import React from 'react';
 import E from 'wangeditor';
-import { DatePicker, Input, Button, Card, Select, Tag, Modal, Row, Col } from 'antd';
+import { DatePicker, Input, Button, Card, Select, Tag, Modal, Row, Col, message, notification,  } from 'antd';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import './index.less';
-import { UploadImg } from './../../config/dataAddress';
-
+import { AddAnnouncementUrl, UploadImg, SelectAnnouncementTag } from './../../config/dataAddress';
+import cookie from 'react-cookies';
+import Fetch from './../../fetch';
 
 moment.locale('zh-cn');
 const { Option } = Select;
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 
-const tags = [
-    {
-        tagName: '讲座',
-        tagColor: '#3ce016',
-    },
-    {
-        tagName: '比赛',
-        tagColor: '#e01639',
-    },
-    {
-        tagName: '会议',
-        tagColor: '#16e0c4',
-    },
-    {
-        tagName: '通知',
-        tagColor: '#16c4e0',
-    }
-]
+function getString(s) {
+    s = s.replace(/\+/g, "%2B");
+    s = s.replace(/&/g, "%26");
+    return s;
+}
 
 class AddAnnouncementPublishView extends React.Component {
 
+    state = {
+        loading: false,
+    }
 
     constructor(props) {
         super(props);
         this.state = {
-            editorContent: '',
-            publishTag: '',
-            isRegister: false,
-            registerStartTime: '',
-            registerEndTime: '',
-            startTime: '',
+            announcementTagId: 0,
+            announcementTagName: '',
+            isRegister: 0,
+            registerStartTime: null,
+            registerEndTime: null,
+            startTime: null,
             lastTime: '',
+            isPublish: 0,
+            needStartTime: 0,
+            allTag: [],
         }
     }
 
-    addAnnouncementData() {
+    componentWillMount() {
+        this.getTagData();
+    }
 
-        // this.setState({
-        //     visible: false,
-        // });
+    getTagData() {
+        Fetch.requestPost({
+            url: SelectAnnouncementTag,
+            info: 'pageSize=100',
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                // console.log(data);
+                if (data.status == 0) {
+                    this.setState({
+                        allTag: data.resultBean.items
+                    })
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
+    addAnnouncementData(type) {
         
-        // fetch(UpdateFriendUrl, {
-        //     method: 'POST',
-        //     headers : {
-        //         'Authorization': cookie.load('token'),
-        //         'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-        //     },
-        //     body:'friendurlId='+this.state.friendurlId+'&friendurlTitle='+this.state.friendurlTitle+'&friendurlBody='+this.state.friendurlBody
-        // }).then(res => res.json()).then(
-        //     data => {
-        //         if (data.code==0) {
-        //             message.success('修改成功');
-        //             emitter.emit('changeFirstText', '修改')
-        //         } else {
-        //             message.error(data.msg);
-        //         }
-        //     }
-        // )
+        if (this.props.announcementTitle.length == 0) {
+            message.error('公告标题不能为空!');
+            return ;
+        }
+        if (this.props.announcementTitle.length > 20) {
+            message.error('公告标题过长!');
+            return ;
+        }
+
+        // wangediter 有个bug就是必须聚焦到内容框才能检测出由内容, 不然里面的内容就是无
+        if (this.props.editorContentText.length == 0) {
+            message.error('公告内容不能为空或者未点击主编辑框!');
+            return ;
+        }
+
+        if (this.state.announcementTagId == 0) {
+            message.error('请选择类别!');
+            return ;
+        }
+
+        let startTime = '';
+        if (this.state.needStartTime == 1) {
+            if (this.state.startTime == null) {
+                message.error(`${this.state.announcementTagName}开始时间不能为空!`);
+                return ;
+            }
+            startTime = moment(this.state.startTime).format('YYYY-MM-DD HH:mm:ss');
+            if (this.state.lastTime == null) {
+                message.error(`${this.state.announcementTagName}持续时间不能为空!`);
+                return ;
+            }
+        }
+
+        let registerStartTime = '', registerEndTime = '';
+        if (this.state.isRegister == 1) {
+            if (this.state.registerStartTime == null) {
+                message.error(`${this.state.announcementTagName}报名注册周期不能为空!`);
+                return ;
+            }
+            registerStartTime = moment(this.state.registerStartTime).format('YYYY-MM-DD HH:mm:ss');
+            registerEndTime = moment(this.state.registerEndTime).format('YYYY-MM-DD HH:mm:ss');
+        }
+
+        this.setState({
+            loading: true,
+        });
+
+        Fetch.requestPost({
+            url: AddAnnouncementUrl,
+            info: 'announcementTitle='+this.props.announcementTitle
+                    +'&announcementBody='+encodeURI(getString(this.props.editorContent))
+                    +'&announcementTagId='+this.state.announcementTagId+'&isRegister='+this.state.isRegister
+                    +'&registerStartTime='+registerStartTime+'&registerEndTime='+registerEndTime
+                    +'&startTime='+startTime+'&lastTime='+this.state.lastTime+'&isPublish='+type,
+            timeOut: 3000,
+        }).then(
+            data => {
+                if (data.status == 0) {
+                    if (!type) message.success('公告草稿存储成功!');
+                    else message.success('发布公告成功!');
+                    this.setState({
+                        announcementTagId: 0,
+                        announcementTagName: '',
+                        isRegister: 0,
+                        registerStartTime: null,
+                        registerEndTime: null,
+                        startTime: null,
+                        lastTime: '',
+                        isPublish: 0,
+                        needStartTime: 0,
+                    }, () => this.props.refresh());
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+
+        this.setState({
+            loading: false,
+        });
     }
 
     handlePublishTag = (value) => {
-        console.log(value);
-        this.setState({
-            publishTag: value,
-        })
+        if (typeof value === "undefined") {
+            this.setState({
+                announcementTagName: undefined,
+                announcementTagId: 0,
+                needStartTime: 0,
+            })
+            return ;
+        }
+        const tags = this.state.allTag;
+        for (let i in tags) {
+            if (tags[i].announcementTagName == value) {
+                this.setState({
+                    announcementTagId: tags[i].announcementTagId,
+                    announcementTagName: value,
+                    needStartTime: tags[i].needStartTime,
+                })
+                break;
+            }
+        }
     }
 
     handleStartTime = (value) => {
@@ -85,10 +196,27 @@ class AddAnnouncementPublishView extends React.Component {
     }
 
     handleLastTime = (e) => {
-        console.log(e.target.value);
         this.setState({
             lastTime: e.target.value,
         })
+    }
+
+    handleRegisterRangeTime = (dates) => {
+        if (dates.length < 1) {
+            this.setState({
+                registerStartTime: null,
+                registerEndTime: null,
+            });
+            return ;
+        }
+        this.setState({
+            registerStartTime: dates[0],
+            registerEndTime: dates[1],
+        });
+    }
+
+    handlePublish = (type) => {
+        this.addAnnouncementData(type);
     }
 
     handleIsRegister = (value) => {
@@ -96,15 +224,6 @@ class AddAnnouncementPublishView extends React.Component {
         this.setState({
             isRegister: value,
         })
-    }
-
-    handleRegisterRangeTime = (dates) => {
-        console.log(dates[0]);
-        console.log(dates[1]);
-    }
-
-    handlePublish = () => {
-        this.addData();
     }
 
     disabledDate = (current) => {
@@ -116,52 +235,57 @@ class AddAnnouncementPublishView extends React.Component {
         return (
             <div className="publishViewAnnoun">
                 <Card title="参数配置">
-                <div>
-                    &nbsp;&nbsp;&nbsp;类别: &nbsp;&nbsp;
-                    <Select defaultValue={ this.state.publishTag } style={{ width: 150 }} 
-                        onChange={this.handlePublishTag} >
+                    <div>
+                        &nbsp;&nbsp;&nbsp;类别: &nbsp;&nbsp;
+                        <Select value={ this.state.announcementTagName } style={{ width: 150 }} 
+                            onChange={this.handlePublishTag} allowClear placeholder="选择类别" >
+                            {
+                                this.state.allTag.map((item) =>
+                                    <Option value={item.announcementTagName}>
+                                        <Tag color={item.announcementTagColor} key={item.announcementTagName} > {item.announcementTagName} </Tag>
+                                    </Option>
+                                )
+                            }
+                        </Select>
                         {
-                            tags.map((item) =>
-                                <Option value={item.tagName}><Tag color={item.tagColor} key={item.tagName} > {item.tagName} </Tag></Option>
-                            )
-                        }
-                    </Select>
-                    {
-                        this.state.publishTag == "通知" ||  this.state.publishTag == "" ? null : <span>
-                            &nbsp;&nbsp;{this.state.publishTag}开始时间:&nbsp;&nbsp;
-                            <DatePicker
-                                disabledDate={this.disabledDate}
-                                showTime
-                                format="YYYY-MM-DD HH:mm:ss"
-                                value={this.state.startTime}
-                                placeholder="Start"
-                                onChange={this.handleStartTime}
-                            />
-                            &nbsp;&nbsp;{this.state.publishTag}持续时间:&nbsp;&nbsp;
-                            <Input placeholder="以半小时为最小单位" onChange={this.handleLastTime} style={{ height: 30, width: 200 }} />
-                        </span>
-                    }
-                </div>
-                <div>
-                    &nbsp;&nbsp;&nbsp;是否报名: &nbsp;&nbsp;
-                    <Select style={{ width: 150 }} onChange={this.handleIsRegister} className="modalInput">
-                        <Option value={true}>是</Option>
-                        <Option value={false}>否</Option>
-                    </Select>
-                    {
-                        this.state.isRegister == false ? null :
-                            <span>&nbsp;&nbsp;报名起止时间: 
-                                <RangePicker 
+                            this.state.needStartTime == 0 ? null : <span>
+                                &nbsp;&nbsp;{this.state.announcementTagName}开始时间:&nbsp;&nbsp;
+                                <DatePicker
+                                    disabledDate={this.disabledDate}
                                     showTime
                                     format="YYYY-MM-DD HH:mm:ss"
-                                    onChange={this.handleRegisterRangeTime} 
-                                    disabledDate={this.disabledDate} 
-                                    style={{ width: 400 }} />
+                                    value={this.state.startTime}
+                                    placeholder="Start"
+                                    onChange={this.handleStartTime}
+                                />
+                                &nbsp;&nbsp;{this.state.announcementTagName}持续时间:&nbsp;&nbsp;
+                                <Input value={this.state.lastTime} placeholder="以半小时为最小单位" onChange={this.handleLastTime} 
+                                    style={{ height: 30, width: 200 }} allowClear />
                             </span>
-                    }
-                </div>
-                <Button type="dashed" onClick={this.handlePublish} loading={this.state.submitLoading}> 存为草稿 </Button>
-                <Button type="primary" onClick={this.handlePublish}>发布</Button>
+                        }
+                    </div>
+                    <div>
+                        &nbsp;&nbsp;&nbsp;是否报名: &nbsp;&nbsp;
+                        <Select value={this.state.isRegister} style={{ width: 150 }} onChange={this.handleIsRegister} 
+                            className="modalInput" >
+                            <Option value={1}>是</Option>
+                            <Option value={0}>否</Option>
+                        </Select>
+                        {
+                            this.state.isRegister == 0 ? null :
+                                <span>&nbsp;&nbsp;报名起止时间: 
+                                    <RangePicker 
+                                        showTime
+                                        format="YYYY-MM-DD HH:mm:ss"
+                                        onChange={this.handleRegisterRangeTime}
+                                        style={{ width: 400 }} />
+                                </span>
+                        }
+                    </div>
+                    <Button type="dashed" onClick={() => this.handlePublish(0)} loading={this.state.loading}> 
+                        存为草稿 
+                    </Button>
+                    <Button type="primary" onClick={() => this.handlePublish(1)} loading={this.state.loading}>发布</Button>
                 </Card>
             </div>
         );
@@ -171,47 +295,65 @@ class AddAnnouncementPublishView extends React.Component {
 
 class AddAnnouncementEditView extends React.Component {
 
-    state = {
-        visible: false,
-    }
-
     constructor(props) {
         super(props);
         this.state = {
+            announcementTitle: '',
+            editor: '',
             editorContent: '',
-            publishNewsTitle: '',
+            editorContentText: '',
         }
     }
 
-    handleAddAnnouncementTitle = (e) => {
-        console.log(e);
+    refresh = () => {
+        this.state.editor.txt.clear()
         this.setState({
-            publishNewsTitle: e.target.value,
+            announcementTitle: '',
+            editor: '',
+            editorContent: '',
+            editorContentText: '',
+        })
+    }
+
+    handleAddAnnouncementTitle = (e) => {
+        this.setState({
+            announcementTitle: e.target.value,
         })
     }
 
     render() {
         return (
-        <div style={{ flex: 1, padding: "10px" }}>
-            <Card title="添加新闻" >
+        <div style={{ flex: 1 }}>
+            <Card title="添加公告" >
                 <div>
-                <Input size="small" placeholder="公告标题" style={{ height:30, width: 400 }} onChange={this.handleAddAnnouncementTitle } />
+                <Input size="small" placeholder="公告标题" style={{ height:30, width: 400 }} allowClear
+                    onChange={this.handleAddAnnouncementTitle } value={this.state.announcementTitle} />
                 </div>
                 <br />
                 <div ref="editorElem" className="toolbar" />
             </Card>
+
+
+            <AddAnnouncementPublishView announcementTitle={this.state.announcementTitle} editorContent={this.state.editorContent} 
+                editorContentText={this.state.editorContentText} refresh={this.refresh}
+            />
         </div>
         );
     }
+
     componentDidMount() {
         const elem = this.refs.editorElem
         const editor = new E(elem)
+        this.setState({
+            editor: editor,
+        })
         editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
         editor.customConfig.uploadFileName = 'myFileName';
         editor.customConfig.uploadImgServer = UploadImg;
         editor.customConfig.uploadImgHooks = { 
             customInsert: function (insertImg, result, editor) { 
-                var url =result.data; insertImg(url); 
+                var url =result.data; 
+                insertImg(url); 
             } 
         };
     
@@ -232,7 +374,6 @@ export default class AddAnnouncement extends React.Component {
         return (
             <div>
                 <AddAnnouncementEditView />
-                <AddAnnouncementPublishView />
             </div>
         );
     }

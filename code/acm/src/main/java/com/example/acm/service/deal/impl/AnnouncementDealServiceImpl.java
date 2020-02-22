@@ -62,6 +62,12 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
                                       String registerEndTime, String startTime, String lastTime, int isPublish) {
         try {
 
+            List<AnnouncementTag> listAnnouncementTags = announcementTagService.findAnnouncementTagListByAnnouncementTagId(announcementTagId);
+
+            if (listAnnouncementTags.isEmpty()) {
+                return new ResultBean(ResultCode.PARAM_ERROR, "不存在该公告类别");
+            }
+
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
             Announcement announcement = new Announcement();
@@ -71,10 +77,14 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
             announcement.setAnnouncementTagId(announcementTagId);
 
             announcement.setIsRegister(isRegister);
-            if (!StringUtil.isNull(registerStartTime)) announcement.setRegisterStartTime(sdf.parse(registerStartTime));
-            if (!StringUtil.isNull(registerEndTime)) announcement.setRegisterEndTime(sdf.parse(registerEndTime));
-            if (!StringUtil.isNull(startTime)) announcement.setStartTime(sdf.parse(startTime));
-            if (!StringUtil.isNull(lastTime)) announcement.setLastTime(lastTime);
+            if (isRegister == 1) {
+                announcement.setRegisterStartTime(sdf.parse(registerStartTime));
+                announcement.setRegisterEndTime(sdf.parse(registerEndTime));
+            }
+            if (listAnnouncementTags.get(0).getNeedStartTime() == 1) {
+                announcement.setStartTime(sdf.parse(startTime));
+                announcement.setLastTime(lastTime);
+            }
 
             announcement.setCreateUser(user.getUserId());
             announcement.setCreateTime(new Date());
@@ -148,8 +158,14 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
 
             List<Announcement> announcements = announcementService.findAnnouncementListByAnnouncementId(announcementId);
 
-            if (announcements.size() < 1) {
+            if (announcements.isEmpty()) {
                 return new ResultBean(ResultCode.PARAM_ERROR, "不存在该公告");
+            }
+
+            List<AnnouncementTag> listAnnouncementTags = announcementTagService.findAnnouncementTagListByAnnouncementTagId(announcementTagId);
+
+            if (listAnnouncementTags.isEmpty()) {
+                return new ResultBean(ResultCode.PARAM_ERROR, "不存在该公告类别");
             }
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -160,10 +176,21 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
             announcement.setAnnouncementTagId(announcementTagId);
 
             announcement.setIsRegister(isRegister);
-            if (!StringUtil.isNull(registerStartTime)) announcement.setRegisterStartTime(sdf.parse(registerStartTime));
-            if (!StringUtil.isNull(registerEndTime)) announcement.setRegisterEndTime(sdf.parse(registerEndTime));
-            if (!StringUtil.isNull(startTime)) announcement.setStartTime(sdf.parse(startTime));
-            if (!StringUtil.isNull(lastTime)) announcement.setLastTime(lastTime);
+            if (isRegister == 1) {
+                announcement.setRegisterStartTime(sdf.parse(registerStartTime));
+                announcement.setRegisterEndTime(sdf.parse(registerEndTime));
+            } else {
+                announcement.setRegisterStartTime(null);
+                announcement.setRegisterEndTime(null);
+            }
+
+            if (listAnnouncementTags.get(0).getNeedStartTime() == 1) {
+                announcement.setStartTime(sdf.parse(startTime));
+                announcement.setLastTime(lastTime);
+            } else {
+                announcement.setStartTime(null);
+                announcement.setLastTime(null);
+            }
 
             announcement.setUpdateUser(user.getUserId());
             announcement.setUpdateTime(new Date());
@@ -223,15 +250,7 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
             }
             map.put("isEffective", SysConst.LIVE);
 
-//            System.out.println(map.containsKey("searchTagId"));
-//            System.out.println(map.containsKey("searchStartTime"));
-//            System.out.println(map.containsKey("searchEndTime"));
-//            System.out.println(start + " " + limit + " " + pageNum + " " + pageSize);
-
             List<Map<String, Object>> list = announcementService.findAnnouncementMapListByQueryJoinTagTable(map);
-
-//            System.out.println(map.containsKey(searchStartTime));
-//            System.out.println("xierenyi " + list.size());
 
             if (list.size() >0) {
                 for (Map<String, Object> mapTemp : list) {

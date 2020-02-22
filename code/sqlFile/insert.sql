@@ -29,3 +29,5 @@ INSERT INTO `feedbackCount` VALUES ('23', '7', '8', '2020-01-02 12:23', '1', '1'
 INSERT INTO `feedbackCount` VALUES ('24', '7', '9', '2020-01-01 12:23', '1', '1');
 
 INSERT INTO `news` VALUES ('5', '时事突击', '测试', '1', '1', '2020-01-11 00:00:00', '1', '2020-01-11 00:00:00', '1', '1');
+
+INSERT INTO `announcement` (announcementId, announcementTitle, announcementBody) VALUES ('1', 'DFS新生讲座', '测试');

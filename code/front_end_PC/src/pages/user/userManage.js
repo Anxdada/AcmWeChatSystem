@@ -156,6 +156,7 @@ class UserTable extends React.Component {
                 title: '用户名',
                 dataIndex: 'userName',
                 key: 'userName',
+                align: 'center',
                 render: (text, record) => (
                     <span>
                     <a onClick={() => this.handleShowUserDetail(record)}>{text}</a>
@@ -166,21 +167,25 @@ class UserTable extends React.Component {
                 title: '联系电话',
                 dataIndex: 'telephone',
                 key: 'telephone',
+                align: 'center',
             },  
             {
                 title: '学号',
                 dataIndex: 'studentId',
                 key: 'studentId',
+                align: 'center',
                 sorter: (a, b) => a.studentId - b.studentId
             },  
             {
                 title: '年级',
                 dataIndex: 'grade',
                 key: 'grade',
+                align: 'center',
             }, 
             {
                 title: '操作',
                 key: 'action',
+                align: 'center',
                 render: (text, record) => (
                     <span>
                     {
@@ -327,14 +332,14 @@ class UserView extends React.Component {
         console.log(e);
         this.setState({ 
             userNameSearchText: e.target.value 
-        }, () => this.getUserData());
+        });
     }
 
     handleSearchTextStuNum = (e) => {
         console.log(e);
         this.setState({ 
             stuNumSearchText: e.target.value 
-        }, () => this.getUserData());
+        });
     }
 
     handleSearchBtn = () => {
@@ -359,9 +364,11 @@ class UserView extends React.Component {
             <div>
                 <Card title="用户管理">
                     <div>
-                        <Input size="small" onChange={this.handleSearchTextUserName} placeholder="用户名" style={{ height:30 , width:150 }}/>
+                        <Input size="small" onChange={this.handleSearchTextUserName} placeholder="用户名" 
+                            style={{ height:30 , width:150 }} allowClear />
                         &nbsp;&nbsp;
-                        <Input size="small" onChange={this.handleSearchTextStuNum} placeholder="学号" style={{ height:30 , width:150 }}/>
+                        <Input size="small" onChange={this.handleSearchTextStuNum} placeholder="学号" 
+                            style={{ height:30 , width:150 }} allowClear />
                         &nbsp;&nbsp;
                         <Button type="primary" shape="circle" icon="search" onClick={ this.handleSearchBtn }/>
                     </div>

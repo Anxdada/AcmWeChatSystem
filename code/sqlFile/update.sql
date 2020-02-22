@@ -14,4 +14,4 @@ UPDATE user tt SET tt.avatar = 'http://localhost:9999/avatar/ziqiao.jpg' WHERE t
 UPDATE user tt SET tt.avatar = 'http://localhost:9999/avatar/meijiao.jpg' WHERE tt.userId = 12;
 UPDATE user tt SET tt.avatar = 'http://localhost:9999/avatar/dali.jpg' WHERE tt.userId = 13;
 UPDATE user tt SET tt.avatar = 'http://localhost:9999/avatar/haitang.jpg' WHERE tt.userId = 14;
-UPDATE news tt SET tt.newsTagId = 24 WHERE tt.newsId = 5;
+UPDATE news tt SET tt.newsBody = "<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<img src="http://localhost:9999/photo/8fc0f27f-ed57-4986-bbad-497b7f288c5f.jpeg" style="max-width:100%;"><br></p><p>我们这群人，苦没有真正苦过，爱没有用力爱过。</p><p>每天受着信息大潮的冲击，三观未定又备受曲折。</p><p>贫穷不再是正义，又妄图不让金钱成为唯一的追求。</p><p>过早看到了更大的世界，勤奋却又不过三天。</p><p>热血透不过键盘和屏幕，回忆止于游戏和高考。</p>" WHERE tt.newsId = 25;

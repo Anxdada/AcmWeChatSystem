@@ -180,8 +180,6 @@ class AddNewsPublishView extends React.Component {
     }
 }
 
-// loading={this.state.loadingDraft} disabled={!this.state.loadingDraft} 
-// loading={this.state.loadingSubmit} disabled={!this.state.loadingSubmit}
 
 class AddNewsEditView extends React.Component {
 

@@ -171,10 +171,10 @@
             <if test="announcement.updateUser != null">updateUser=#{announcement.updateUser},</if>
             <if test="announcement.updateTime != null">updateTime=#{announcement.updateTime},</if>
             <if test="announcement.isRegister != null">isRegister=#{announcement.isRegister},</if>
-            <if test="announcement.registerStartTime != null">registerStartTime=#{announcement.registerStartTime},</if>
-            <if test="announcement.registerEndTime != null">registerEndTime=#{announcement.registerEndTime},</if>
-            <if test="announcement.startTime != null">startTime=#{announcement.startTime},</if>
-            <if test="announcement.lastTime != null">lastTime=#{announcement.lastTime},</if>
+            registerStartTime=#{announcement.registerStartTime},
+            registerEndTime=#{announcement.registerEndTime},
+            startTime=#{announcement.startTime},
+            lastTime=#{announcement.lastTime},
             <if test="announcement.isPublish != null">isPublish=#{announcement.isPublish},</if>
             <if test="announcement.isEffective != null">isEffective=#{announcement.isEffective},</if>
         </set>

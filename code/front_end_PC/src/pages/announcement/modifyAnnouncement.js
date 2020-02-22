@@ -44,9 +44,7 @@ function getString(s) {
 class ModifyAnnouncementPublishView extends React.Component {
 
     state = { 
-        visible: false,
-        submitLoading: false,
-        submitDisable: false,
+        loading: false,
     }
 
     constructor(props) {
@@ -143,7 +141,7 @@ class ModifyAnnouncementPublishView extends React.Component {
         });
     }
 
-    updateSingleAnnouncementData() {
+    updateSingleAnnouncementData(type) {
 
         if (this.props.announcementTitle.length == 0) {
             message.error('公告标题不能为空!');
@@ -153,12 +151,12 @@ class ModifyAnnouncementPublishView extends React.Component {
             message.error('公告标题过长!');
             return ;
         }
+
         // wangediter 有个bug就是必须聚焦到内容框才能检测出由内容, 不然里面的内容就是无
-        // 所以这个判断暂时不要, 后面再看有无解决方法.
-        // if (this.props.editorContentText.length == 0) {
-        //     message.error('公告内容不能为空!');
-        //     return ;
-        // }
+        if (this.props.editorContentText.length == 0) {
+            message.error('公告内容不能为空或者未点击主编辑框!');
+            return ;
+        }
 
         let startTime = '';
         if (this.state.needStartTime == 1) {
@@ -184,8 +182,7 @@ class ModifyAnnouncementPublishView extends React.Component {
         }
 
         this.setState({
-            submitLoading: true,
-            submitDisable: true,
+            loading: true,
         });
 
         Fetch.requestPost({
@@ -195,7 +192,7 @@ class ModifyAnnouncementPublishView extends React.Component {
                     +'&announcementTagId='+this.state.announcementTagId+'&isRegister='+this.state.isRegister
                     +'&registerStartTime='+registerStartTime+'&registerEndTime='+registerEndTime
                     +'&startTime='+startTime+'&lastTime='+this.state.lastTime
-                    +'&isPublish='+this.state.isPublish,
+                    +'&isPublish='+type,
             timeOut: 3000,
         }).then(
             data => {
@@ -218,8 +215,7 @@ class ModifyAnnouncementPublishView extends React.Component {
         });
 
         this.setState({
-            submitLoading: false,
-            submitDisable: false,
+            loading: false,
         });
     }
     
@@ -276,12 +272,20 @@ class ModifyAnnouncementPublishView extends React.Component {
         })
     }
 
-    handlePublish = () => {
-        this.updateSingleAnnouncementData();
+    handlePublish = (type) => {
+        this.updateSingleAnnouncementData(type);
     }
 
-    disabledDate = (current) => {
-        // 从明天开始的日期才是有效日期
+    // disabledDate = (current) => {
+    //     console.log('xiexie');
+    //     console.log(current);
+    //     // 从明天开始的日期才是有效日期
+    //     return registerStartTime[0] && current < moment().endOf('day') < rangeTime[0] ;
+    // }
+
+    disabledStartDate = (current) => {
+        // Can not select days before today and today
+        // console.log(current);
         return current && current < moment().endOf('day');
     }
 
@@ -312,7 +316,7 @@ class ModifyAnnouncementPublishView extends React.Component {
                         <span>
                             &nbsp;&nbsp;{this.state.announcementTagName}开始时间:&nbsp;&nbsp;
                             <DatePicker
-                                disabledDate={this.disabledDate}
+                                disabledDate={this.disabledStartDate}
                                 showTime
                                 format="YYYY-MM-DD HH:mm:ss"
                                 value={this.state.startTime == null ? null : moment(this.state.startTime)}
@@ -339,17 +343,28 @@ class ModifyAnnouncementPublishView extends React.Component {
                                     showTime
                                     format="YYYY-MM-DD HH:mm:ss"
                                     value={rangeTime}
-                                    onChange={this.handleRegisterRangeTime} 
-                                    disabledDate={this.disabledDate} 
+                                    onChange={this.handleRegisterRangeTime}
                                     style={{ width: 400 }} />
                             </span>
                     }
                 </div>
+                <div>
+                &nbsp;&nbsp;&nbsp;状态:&nbsp;&nbsp;
+                {
+                    this.state.isPublish == 0 ? <Tag color="gray">未发布[草稿]</Tag> :
+                        this.state.isRegister == 0 ? <Tag color="blue">已发布</Tag> :
+                        moment().isAfter(this.state.registerEndTime) ? 
+                                            <Tooltip title={`截止时间 ${moment(this.state.registerEndTime).format('YYYY-MM-DD HH:mm:ss')}`}>
+                                                <Tag color="#f50">报名结束</Tag> 
+                                            </Tooltip>
+                        : <Tag color="green">正在报名</Tag>
+                }
+                </div>
                 {
                     this.state.isPublish == 1 ? null : 
-                    <Button type="dashed" onClick={this.handlePublish} loading={this.state.submitLoading}> 存为草稿 </Button>
+                    <Button type="dashed" onClick={() => this.handlePublish(0)} loading={this.state.loading}> 存为草稿 </Button>
                 }
-                <Button type="primary" onClick={this.handlePublish} loading={this.state.submitLoading}>
+                <Button type="primary" onClick={() => this.handlePublish(1)} loading={this.state.loading}>
                 {
                     this.state.isPublish == 1 ? <span>修改提交</span> : <span>修改并发布</span>
                 }

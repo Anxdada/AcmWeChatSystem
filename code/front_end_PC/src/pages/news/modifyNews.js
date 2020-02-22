@@ -114,7 +114,6 @@ class ModifyNewsPublishView extends React.Component {
         }
 
         // wangediter 有个bug就是必须聚焦到内容框才能检测出由内容, 不然里面的内容就是无
-        // 所以这个判断暂时不要, 后面再看有无解决方法.
         if (this.props.editorContentText.length == 0) {
             message.error('公告内容不能为空或者未点击主编辑框!');
             return ;

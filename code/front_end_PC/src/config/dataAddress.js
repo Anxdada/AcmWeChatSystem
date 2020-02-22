@@ -33,7 +33,7 @@ export const UpdateAnnouncementTag = localhost+"/announcementtag/updateAnnouncem
 export const SelectAnnouncementTag = localhost+"/announcementtag/selectAnnouncementTag";
 export const DetailAnnouncementTag = localhost+"/announcementtag/detailAnnouncementTag";
 // 公告
-export const AddAnnouncement = localhost+"/announcement/addAnnouncement";
+export const AddAnnouncementUrl = localhost+"/announcement/addAnnouncement";
 export const DeleteAnnouncement = localhost+"/announcement/deleteAnnouncement";
 export const UpdateAnnouncement = localhost+"/announcement/updateAnnouncement";
 export const SelectAnnouncement = localhost+"/announcement/selectAnnouncement";

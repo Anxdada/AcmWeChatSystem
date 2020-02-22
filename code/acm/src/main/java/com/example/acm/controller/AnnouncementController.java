@@ -8,6 +8,7 @@ import com.example.acm.service.AnnouncementService;
 import com.example.acm.service.UserService;
 import com.example.acm.service.deal.AnnouncementDealService;
 import com.example.acm.service.deal.OnDutyDealService;
+import com.example.acm.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,9 @@ public class AnnouncementController extends BaseController {
                                       @RequestParam(value = "isPublish", required = true) int isPublish,
                                       HttpServletRequest request, HttpServletResponse response) {
 
+        announcementBody = StringUtil.getHtml(announcementBody);
+
+//        System.out.println(lastTime);
 
         User user = getUserIdFromSession(request);
         if (user == null) {

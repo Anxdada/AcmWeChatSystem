@@ -21,9 +21,7 @@ class DetailAnnouncement extends React.Component {
         this.state = {
             announcementId: '',
             announcementTitle: '',
-            editor: '',
-            editorContent: '',
-            editorContentText: '',
+            announcementBody: '',
             announcementTagName: '',
             announcementTagColor: '',
             createUser: '',
@@ -77,8 +75,7 @@ class DetailAnnouncement extends React.Component {
                     this.setState({
                         announcementId: data.resultBean.announcementId,
                         announcementTitle: data.resultBean.announcementTitle,
-                        // editorContent: this.state.editor.txt.html(data.resultBean.announcementBody),
-                        editorContent: data.resultBean.announcementBody,
+                        announcementBody: data.resultBean.announcementBody,
                         announcementTagName: data.resultBean.announcementTagName,
                         announcementTagColor: data.resultBean.announcementTagColor,
                         createUser: data.resultBean.createUser,
@@ -165,7 +162,7 @@ class DetailAnnouncement extends React.Component {
                 <br />
                 <br />
                 <strong>内容:</strong>&nbsp;&nbsp;
-                <p> { this.state.editorContent } </p>
+                <div dangerouslySetInnerHTML={{__html: this.state.announcementBody}} />
             </Card>
         );
     }
