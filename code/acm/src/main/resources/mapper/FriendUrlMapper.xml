@@ -55,12 +55,12 @@
     <!-- 根据条件查找URL数量 -->
     <select id="countFriendUrlListByQuery" resultType="java.lang.Integer">
         SELECT
-            count(*)
+        count(*)
         FROM
-            friendUrl tt
+        friendUrl a
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <if test="map.isEffective != null ">
-                AND tt.isEffective=#{map.isEffective}
+                AND a.isEffective=#{map.isEffective}
             </if>
         </trim>
     </select>
@@ -69,10 +69,10 @@
     <select id="findFriendUrlListByFriendUrlId" resultType="com.example.acm.entity.FriendUrl">
         SELECT
         *
-        FROM friendUrl tt
+        FROM friendUrl a
         <where>
             <if test="friendUrlId != null">
-                tt.friendUrlId = #{friendUrlId}
+                a.friendUrlId = #{friendUrlId}
             </if>
         </where>
     </select>
@@ -82,46 +82,46 @@
         SELECT
         count(*)
         FROM
-        friendUrl tt
+        friendUrl a
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <if test="map.friendUrlName != null ">
-                AND tt.friendUrlName like CONCAT ('%', #{map.friendUrlName}, '%')
+                AND a.friendUrlName like CONCAT ('%', #{map.friendUrlName}, '%')
             </if>
             <if test="map.isEffective != null ">
-                AND tt.isEffective=#{map.isEffective}
+                AND a.isEffective=#{map.isEffective}
             </if>
         </trim>
     </select>
 
     <sql id="friend_url_table">
-		tt.friendUrlId,
-		tt.friendUrlName,
-		tt.friendUrlAddress,
-		tt.friendUrlTag,
-		tt.createUser,
-		tt.createTime,
-		tt.updateUser,
-		tt.updateTime,
-		tt.isEffective
-	</sql>
+        a.friendUrlId,
+        a.friendUrlName,
+        a.friendUrlAddress,
+        a.friendUrlTag,
+        a.createUser,
+        a.createTime,
+        a.updateUser,
+        a.updateTime,
+        a.isEffective
+    </sql>
 
     <!-- 通过很多限制条件查询满足的Url -->
     <select id="findFriendUrlMapListByQuery" resultType="java.util.Map">
         SELECT
         <include refid="friend_url_table"/>
         FROM
-        friendUrl tt
+        friendUrl a
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <if test="map.friendUrlName != null ">
-                AND tt.friendUrlName like CONCAT ('%', #{map.friendUrlName}, '%')
+                AND a.friendUrlName like CONCAT ('%', #{map.friendUrlName}, '%')
             </if>
             <if test="map.isEffective != null ">
-                AND tt.isEffective=#{map.isEffective}
+                AND a.isEffective=#{map.isEffective}
             </if>
         </trim>
         <if test="map.order != null ">
             ORDER BY
-            tt.${map.order} ${map.aOrS}
+            a.${map.order} ${map.aOrS}
         </if>
         <if test="map.start != null ">
             limit #{map.start},#{map.limit}

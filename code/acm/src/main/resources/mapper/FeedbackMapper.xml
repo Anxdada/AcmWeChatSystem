@@ -8,12 +8,12 @@
     </select>
 
     <sql id="feedback_table">
-		tt.feedbackId,
-		tt.feedbackUser,
-		tt.feedbackBody,
-		tt.feedbackTime,
-		tt.isEffective
-	</sql>
+        a.feedbackId,
+        a.feedbackUser,
+        a.feedbackBody,
+        a.feedbackTime,
+        a.isEffective
+    </sql>
 
     <!-- 添加反馈 -->
     <insert id="addFeedback" useGeneratedKeys="true">
@@ -53,13 +53,13 @@
         SELECT
         count(*)
         FROM
-            feedback tt
+        feedback a
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <if test="map.feedbackId != null ">
-                AND tt.feedbackId like CONCAT ('%', #{map.feedbackId}, '%')
+                AND a.feedbackId like CONCAT ('%', #{map.feedbackId}, '%')
             </if>
             <if test="map.isEffective != null ">
-                AND tt.isEffective=#{map.isEffective}
+                AND a.isEffective=#{map.isEffective}
             </if>
         </trim>
     </select>
@@ -69,24 +69,24 @@
         SELECT
         <include refid="feedback_table"/>
         FROM
-            feedback tt
+        feedback a
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <if test="map.feedbackId != null ">
-                AND tt.feedbackId=#{map.feedbackId}
+                AND a.feedbackId=#{map.feedbackId}
             </if>
             <if test="map.feedbackUser != null ">
-                AND tt.feedbackUser=#{map.feedbackUser}
+                AND a.feedbackUser=#{map.feedbackUser}
             </if>
             <if test="map.feedbackBody != null ">
-                AND tt.feedbackUser like CONCAT ('%', #{map.feedbackBody}, '%')
+                AND a.feedbackUser like CONCAT ('%', #{map.feedbackBody}, '%')
             </if>
             <if test="map.isEffective != null ">
-                AND tt.isEffective=#{map.isEffective}
+                AND a.isEffective=#{map.isEffective}
             </if>
         </trim>
         <if test="map.order != null ">
             ORDER BY
-                tt.${map.order} ${map.aOrS}
+            a.${map.order} ${map.aOrS}
         </if>
         <if test="map.start != null ">
             limit #{map.start}, #{map.limit}
@@ -99,24 +99,24 @@
         SELECT
         <include refid="feedback_table"/>
         FROM
-            feedback tt
+        feedback a
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <if test="map.feedbackId != null ">
-                AND tt.feedbackId=#{map.feedbackId}
+                AND a.feedbackId=#{map.feedbackId}
             </if>
             <if test="map.feedbackUser != null ">
-                AND tt.feedbackUser=#{map.feedbackUser}
+                AND a.feedbackUser=#{map.feedbackUser}
             </if>
             <if test="map.feedbackBody != null ">
-                AND tt.feedbackUser like CONCAT ('%', #{map.feedbackBody}, '%')
+                AND a.feedbackUser like CONCAT ('%', #{map.feedbackBody}, '%')
             </if>
             <if test="map.isEffective != null ">
-                AND tt.isEffective=#{map.isEffective}
+                AND a.isEffective=#{map.isEffective}
             </if>
         </trim>
         <if test="map.order != null ">
             ORDER BY
-            tt.${map.order} ${map.aOrS}
+            a.${map.order} ${map.aOrS}
         </if>
         <if test="map.start != null ">
             limit #{map.start}, #{map.limit}

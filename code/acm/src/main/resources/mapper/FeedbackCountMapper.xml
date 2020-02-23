@@ -8,11 +8,11 @@
     </select>
 
     <sql id="feedback_count_table">
-		tt.feedbackCountId,
-		tt.feedbackId,
-		tt.userId,
-		tt.type,
-		tt.isEffective
+		a.feedbackCountId,
+		a.feedbackId,
+		a.userId,
+		a.type,
+		a.isEffective
 	</sql>
 
     <!-- 添加一个操作 -->
@@ -57,21 +57,21 @@
         SELECT
         <include refid="feedback_count_table"/>
         FROM
-            feedbackCount tt
+        feedbackCount a
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <if test="map.feedbackId != null ">
-                AND tt.feedbackId like CONCAT ('%', #{map.feedbackId}, '%')
+                AND a.feedbackId like CONCAT ('%', #{map.feedbackId}, '%')
             </if>
             <if test="map.userId != null ">
-                AND tt.userId=#{map.userId}
+                AND a.userId=#{map.userId}
             </if>
             <if test="map.isEffective != null ">
-                AND tt.isEffective=#{map.isEffective}
+                AND a.isEffective=#{map.isEffective}
             </if>
         </trim>
         <if test="map.order != null ">
             ORDER BY
-            tt.${map.order} ${map.aOrS}
+            a.${map.order} ${map.aOrS}
         </if>
         <if test="map.start != null ">
             limit #{map.start}, #{map.limit}
@@ -84,16 +84,16 @@
         SELECT
         COUNT(*)
         FROM
-            feedbackCount tt
+        feedbackCount a
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <if test="map.feedbackId != null ">
-                AND tt.feedbackId like CONCAT ('%', #{map.feedbackId}, '%')
+                AND a.feedbackId like CONCAT ('%', #{map.feedbackId}, '%')
             </if>
             <if test="map.type != null ">
-                AND tt.type=#{map.type}
+                AND a.type=#{map.type}
             </if>
             <if test="map.isEffective != null ">
-                AND tt.isEffective=#{map.isEffective}
+                AND a.isEffective=#{map.isEffective}
             </if>
         </trim>
         <if test="map.start != null ">
@@ -106,21 +106,21 @@
         SELECT
         <include refid="feedback_count_table"/>
         FROM
-            feedbackCount tt
+        feedbackCount a
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <if test="map.feedbackId != null ">
-                AND tt.feedbackId like CONCAT ('%', #{map.feedbackId}, '%')
+                AND a.feedbackId like CONCAT ('%', #{map.feedbackId}, '%')
             </if>
             <if test="map.userId != null ">
-                AND tt.userId=#{map.userId}
+                AND a.userId=#{map.userId}
             </if>
             <if test="map.isEffective != null ">
-                AND tt.isEffective=#{map.isEffective}
+                AND a.isEffective=#{map.isEffective}
             </if>
         </trim>
         <if test="map.order != null ">
             ORDER BY
-            tt.${map.order} ${map.aOrS}
+            a.${map.order} ${map.aOrS}
         </if>
         <if test="map.start != null ">
             limit #{map.start}, #{map.limit}

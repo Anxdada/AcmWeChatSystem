@@ -6,9 +6,15 @@ const localhost = "http://localhost:9999"
 // 主页的一些数据
 export const GetHomeData = localhost+"/home/getHomeData";
 
-// 用户
+// 用户(后台操作的接口)PC端
 export const GetLoginUser = localhost+"/user/getLoginUser";
 export const LoginUrl = localhost+"/user/PCLogin";
+export const AddUserPC = localhost+"/user/addUserPC";
+export const UpdateUserPC = localhost+"/user/updateUserPC";
+export const SelectUserPC = localhost+"/user/selectUserPC";
+export const SelectUserStatistic = localhost+"/user/statistic";
+// 用户 (前台操作, 手机端)的接口
+
 
 
 // 新闻的分类

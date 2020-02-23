@@ -13,10 +13,10 @@ public class User implements Serializable {
 	private Long userId;
 	private String userName;
 	private String password;
-	private Integer auth; // 0-未通过审核 0-超级管理员 1-管理员 2-队员 3-萌新 4-未完善资料的萌新 (后面的0-4是指身份值的数字的二进制的位数)
+	private Integer auth; // 0-超级管理员 1-管理员 2-队员 3-游客 4-暂存给后面的类别 5-拉黑用户 (后面的0-5是指身份值的数字的二进制的位数)
 	// 比如 anth = 6, 那么这个人既是 管理员 又是 队员 (第多少位上是1, 代表他就具有该种身份)
 	private String avatar;  // 头像
-	private Long studentId;  // 学号
+	private String studentId;  // 学号
 	private Integer grade;   // 年级
 	private Date createTime;  // 申请通过时间, 可以记录加入多久了之类的
 	private String telephone; // 联系电话
@@ -64,11 +64,11 @@ public class User implements Serializable {
 		this.avatar = avatar;
 	}
 
-	public Long getStudentId() {
+	public String getStudentId() {
 		return studentId;
 	}
 
-	public void setStudentId(Long studentId) {
+	public void setStudentId(String studentId) {
 		this.studentId = studentId;
 	}
 

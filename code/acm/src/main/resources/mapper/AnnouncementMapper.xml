@@ -34,7 +34,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="AnnouncementMap">
         select
-          announcementId, announcementTitle, announcementTagId, createUser, createTime, updateUser, updateTime, isRegister, isDone, isEffective
+        announcementId, announcementTitle, announcementTagId, createUser, createTime, updateUser, updateTime, isRegister, isDone, isEffective
         from acm.announcement
         <where>
             <if test="announcementid != null">
@@ -183,51 +183,51 @@
 
 
     <sql id="announcement_table">
-		tt.announcementId,
-		tt.announcementTitle,
-		tt.announcementBody,
-		tt.announcementTagId,
-		tt.createUser,
-        tt.createTime,
-		tt.updateUser,
-		tt.updateTime,
-		tt.isRegister,
-		tt.registerStartTime,
-        tt.registerEndTime,
-		tt.startTime,
-		tt.lastTime,
-		tt.isPublish,
-		tt.isEffective,
+		a.announcementId,
+		a.announcementTitle,
+		a.announcementBody,
+		a.announcementTagId,
+		a.createUser,
+        a.createTime,
+		a.updateUser,
+		a.updateTime,
+		a.isRegister,
+		a.registerStartTime,
+        a.registerEndTime,
+		a.startTime,
+		a.lastTime,
+		a.isPublish,
+		a.isEffective,
 	</sql>
 
     <!-- 多了和类别的字段 -->
     <sql id="announcement_join_tag_table">
-		tt.announcementId,
-		tt.announcementTitle,
-		tt.announcementBody,
-		tt.announcementTagId,
-		tt.createUser,
-        tt.createTime,
-		tt.updateUser,
-		tt.updateTime,
-		tt.isRegister,
-		tt.registerStartTime,
-        tt.registerEndTime,
-		tt.startTime,
-		tt.lastTime,
-		tt.isPublish,
-		tt.isEffective,
-		tb.announcementTagName,
-		tb.announcementTagColor
+		a.announcementId,
+		a.announcementTitle,
+		a.announcementBody,
+		a.announcementTagId,
+		a.createUser,
+        a.createTime,
+		a.updateUser,
+		a.updateTime,
+		a.isRegister,
+		a.registerStartTime,
+        a.registerEndTime,
+		a.startTime,
+		a.lastTime,
+		a.isPublish,
+		a.isEffective,
+		tb.announcemenaagName,
+		tb.announcemenaagColor
 	</sql>
 
 
     <!-- 通过Id 返回 返回值不一样, 直接返回实体类 -->
     <select id="findAnnouncementListByAnnouncementId" resultType="com.example.acm.entity.Announcement">
         SELECT
-            a.*
+        a.*
         FROM
-            announcement a
+        announcement a
         <where>
             <if test="announcementId != null">
                 a.announcementId = #{announcementId}
@@ -238,9 +238,9 @@
     <!-- 通过很多限制条件查询满足的OnDuty的总数 -->
     <select id="countAnnouncementMapListByQuery" resultType="java.lang.Integer">
         SELECT
-            count(*)
+        count(*)
         FROM
-            announcement a
+        announcement a
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <if test="map.announcementTitle != null ">
                 AND a.announcementTitle like CONCAT ('%', #{map.announcementTitle}, '%')
@@ -260,9 +260,9 @@
     <!-- 通过很多限制条件查询满足的announcement inner join 没有匹配的行不会列出 -->
     <select id="findAnnouncementMapListByQueryJoinTagTable" resultType="java.util.Map">
         SELECT
-            a.*, b.announcementTagName, b.announcementTagColor, b.needStartTime
+        a.*, b.announcementTagName, b.announcementTagColor, b.needStartTime
         FROM
-            announcement a inner join announcementTag b
+        announcement a inner join announcementTag b
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             AND a.announcementTagId = b.announcementTagId
             <if test="map.announcementId != null ">

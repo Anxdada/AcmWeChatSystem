@@ -18,6 +18,12 @@ public interface UserService{
      *
      */
     public void addUser(User user);
+
+    /**
+     * 更新user
+     *
+     */
+    public void updateUserPC(User user);
     
     /** 
      * 添加user列表

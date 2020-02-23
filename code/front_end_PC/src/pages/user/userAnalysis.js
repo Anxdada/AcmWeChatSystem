@@ -1,113 +1,64 @@
 import React from 'react';
 import './index.less';
-import { Row, Col, message, Icon, Card } from 'antd';
+import { Row, Col, message, Icon, Card, notification } from 'antd';
 import ReactHighcharts from 'react-highcharts';
-import cookie from 'react-cookies';
+import Fetch from './../../fetch';
+import { SelectUserStatistic } from '../../config/dataAddress';
 
 class LineChart extends React.Component{
 
-    constructor(props) {
-        super(props);
+constructor(props) {
+    
+    super(props);
         this.state = {
-        configUserRegister : {
-            title: {
-                text: '用户注册量'
-            },
-
-            yAxis: {
+            configUserRegister : {
                 title: {
-                  text: '总数'
-                }
-            },
-            credits:{
-                enabled:false
-            },
-            xAxis:{
-                categories:[2019, 2020]
-            },
-            series: [{
-                name: '注册人数',
-                data: [2, 8]
-            }],
-        },
-        configUserActive : {
-            title: {
-                text: '用户活跃度'
-            },
+                    text: '用户注册量'
+                },
 
-            yAxis: {
-              title: {
-                 text: '总数'
-              }
+                yAxis: {
+                    title: {
+                        text: '总数'
+                    }
+                },
+                credits:{
+                    enabled:false
+                },
+                xAxis:{
+                    categories:[2019, 2020]
+                },
+                series: [{
+                    name: '注册人数',
+                    data: [2, 8]
+                }],
             },
-            credits:{
-                enabled:false
-            },
-            xAxis:{
-                categories:['2010','2011','2012','2013','2014','2015','2016','2017']
-            },
-            series: [{
-                name: '活跃人数',
-                data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
-            }],
+            configUserActive : {
+                title: {
+                    text: '用户活跃度'
+                },
+                yAxis: {
+                    title: {
+                        text: '总数'
+                    }
+                },
+                credits:{
+                    enabled:false
+                },
+                xAxis:{
+                    categories:['2010','2011','2012','2013','2014','2015','2016','2017']
+                },
+                series: [{
+                    name: '活跃人数',
+                    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+                }],
+            }
         }
-        }
-      
     }
-    componentWillMount(){
-      this.getData();
-      this.getData2();
+
+    componentWillMount() {
+
     }
-    getData() {
-    //   fetch(InvitationSumUrl, {
-    //     method: 'POST',
-    //     headers: {
-    //       'Authorization': cookie.load('token'),
-    //       'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-    //     }
-    //   }).then( res => res.json()).then(
-    //     data => {
-    //       var tmp = this.state.config;
-    //       //alert(data.code);
-    //       if (data.code==0) {
-    //         //this.setState({series:this.series[0].data.add(data.resultBean)});
-    //        // this.setState({series[0].data: data.resultBean})
-    //        console.log(data.resultBean);
-    //        tmp.xAxis.categories = data.resultBean.data;
-    //        tmp.series[0].data = data.resultBean.sum;
-    //        this.setState({config: tmp}, ()=>{console.log(this.state.config)});
-    //        //return data.resultBean;
-    //       } else {
-    //         message.error(data.msg);
-    //       }
-    //     }
-    //   )
-    }
-    getData2() {
-    //   fetch(ProblemSumUrl, {
-    //     method: 'POST',
-    //     headers: {
-    //       'Authorization': cookie.load('token'),
-    //       'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-    //     }
-    //   }).then( res => res.json()).then(
-    //     data => {
-    //       var tmp = this.state.config1;
-    //       //alert(data.code);
-    //       if (data.code==0) {
-    //         //this.setState({series:this.series[0].data.add(data.resultBean)});
-    //        // this.setState({series[0].data: data.resultBean})
-    //        console.log(data.resultBean);
-    //        tmp.xAxis.categories = data.resultBean.data;
-    //        tmp.series[0].data = data.resultBean.sum;
-    //        this.setState({config1: tmp}, ()=>{console.log(this.state.config1)});
-    //        //return data.resultBean;
-    //       } else {
-    //         message.error(data.msg);
-    //       }
-    //     }
-    //   )
-    }
+
     render() {
         return (
             <div style={{margin:'10px 0'}}>
@@ -121,85 +72,87 @@ class LineChart extends React.Component{
                 </Row>
             </div>
         );
-  }
+    }
 }
 
 class UserNumberStatistics extends React.Component{
 
     constructor(props) {
-      super(props);
-      this.state = {
-        allUserNum: '',
-        managerUserNum: '',
-        unCheckUserNum: '',
-        failUserNum: '',
-      }
-  
+        super(props);
+        this.state = {
+            totUserNum: 0,
+            totManageNum: 0,
+            totTeamNum: 0,
+            totBlockNum: 0,
+        }
     }
-    componentWillMount(){
-        this.getData();
+
+    componentWillMount() {
+        this.getUserData();
     }
-    getData() {
-      this.setState({
-        allUserNum: 10,
-        managerUserNum: 1,
-        unCheckUserNum: 2,
-        failUserNum: 0,
-      })
-    //   fetch(GetIndexInfoUrl, {
-    //     method: 'POST',
-    //     headers: {
-    //       'Authorization': cookie.load('token'),
-    //       'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-    //     }
-    //   }).then( res => res.json()).then(
-    //     data => {
-    //       if (data.code==0) {
-    //         this.setState({allFriendNum: data.resultBean.allFriendNum});
-    //         this.setState({nowDuty: data.resultBean.allUserNum});
-    //         this.setState({allInvitationNum: data.resultBean.allInvitationNum});
-    //         this.setState({allUserNum: data.resultBean.allPhotoNum});
-  
-    //       } else {
-    //         message.error(data.msg);
-    //       }
-    //     }
-    
-    //   )
+
+    getUserData() {
+        // auth 根据规则获取普通用户的, 0-超级管理员 1-管理员 2-队员 3-萌新 4-未完善资料的萌新 5-拉黑用户 (后面的0-5是指身份值的数字的二进制的位数)
+        // 比如 anth = 6, 那么这个人既是 管理员 又是 队员 (第多少位上是1, 代表他就具有该种身份)
+        Fetch.requestGet({
+            url: SelectUserStatistic,
+            timeOut: 3000,
+        }).then( 
+            data => {
+                console.log(data);
+                if (data.status == 0) {
+                    this.setState({
+                        totUserNum: data.resultBean.totUserNum,
+                        totManageNum: data.resultBean.totManageNum,
+                        totTeamNum: data.resultBean.totTeamNum,
+                        totBlockNum: data.resultBean.totBlockNum,
+                    })
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        )
     }
+
     render() {
-      return(
-        <div>
-          <Row gutter={16} className="first">
+        return (
+            <div>
+            <Row gutter={16} className="first">
             <Col span={6}>
                 <Card title={<span><Icon type="team" /><span>用户总数</span></span>}>
-                  <p style={{fontSize:'25px'}}><strong>{this.state.allUserNum}</strong></p>
+                  <p style={{fontSize:'25px'}}><strong>{this.state.totUserNum}</strong></p>
                 </Card>
             </Col>
             <Col span={6}>
                 <Card title={<span><Icon type="team" /><span>管理员个数</span></span>}>
-                  <p style={{fontSize:'25px'}}><strong>{this.state.managerUserNum}</strong></p>
+                  <p style={{fontSize:'25px'}}><strong>{this.state.totManageNum}</strong></p>
                 </Card>
             </Col>
             <Col span={6}>
-                <Card title={<span><Icon type="team" /><span>未审核个数</span></span>}>
-                  <p style={{fontSize:'25px'}}><strong>{this.state.unCheckUserNum}</strong></p>
+                <Card title={<span><Icon type="team" /><span>队员个人</span></span>}>
+                  <p style={{fontSize:'25px'}}><strong>{this.state.totTeamNum}</strong></p>
                 </Card>
             </Col>
             <Col span={6} >
-                <Card title={<span><Icon type="team" /><span>未通过个数</span></span>}>
-                  <p style={{fontSize:'25px'}}><strong>{this.state.failUserNum}</strong></p>
+                <Card title={<span><Icon type="team" /><span>拉黑用户个数</span></span>}>
+                  <p style={{fontSize:'25px'}}><strong>{this.state.totBlockNum}</strong></p>
                 </Card>
             </Col>
-          </Row>
-        </div>
-      );
+            </Row>
+            </div>
+        );
     }
-  }
+}
 
 
 export default class UserAnalysis extends React.Component {
-
     render() {
         return (
             <div>

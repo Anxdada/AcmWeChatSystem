@@ -31,7 +31,15 @@ public class UserServiceImpl implements UserService {
      */
     public void addUser(User user){
         userMapper.addUser(user);
-    }    
+    }
+
+    /**
+     * 更新user
+     *
+     */
+    public void updateUserPC(User user) {
+        userMapper.updateUserPC(user);
+    }
     
     /** 
      * 添加user列表

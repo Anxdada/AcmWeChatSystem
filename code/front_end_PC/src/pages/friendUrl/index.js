@@ -12,7 +12,6 @@ import Fetch from './../../fetch';
 
 var emitter = new EventEmitter2();
 // 用于刷新react, 从一个页面返回时出发最有用, on 注册, emit 修改触发
-var emitter2 = new EventEmitter2();
 
 
 moment.locale('zh-cn');

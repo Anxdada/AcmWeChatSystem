@@ -8,16 +8,16 @@
     </select>
 
     <sql id="on_duty_table">
-		tt.onDutyId,
-		tt.onDutyUserName,
-		tt.onDutyTelephone,
-		tt.onDutyStartTime,
-		tt.onDutyEndTime,
-		tt.createUser,
-        tt.createTime,
-		tt.updateUser,
-		tt.updateTime,
-		tt.isEffective
+		a.onDutyId,
+		a.onDutyUserName,
+		a.onDutyTelephone,
+		a.onDutyStartTime,
+		a.onDutyEndTime,
+		a.createUser,
+        a.createTime,
+		a.updateUser,
+		a.updateTime,
+		a.isEffective
 	</sql>
 
     <!-- 添加OnDuty -->
@@ -72,10 +72,10 @@
     <select id="findOnDutyListByOnDutyId" resultType="com.example.acm.entity.OnDuty">
         SELECT
         *
-        FROM onDuty tt
+        FROM onDuty a
         <where>
             <if test="onDutyId != null">
-                tt.onDutyId = #{onDutyId}
+                a.onDutyId = #{onDutyId}
             </if>
         </where>
     </select>
@@ -85,17 +85,17 @@
         SELECT
         count(*)
         FROM
-        onDuty tt
+        onDuty a
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <if test="map.onDutyUserName != null ">
-                AND tt.onDutyUserName like CONCAT ('%', #{map.onDutyUserName}, '%')
+                AND a.onDutyUserName like CONCAT ('%', #{map.onDutyUserName}, '%')
             </if>
             <if test="map.isEffective != null ">
-                AND tt.isEffective=#{map.isEffective}
+                AND a.isEffective=#{map.isEffective}
             </if>
             <if test="map.onDutyStartTime != null ">
-                AND ( tt.onDutyStartTime between #{map.onDutyStartTime} and #{map.onDutyEndTime}
-                OR tt.onDutyEndTime between #{map.onDutyStartTime} and #{map.onDutyEndTime} )
+                AND ( a.onDutyStartTime between #{map.onDutyStartTime} and #{map.onDutyEndTime}
+                OR a.onDutyEndTime between #{map.onDutyStartTime} and #{map.onDutyEndTime} )
             </if>
         </trim>
     </select>
@@ -105,22 +105,22 @@
         SELECT
         <include refid="on_duty_table"/>
         FROM
-        onDuty tt
+        onDuty a
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <if test="map.onDutyUserName != null ">
-                AND tt.onDutyUserName like CONCAT ('%', #{map.onDutyUserName}, '%')
+                AND a.onDutyUserName like CONCAT ('%', #{map.onDutyUserName}, '%')
             </if>
             <if test="map.isEffective != null ">
-                AND tt.isEffective=#{map.isEffective}
+                AND a.isEffective=#{map.isEffective}
             </if>
             <if test="map.onDutyStartTime != null ">
-                AND ( tt.onDutyStartTime between #{map.onDutyStartTime} and #{map.onDutyEndTime}
-                    OR tt.onDutyEndTime between #{map.onDutyStartTime} and #{map.onDutyEndTime} )
+                AND ( a.onDutyStartTime between #{map.onDutyStartTime} and #{map.onDutyEndTime}
+                OR a.onDutyEndTime between #{map.onDutyStartTime} and #{map.onDutyEndTime} )
             </if>
         </trim>
         <if test="map.order != null ">
             ORDER BY
-            tt.${map.order} ${map.aOrS}
+            a.${map.order} ${map.aOrS}
         </if>
         <if test="map.start != null ">
             limit #{map.start},#{map.limit}

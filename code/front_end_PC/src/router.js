@@ -14,8 +14,9 @@ import FormLogin from './pages/login/login';
 import Register from './pages/login/register'
 import NoMatch from './pages/nomatch';
 import { HashRouter, Route, Switch } from 'react-router-dom';
-import UserManage from './pages/user/userManage';
+
 import UserAnalysis from './pages/user/userAnalysis';
+import UserManage from './pages/user/userManage';
 
 import CategoryNews from './pages/news/category';
 import AddNews from './pages/news/addNews';

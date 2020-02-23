@@ -367,9 +367,6 @@ class AnnouncementView extends React.Component {
             rangeTime = [moment(this.state.searchStartTime), moment(this.state.searchEndTime)];
         else rangeTime = [null, null];
 
-        // console.log(this.state.allTag);
-        // console.log(this.state.allAnnouncementData);
-
         return(
             <div style={{ flex: 1 }}>
                 <Card title="公告管理" >

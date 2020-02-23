@@ -8,7 +8,7 @@ CREATE TABLE `user` (
   `password` varchar(50) DEFAULT NULL,
   `auth` int(11) DEFAULT NULL,
   `avatar` varchar(255) DEFAULT NULL,
-  `studentId` bigint(20) DEFAULT NULL,
+  `studentId` varchar(20) DEFAULT NULL,
   `grade` int(11) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `telephone` varchar(20) DEFAULT NULL,

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
@@ -27,6 +28,8 @@ import java.util.*;
 public class UserController extends BaseController {
 
     private Logger LOG = LoggerFactory.getLogger(this.getClass());
+
+    private final Long longTwo = Long.parseLong(String.valueOf(2));
 
     @Autowired
     private UserService userService;
@@ -106,10 +109,125 @@ public class UserController extends BaseController {
         }
     }
 
+    @PostMapping("/updateUserPC")
+    @ResponseBody
+    public ResultBean updateUserPC(@RequestParam(value = "userId", required = true) long userId,
+                                 @RequestParam(value = "auth", defaultValue = "-1", required = false) int auth,
+                                 @RequestParam(value = "grade", defaultValue = "-1", required = false) int grade,
+                                 HttpServletRequest request, HttpServletResponse response) {
+
+        try {
+
+//            System.out.println(auth);
+//            System.out.println(grade);
+
+            User user = getUserIdFromSession(request);
+            if (user == null) {
+                // 如果忘记传头部信息过来, 默认设置为超级管理员的改动
+                user = new User();
+                user.setUserId(longTwo);
+            }
+
+            return userDealService.updateUserPC(user, userId, auth, grade);
+
+        } catch(Exception e) {
+            LOG.error(e.getMessage(), e);
+
+            e.printStackTrace();
+            return new ResultBean(ResultCode.SYSTEM_FAILED);
+        }
+    }
+
+
+    @PostMapping("/selectUserPC")
+    @ResponseBody
+    public ResultBean selectUserPC(@RequestParam(value = "userName", defaultValue = "", required = false) String userName,
+                                 @RequestParam(value = "studentId", defaultValue = "", required = false) String studentId,
+                                 @RequestParam(value = "realName", defaultValue = "", required = false) String realName,
+                                 @RequestParam(value = "auth", defaultValue = "-1", required = false) int auth,
+                                 @RequestParam(value = "aOrs", defaultValue = "1", required = false) int aOrs,
+                                 @RequestParam(value = "order", defaultValue = "createTime", required = false) String order,
+                                 @RequestParam(value = "pageNum", defaultValue = "1", required = false) int pageNum,
+                                 @RequestParam(value = "pageSize", defaultValue="10", required = false) int pageSize,
+                                 HttpServletRequest request, HttpServletResponse response) {
+
+        try {
+
+            return userDealService.selectUserPC(userName, realName, studentId, auth, aOrs, order, pageNum, pageSize);
+
+        } catch(Exception e) {
+            LOG.error(e.getMessage(), e);
+
+            e.printStackTrace();
+            return new ResultBean(ResultCode.SYSTEM_FAILED);
+        }
+    }
+
+    @GetMapping("/statistic")
+    @ResponseBody
+    public ResultBean statisticUser(HttpServletRequest request, HttpServletResponse response) {
+        try {
+
+            Map<String, Object> totNumMap = new HashMap<>();
+
+            // 用户总数
+            Map<String, Object> map = new HashMap<>();
+            map.put("isEffective", SysConst.LIVE);
+            totNumMap.put("totUserNum", userService.countUserMapListByQueryMap(map));
+
+            int auth = 0;
+            // 管理员个数
+            auth = 2;
+            totNumMap.put("totManageNum", userService.findSatisfyAuthUser(auth).size());
+
+            // 对员个数
+            auth = (1<<2);
+            totNumMap.put("totTeamNum", userService.findSatisfyAuthUser(auth).size());
+
+            // 黑用户个数
+            auth = (1<<5);
+            totNumMap.put("totBlockNum", userService.findSatisfyAuthUser(auth).size());
+
+            return new ResultBean(ResultCode.SUCCESS, totNumMap);
+
+        } catch(Exception e) {
+            LOG.error(e.getMessage(), e);
+
+            e.printStackTrace();
+            return new ResultBean(ResultCode.SYSTEM_FAILED);
+        }
+    }
+
+
+
+    /**
+     * 筛选对应身份的人
+     *
+     * @param auth 身份
+     * 0-未通过审核 0-超级管理员 1-管理员 2-队员 3-萌新 4-未完善资料的萌新 (后面的0-4是指身份值的数字的二进制的位数)
+     * 比如 anth = 6, 那么这个人既是 管理员 又是 队员 (第多少位上是1, 代表他就具有该种身份)
+     *
+     */
+    @PostMapping("/getAuthUser")
+    @ResponseBody
+    public ResultBean getOnDutyStaff(@RequestParam(value="auth", required = true) int auth,
+                                     HttpServletRequest request, HttpServletResponse response) {
+
+
+        List<Map<String, Object>> list = userService.findSatisfyAuthUser(auth);
+        if (list.isEmpty()) {
+            return new ResultBean(ResultCode.SQL_NULL_RECODE, "没有满足该身份的用户");
+        }
+
+        return new ResultBean(ResultCode.SUCCESS, list);
+    }
+
+
+    // 暂时没用这个函数
     @PostMapping("/detailUser")
     @ResponseBody
     public ResultBean detailUser(@RequestParam(value="userId", required = true) long userId,
-                           HttpServletRequest request, HttpServletResponse response) {
+                                 HttpServletRequest request, HttpServletResponse response) {
 
         try {
 

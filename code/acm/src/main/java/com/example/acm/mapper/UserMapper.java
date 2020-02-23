@@ -25,7 +25,13 @@ public interface UserMapper {
      *
      */
     public void addUser(@Param("user") User user);
-    
+
+    /**
+     * 更新user
+     *
+     */
+    public void updateUserPC(@Param("user") User user);
+
     /** 
      * 添加user列表
      *
