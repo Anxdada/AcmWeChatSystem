@@ -160,7 +160,7 @@ public class OnDutyController extends BaseController {
 
 //        System.out.println(onDutyId);
 
-        return onDutyDealService.detailFriendUrl(onDutyId);
+        return onDutyDealService.detailOnDuty(onDutyId);
 
     }
 }

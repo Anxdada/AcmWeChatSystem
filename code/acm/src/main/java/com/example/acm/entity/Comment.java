@@ -1,65 +1,103 @@
-
 package com.example.acm.entity;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @Author xierenyi
- * @Description: 评论表
- * @Date: Created in 15:12 2019-12-22
+ * 评论表
+ *
+ * @author xierenyi
+ * @version 1.0
+ * @date 2020-02-29 16:00
  */
-public class Comment implements Serializable {
+public class Comment {
+    private Long commentId;
+    private Object commentBody;
+    private Integer postId;
+    private Integer replyCommentId;
+    private Long createUser;
+    private Date createTime;
+    private Long updateUser;
+    private Date updateTime;
+    private Integer like;
+    private Integer isEffective;
 
-    private Long commentId;//
-    private Long invitationId;//
-    private Long pCommentid;//
-    private Object commentBody;//
-    private Integer createUser;//
-    private Date createDate;//
-    private Integer isEffective;//
+    public Long getCommentId() {
+        return commentId;
+    }
 
-	public void setCommentId(Long commentId) {
-		this.commentId = commentId;
-	}
-	public Long getCommentId() {
-		return this.commentId;
-	}
-	public void setInvitationId(Long invitationId) {
-		this.invitationId = invitationId;
-	}
-	public Long getInvitationId() {
-		return this.invitationId;
-	}
-	public void setPCommentid(Long pCommentid) {
-		this.pCommentid = pCommentid;
-	}
-	public Long getPCommentid() {
-		return this.pCommentid;
-	}
-	public void setCommentBody(Object commentBody) {
-		this.commentBody = commentBody;
-	}
-	public Object getCommentBody() {
-		return this.commentBody;
-	}
-	public void setCreateUser(Integer createUser) {
-		this.createUser = createUser;
-	}
-	public Integer getCreateUser() {
-		return this.createUser;
-	}
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
-	public Date getCreateDate() {
-		return this.createDate;
-	}
-	public void setIsEffective(Integer isEffective) {
-		this.isEffective = isEffective;
-	}
-	public Integer getIsEffective() {
-		return this.isEffective;
-	}
+    public void setCommentId(Long commentId) {
+        this.commentId = commentId;
+    }
+
+    public Object getCommentBody() {
+        return commentBody;
+    }
+
+    public void setCommentBody(Object commentBody) {
+        this.commentBody = commentBody;
+    }
+
+    public Integer getPostId() {
+        return postId;
+    }
+
+    public void setPostId(Integer postId) {
+        this.postId = postId;
+    }
+
+    public Integer getReplyCommentId() {
+        return replyCommentId;
+    }
+
+    public void setReplyCommentId(Integer replyCommentId) {
+        this.replyCommentId = replyCommentId;
+    }
+
+    public Long getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(Long createUser) {
+        this.createUser = createUser;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Long getUpdateUser() {
+        return updateUser;
+    }
+
+    public void setUpdateUser(Long updateUser) {
+        this.updateUser = updateUser;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public Integer getLike() {
+        return like;
+    }
+
+    public void setLike(Integer like) {
+        this.like = like;
+    }
+
+    public Integer getIsEffective() {
+        return isEffective;
+    }
+
+    public void setIsEffective(Integer isEffective) {
+        this.isEffective = isEffective;
+    }
 }
-

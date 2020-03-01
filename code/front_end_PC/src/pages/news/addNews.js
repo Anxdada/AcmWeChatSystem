@@ -3,7 +3,6 @@ import E from 'wangeditor';
 import './index.less';
 import { DatePicker, Row, Col, Input, Button, Card, Select, Tag, message, notification } from 'antd';
 import { AddNewsUrl, UploadImg, SelectNewsTag } from './../../config/dataAddress';
-import cookie from 'react-cookies';
 import Fetch from './../../fetch';
 import { EventEmitter2 } from 'eventemitter2';
 
@@ -18,7 +17,6 @@ function getString(s) {
 }
 
 class AddNewsPublishView extends React.Component {
-
 
     state = {
         loading: false,
@@ -96,8 +94,7 @@ class AddNewsPublishView extends React.Component {
 
         Fetch.requestPost({
             url: AddNewsUrl,
-            info: 'newsId='+this.state.newsId+'&newsTitle='+this.props.newsTitle
-                    +'&newsBody='+encodeURI(getString(this.props.editorContent))
+            info: 'newsTitle='+this.props.newsTitle+'&newsBody='+encodeURI(getString(this.props.editorContent))
                     +'&newsTagId='+this.state.newsTagId+'&isPublish='+type,
             timeOut: 3000,
         }).then(
@@ -157,7 +154,7 @@ class AddNewsPublishView extends React.Component {
 
     render() {
         return (
-            <div style={{ padding: 10 }} >
+            <div className="publishView" >
                 <Card title="发布配置" >
                     &nbsp;&nbsp;&nbsp;&nbsp;类别:&nbsp;&nbsp;
                     <Select value={ this.state.newsTagName } style={{ width: 150 }} 
@@ -212,7 +209,7 @@ class AddNewsEditView extends React.Component {
 
     render() {
         return (
-          <div style={{ flex: 1, padding: "10px" }}>
+          <div style={{ flex: 1 }}>
             <Row>
                 <Col span={18}>
                     <Card title="添加新闻" >

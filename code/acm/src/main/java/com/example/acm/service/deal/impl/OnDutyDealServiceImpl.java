@@ -184,12 +184,6 @@ public class OnDutyDealServiceImpl implements OnDutyDealService {
 
             List<Map<String, Object>> list = onDutyService.findOnDutyMapListByQuery(map);
 
-//            System.out.println("xierenyi " + list.size());
-
-            if (list.size() < 1) {
-                return new ResultBean(ResultCode.SYSTEM_FAILED);
-            }
-
             if (list.size() > 0) {
                 for (Map<String, Object> mapTemp : list) {
                     List<User> listUsers = userService.findUserListByUserId((Long)mapTemp.get("updateUser"));
@@ -217,6 +211,7 @@ public class OnDutyDealServiceImpl implements OnDutyDealService {
 
 
         } catch (Exception e) {
+            // log
             e.printStackTrace();
             return new ResultBean(ResultCode.SYSTEM_FAILED);
         }
@@ -230,7 +225,7 @@ public class OnDutyDealServiceImpl implements OnDutyDealService {
      * @param onDutyId 值班Id
      * @return
      */
-    public ResultBean detailFriendUrl(long onDutyId) {
+    public ResultBean detailOnDuty(long onDutyId) {
         try {
             List<OnDuty> onDutys = onDutyService.findOnDutyListByOnDutyId(onDutyId);
 

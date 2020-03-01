@@ -35,7 +35,7 @@ public interface RegisterDealService {
      * @param studentId 学号
      * @return realName 姓名
      */
-    public ResultBean updateRegister(User user, long registerId, long studentId, String realName);
+    public ResultBean updateRegister(User user, long registerId, String studentId, String realName);
 
     /**
      * 提取所有报名
@@ -43,5 +43,5 @@ public interface RegisterDealService {
      * @param announcementId 对应的公告id
      * @param studentId 搜索的学号
      */
-    public ResultBean selectRegister(long announcementId, long studentId);
+    public ResultBean selectRegister(long announcementId, String studentId);
 }

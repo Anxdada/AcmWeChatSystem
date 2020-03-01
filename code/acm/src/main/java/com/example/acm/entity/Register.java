@@ -12,7 +12,7 @@ public class Register {
     private Long registerId;
     private Long announcementId;
     private Date registerTime;
-    private Long studentId;
+    private String studentId;
     private String realName;
     private Long updateUser;
     private Date updateTime;
@@ -42,11 +42,11 @@ public class Register {
         this.registerTime = registerTime;
     }
 
-    public Long getStudentId() {
+    public String getStudentId() {
         return studentId;
     }
 
-    public void setStudentId(Long studentId) {
+    public void setStudentId(String studentId) {
         this.studentId = studentId;
     }
 

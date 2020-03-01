@@ -59,7 +59,12 @@ export const UpdateLabel = localhost+"/label/updateLabel";
 export const SelectLabel = localhost+"/label/selectLabel";
 export const DetailLabel = localhost+"/label/detailLabel";
 // 讨论区帖子相关
-
+export const AddPostUrl = localhost+"/post/addPost";
+export const DeletePost = localhost+"/post/deletePost";
+export const UpdatePost = localhost+"/post/updatePost";
+export const SelectPost = localhost+"/post/selectPost";
+export const DetailPostUrl = localhost+"/post/detailPost";
+// 用于手机端用户操作的
 
 
 // 友链相关

@@ -6,6 +6,7 @@ import com.example.acm.common.SysConst;
 import com.example.acm.entity.Label;
 import com.example.acm.entity.User;
 import com.example.acm.service.LabelService;
+import com.example.acm.service.PostService;
 import com.example.acm.service.UserService;
 import com.example.acm.service.deal.LabelDealService;
 import com.example.acm.utils.DateUtil;
@@ -25,6 +26,9 @@ public class LabelDealServiceImpl implements LabelDealService {
 
     @Autowired
     private LabelService labelService;
+
+    @Autowired
+    private PostService postService;
 
     @Autowired
     private UserService userService;
@@ -77,6 +81,7 @@ public class LabelDealServiceImpl implements LabelDealService {
     }
 
     /**
+     * 得保证无该类别的帖子的存在才能删除
      *
      * @param user 删除操作人
      * @param labelId 删除的帖子标签id
@@ -86,11 +91,22 @@ public class LabelDealServiceImpl implements LabelDealService {
         try {
 
             List<Label> list = labelService.findLabelListByLabelId(labelId);
-            if (list.size() < 0) {
+            if (list.isEmpty()) {
                 return new ResultBean(ResultCode.SYSTEM_FAILED, "无该条记录, 请检查你的代码!");
             }
 
             Label label = list.get(0);
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("postTag", label.getFlag());
+            map.put("isEffective", SysConst.LIVE);
+
+            List<Map<String, Object>> listMap = postService.findPostMapListByQuery(map);
+
+            if (!listMap.isEmpty()) {
+                return new ResultBean(ResultCode.SYSTEM_FAILED, "还有该类别的帖子存在, 无法删除该类别!");
+            }
+
             label.setUpdateUser(user.getUserId());
             label.setUpdateTime(new Date());
             label.setIsEffective(SysConst.NOT_LIVE);

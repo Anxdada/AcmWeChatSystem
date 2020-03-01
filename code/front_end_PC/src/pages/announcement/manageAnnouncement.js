@@ -216,12 +216,7 @@ class AnnouncementView extends React.Component {
     }
 
     refresh = () => {
-        this.setState({
-            searchAnnouncementTitle: '',
-            searchTag: '',
-            searchStartTime: null,
-            searchEndTime: null,
-        }, () => this.getAnnouncementData());
+        this.getAnnouncementData();
     }
 
     getTagData() {

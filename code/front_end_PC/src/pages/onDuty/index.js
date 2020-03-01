@@ -1,12 +1,9 @@
 import React from 'react';
 import './index.less';
 import { Card, Calendar, Badge, Modal, Select, Input, DatePicker, message, notification, Button, Pagination, Table, Tag, Divider, Popconfirm } from 'antd';
-import Util from '../../utils/utils';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
-import staffOnDutyName from '../../config/staffOnDutyInfo';
 import { AddOnDuty, DeleteOnDuty, UpdateOnDuty, SelectOnDuty, DetailOnDuty, GetTeamStaff } from './../../config/dataAddress';
-import cookie from 'react-cookies';
 import { EventEmitter2 } from 'eventemitter2';
 import Fetch from './../../fetch';
 

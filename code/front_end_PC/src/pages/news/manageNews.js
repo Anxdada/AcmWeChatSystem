@@ -182,12 +182,7 @@ class NewsView extends React.Component {
     }
 
     refresh = () => {
-        this.setState({
-            searchNewsTitle: '',
-            searchTag: '',
-            searchStartTime: null,
-            searchEndTime: null,
-        }, () => this.getNewsData());
+        this.getNewsData();
     }
 
     getTagData() {

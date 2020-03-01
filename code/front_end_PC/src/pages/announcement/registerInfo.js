@@ -414,7 +414,7 @@ class RegisterInfoView extends React.Component {
                 <p> {this.state.announcementBody } </p>
                 <strong>报名表:</strong>&nbsp;&nbsp;
                 <br /><br />
-                <Search placeholder="学号" onSearch={this.handleSearchStudentIdBtn} style={{ height: 30, width: 150}} className="searchF" />
+                <Search allowClear placeholder="学号" onSearch={this.handleSearchStudentIdBtn} style={{ height: 30, width: 150}} className="searchF" />
                 <Button type="primary" style={{ marginLeft:20, width: 100 }} onClick={this.handleExportExcel} >导出报名表</Button>
                 <RegisterInfoTable data={this.state.allRegisterData} />
             </Card>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace用于绑定Dao接口 -->
+<mapper namespace="com.example.acm.mapper.PostMapper">
+    <!-- 查询初始所有post -->
+    <select id="selectAll" resultType="com.example.acm.entity.Post">
+        SELECT * FROM post;
+    </select>
+
+    <sql id="post_table">
+		a.postId,
+		a.postTag,
+		a.postTitle,
+		a.postBody,
+		a.createUser,
+		a.createTime,
+		a.updateUser,
+		a.updateTime,
+        a.like,
+		a.comments,
+		a.views,
+		a.isGreat,
+		a.isHot,
+		a.isHead,
+		a.isEffective
+	</sql>
+
+    <!-- 添加post -->
+    <insert id="addPost" useGeneratedKeys="true">
+        INSERT INTO post
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="post.postId != null">postId,</if>
+            <if test="post.postTag != null">postTag,</if>
+            <if test="post.postTitle != null">postTitle,</if>
+            <if test="post.postBody != null">postBody,</if>
+            <if test="post.createUser != null">createUser,</if>
+            <if test="post.createTime != null">createTime,</if>
+            <if test="post.updateUser != null">updateUser,</if>
+            <if test="post.updateTime != null">updateTime,</if>
+            <if test="post.like != null">like,</if>
+            <if test="post.comments != null">comments,</if>
+            <if test="post.views != null">views,</if>
+            <if test="post.isGreat != null">isGreat,</if>
+            <if test="post.isHot != null">isHot,</if>
+            <if test="post.isHead != null">isHead,</if>
+            <if test="post.isEffective != null">isEffective,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="post.postId != null">#{post.postId},</if>
+            <if test="post.postTag != null">#{post.postTag},</if>
+            <if test="post.postTitle != null">#{post.postTitle},</if>
+            <if test="post.postBody != null">#{post.postBody},</if>
+            <if test="post.createUser != null">#{post.createUser},</if>
+            <if test="post.createTime != null">#{post.createTime},</if>
+            <if test="post.updateUser != null">#{post.updateUser},</if>
+            <if test="post.updateTime != null">#{post.updateTime},</if>
+            <if test="post.like != null">#{post.like},</if>
+            <if test="post.comments != null">#{post.comments},</if>
+            <if test="post.views != null">#{post.views},</if>
+            <if test="post.isGreat != null">#{post.isGreat},</if>
+            <if test="post.isHot != null">#{post.isHot},</if>
+            <if test="post.isHead != null">#{post.isHead},</if>
+            <if test="post.isEffective != null">#{post.isEffective},</if>
+        </trim>
+    </insert>
+
+    <!-- 更新post -->
+    <update id="updatePost">
+        UPDATE post a
+        <set>
+            <if test="post.postId != null">postId=#{post.postId},</if>
+            <if test="post.postTag != null">postTag=#{post.postTag},</if>
+            <if test="post.postTitle != null">postTitle=#{post.postTitle},</if>
+            <if test="post.postBody != null">postBody=#{post.postBody},</if>
+            <if test="post.createUser != null">createUser=#{post.createUser},</if>
+            <if test="post.createTime != null">createTime=#{post.createTime},</if>
+            <if test="post.updateUser != null">updateUser=#{post.updateUser},</if>
+            <if test="post.updateTime != null">updateTime=#{post.updateTime},</if>
+            <if test="post.like != null">a.like=#{post.like},</if>
+            <if test="post.comments != null">comments=#{post.comments},</if>
+            <if test="post.views != null">views=#{post.views},</if>
+            <if test="post.isGreat != null">isGreat=#{post.isGreat},</if>
+            <if test="post.isHot != null">isHot=#{post.isHot},</if>
+            <if test="post.isHead != null">isHead=#{post.isHead},</if>
+            <if test="post.isEffective != null">isEffective=#{post.isEffective},</if>
+        </set>
+        WHERE postId = #{post.postId};
+    </update>
+
+    <!-- 查询单条post -->
+    <select id="findPostListByPostId" resultType="com.example.acm.entity.Post">
+        SELECT
+        *
+        FROM post a
+        <where>
+            <if test="postId != null">
+                a.postId = #{postId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的post的总数 -->
+    <select id="countPostList" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        post a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.postId != null ">
+                AND a.postId = #{map.postId}
+            </if>
+            <if test="map.postUserName != null ">
+                AND a.postUserName like CONCAT ('%', #{map.postUserName}, '%')
+            </if>
+            <if test="map.postTag != null ">
+                AND ~a.postTag &amp; #{map.postTag} = 0
+            </if>
+            <if test="map.postStartTime != null ">
+                AND a.createTime between #{map.postStartTime} and #{map.postEndTime}
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective = #{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的post -->
+    <select id="findPostMapListByQuery" resultType="java.util.Map">
+        SELECT
+        a.*
+        FROM
+        post a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.postId != null ">
+                AND a.postId = #{map.postId}
+            </if>
+            <if test="map.postTitle != null ">
+                AND a.postTitle like CONCAT ('%', #{map.postTitle}, '%')
+            </if>
+            <if test="map.postTag != null ">
+                AND ~a.postTag &amp; #{map.postTag} = 0
+            </if>
+            <if test="map.postStartTime != null ">
+                AND a.createTime between #{map.postStartTime} and #{map.postEndTime}
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective = #{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            a.${map.order} ${map.aOrS}, a.postId ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start},#{map.limit}
+        </if>
+    </select>
+</mapper>

@@ -1,57 +1,33 @@
 import React from 'react';
-import { Card, DatePicker } from 'antd';
+import { Card, DatePicker, message, notification, Tag } from 'antd';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import { connect } from 'react-redux';
 import { switchMenu,addMenu } from './../../redux/actions';
+import { SelectLabel, DetailPostUrl } from '../../config/dataAddress';
+import Fetch from './../../fetch';
 
 moment.locale('zh-cn');
+
+const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 
 class DetailPost extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            createName: '',
-            createTime: '',
-            newsTitle: '',
-            newsBody: '',
+            createUser: '',
+            createTime: null,
+            updateUser: '',
+            updateTime: null,
+            postTitle: '',
+            postTag: '',
+            postBody: '',
+            isHead: 0,
+            isGreat: 0,
+            isHot: 0,
+            labels: [],
         }
-    }
-
-    componentWillMount() {
-        this.getData();
-    }
-
-    getData() {
-        this.setState({
-            createName: '超级管理员',
-            createTime: moment(),
-            newsTitle: 'HDU 2018',
-            newsBody: '求第10000000000 个斐波那契数是多少 (%1e9+7) 输出答案',
-        })
-        // fetch(LectureDetailUrl, {
-        //     method: 'POST',
-        //     headers: {
-        //         'Authorization': cookie.load('token'),
-        //         'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-        //     },
-        //     body: 'lectureId='+this.props.match.params.id
-        // }).then( res => res.json()).then(
-        //     data => {
-        //     //console.log('token'+cookie.load('token'));
-        //    // window.alert(data);
-        //    // window.alert(data.code);
-        //     if (data.code==0) {
-        //         this.setState({title: data.resultBean.lectureTitle});
-        //         this.setState({editorContent: this.state.editor.txt.html(data.resultBean.lectureBody)});
-        //         this.setState({createDate: data.resultBean.createDate});
-        //     } else {
-        //         message.error(data.msg)
-        //     }
-        //   }
-      
-        // )
     }
 
     componentDidMount() {
@@ -73,16 +49,122 @@ class DetailPost extends React.Component {
         dispatch(switchMenu(titleArray));
     }
 
+    componentWillMount() {
+        this.getLabelData();
+        this.getPostData();
+    }
+
+    getLabelData() {
+        // 用于取出目前所有的标签
+        Fetch.requestPost({
+            url: SelectLabel,
+            info: 'pageSize=100',
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    this.setState({
+                        labels: data.resultBean.items,
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
+    getPostData() {
+        Fetch.requestPost({
+            url: DetailPostUrl,
+            info: 'postId='+this.props.match.params.id,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+
+                if (data.status == 0) {
+                    this.setState({
+                        createUser: data.resultBean.createUser,
+                        createTime: data.resultBean.createTime,
+                        updateUser: data.resultBean.updateUser,
+                        updateTime: data.resultBean.updateTime,
+                        postTitle: data.resultBean.postTitle,
+                        postTag: data.resultBean.postTag,
+                        postBody: data.resultBean.postBody,
+                        isHead: data.resultBean.isHead,
+                        isGreat: data.resultBean.isGreat,
+                        isHot: data.resultBean.isHot,
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
+    
+
     render() {
+        const { labels } = this.state;
+        let postLabels = [];
+        for (let i = 0 ; i < labels.length ; ++ i) {
+            if (!(this.state.postTag & (1<<labels[i].flag))) continue;
+            postLabels.push(labels[i]);
+        }
         return (
-            <Card title={this.state.newsTitle}>
-                <strong>创建人:&nbsp;&nbsp;{this.state.createName}</strong>
+            <Card title={
+                <span>
+                    {this.state.postTitle}&nbsp;&nbsp;
+                    {
+                        this.state.isHead == 0 ? null : <Tag color="magenta">置顶&nbsp;&nbsp;</Tag>
+                    }
+                    {
+                        this.state.isGreat == 0 ? null : <Tag color="volcano">精&nbsp;&nbsp;</Tag>
+                    }
+                    {
+                        this.state.isHot == 0 ? null : <Tag color="red">热&nbsp;&nbsp;</Tag>
+                    }
+                </span>
+            }>
+                <strong>创建人:&nbsp;&nbsp;{this.state.createUser}</strong>
                 <br />
                 <strong>创建时间:</strong>&nbsp;&nbsp;
-                <DatePicker format="YYYY-MM-DD" defaultValue={this.state.createTime} disabled />
+                <DatePicker format="YYYY-MM-DD" value={moment(this.state.createTime)} disabled />
                 <br /><br />
-                <strong>内容:</strong>
-                <p> {this.state.newsBody } </p>
+                <strong>最近一次更新人:&nbsp;&nbsp;{this.state.updateUser}</strong>
+                <br />
+                <strong>最近一次更新时间:</strong>&nbsp;&nbsp;
+                <DatePicker  style={{ width: 200 }} format="YYYY-MM-DD HH:mm:ss" value={moment(this.state.updateTime)} disabled />
+                <br /><br />
+                <strong>类别:</strong>&nbsp;&nbsp;
+                {
+                    postLabels.map((item) => 
+                            <Tag color={item.labelColor} key={item.labelId}>{item.labelName}</Tag>
+                    )
+                }
+                <br />
+                <br />
+                <strong>内容:</strong>&nbsp;&nbsp;
+                <div dangerouslySetInnerHTML={{__html: this.state.postBody}} />
             </Card>
         );
     }

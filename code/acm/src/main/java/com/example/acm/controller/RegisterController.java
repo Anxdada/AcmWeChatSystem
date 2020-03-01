@@ -60,7 +60,7 @@ public class RegisterController extends BaseController {
     @PostMapping("/updateRegister")
     @ResponseBody
     public ResultBean updateRegister(@RequestParam(value = "registerId", required = true) long registerId,
-                                     @RequestParam(value = "studentId", required = true) long studentId,
+                                     @RequestParam(value = "studentId", required = true) String studentId,
                                      @RequestParam(value = "realName", required = true) String realName,
                                      HttpServletRequest request, HttpServletResponse response) {
 //
@@ -82,7 +82,7 @@ public class RegisterController extends BaseController {
     @PostMapping("/selectRegister")
     @ResponseBody
     public ResultBean selectRegister(@RequestParam(value = "announcementId", required = true) long announcementId,
-                                     @RequestParam(value = "studentId", defaultValue = "-1", required = false) long studentId,
+                                     @RequestParam(value = "studentId", defaultValue = "", required = false) String studentId,
                                      HttpServletRequest request, HttpServletResponse response) {
 
         try {

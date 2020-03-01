@@ -318,7 +318,6 @@ class TagsView extends React.Component {
 
     refresh = (msg) => {
         this.setState({
-            tagSearchName: '',
             tagAddName: '',
             tagAddColor: '#19b8e2',
         }, () => this.getTagData());
@@ -449,10 +448,11 @@ class TagsView extends React.Component {
             <div>
                 <Card title="帖子标签">
                     <div>
-                        <Input size="small" onChange={this.handleSearchTagName} placeholder="标签名称" style={{ height:30 , width:150 }}/>
+                        <Input size="small" value={this.state.tagSearchName} onChange={this.handleSearchTagName} 
+                            placeholder="标签名称" style={{ height:30 , width:150 }} allowClear />
 
                         <Button type="primary" onClick={ this.handleAddTagBtn } className="addTagBtn" loading={this.state.submitting} >添加</Button>
-                        <Input size="small" onChange={this.handleAddTagText} placeholder="标签名称" className="addTagInput" value={this.state.tagAddName} />
+                        <Input size="small" onChange={this.handleAddTagText} placeholder="标签名称" className="addTagInput" value={this.state.tagAddName} allowClear />
                         &nbsp;&nbsp;色值
                         <Button style={{ width: 100, height: 30, backgroundColor: this.state.tagAddColor, }} 
                             onClick={this.handleAddTagColorBtn} />

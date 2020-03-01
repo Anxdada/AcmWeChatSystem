@@ -77,12 +77,12 @@ public class NewsTagDealServiceImpl implements NewsTagDealService {
         try {
 
             List<NewsTag> list = NewsTagService.findNewsTagListByNewsTagId(newsTagId);
-            if (list.size() < 0) {
+            if (list.isEmpty()) {
                 return new ResultBean(ResultCode.SYSTEM_FAILED, "无该条记录, 请检查你的代码!");
             }
 
             Map<String, Object> map = new HashMap<>();
-            map.put("newsTagId", newsTagId);
+            map.put("searchTagId", newsTagId);
             map.put("isEffective", SysConst.LIVE);
 
             List<Map<String, Object>> listMap = newsService.findNewsMapListByQueryJoinTagTable(map);

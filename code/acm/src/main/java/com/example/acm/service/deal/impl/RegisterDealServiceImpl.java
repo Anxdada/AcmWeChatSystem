@@ -7,6 +7,7 @@ import com.example.acm.entity.Register;
 import com.example.acm.entity.User;
 import com.example.acm.service.RegisterService;
 import com.example.acm.service.deal.RegisterDealService;
+import com.example.acm.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -89,7 +90,7 @@ public class RegisterDealServiceImpl implements RegisterDealService {
      * @param studentId 学号
      * @return realName 姓名
      */
-    public ResultBean updateRegister(User user, long registerId, long studentId, String realName) {
+    public ResultBean updateRegister(User user, long registerId, String studentId, String realName) {
         try {
 
             Map<String, Object> map = new HashMap<>();
@@ -123,7 +124,7 @@ public class RegisterDealServiceImpl implements RegisterDealService {
      * @param announcementId 对应的公告id
      * @param studentId 搜索的学号
      */
-    public ResultBean selectRegister(long announcementId, long studentId) {
+    public ResultBean selectRegister(long announcementId, String studentId) {
         try {
 
             Map<String, Object> map = new HashMap<>();
@@ -131,7 +132,7 @@ public class RegisterDealServiceImpl implements RegisterDealService {
             map.put("aOrS", "DESC");
             map.put("isEffective", SysConst.LIVE);
             map.put("announcementId", announcementId);
-            if (studentId != -1) map.put("studentId", studentId);
+            if (!StringUtil.isNull(studentId)) map.put("studentId", studentId);
 
             List<Map<String, Object>> list = registerService.findRegisterListMapByQueryMap(map);
 

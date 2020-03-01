@@ -82,8 +82,12 @@ public class UserController extends BaseController {
 
             LOG.info(""+user.size());
 
-            if (user == null || user.size() == 0) {
-                return new ResultBean(ResultCode.NO_THIS_USER);
+            if (user == null || user.isEmpty()) {
+                return new ResultBean(ResultCode.NO_THIS_USER, "该用户未注册");
+            }
+
+            if ((user.get(0).getAuth() & 3) == 0) {
+                return new ResultBean(ResultCode.NO_OAUTH, "本后台系统只有管理员才能登录, 有需要请联系@Anxdada");
             }
 
             if (user.get(0).getPassword().equals(password)) {
@@ -180,7 +184,7 @@ public class UserController extends BaseController {
             auth = 2;
             totNumMap.put("totManageNum", userService.findSatisfyAuthUser(auth).size());
 
-            // 对员个数
+            // 队员个数
             auth = (1<<2);
             totNumMap.put("totTeamNum", userService.findSatisfyAuthUser(auth).size());
 

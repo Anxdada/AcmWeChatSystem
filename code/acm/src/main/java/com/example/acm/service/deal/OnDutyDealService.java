@@ -69,6 +69,6 @@ public interface OnDutyDealService {
      * @param onDutyId 值班Id
      * @return
      */
-    public ResultBean detailFriendUrl(long onDutyId);
+    public ResultBean detailOnDuty(long onDutyId);
 
 }
