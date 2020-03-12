@@ -126,8 +126,8 @@ public class UserDealServiceImpl implements UserDealService {
 
             List<User> list = userService.findUserListByUserId(userId);
 
-            if (list.size() < 1) {
-                return new ResultBean(ResultCode.SQL_NULL_RECODE);
+            if (list.isEmpty()) {
+                return new ResultBean(ResultCode.SQL_NULL_RECODE, "数据库无该条记录!");
             }
 
             return new ResultBean(ResultCode.SUCCESS, list.get(0));

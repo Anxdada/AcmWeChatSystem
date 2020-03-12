@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace用于绑定Dao接口 -->
+<mapper namespace="com.example.acm.mapper.CommentMapper">
+    <!-- 查询初始所有comment -->
+    <select id="selectAll" resultType="com.example.acm.entity.Comment">
+        SELECT * FROM comment;
+    </select>
+
+    <sql id="comment_table">
+		a.commentId,
+		a.commentBody,
+		a.replyPostId,
+		a.createUser,
+		a.createTime,
+		a.updateUser,
+		a.updateTime,
+        a.like,
+		a.isEffective
+	</sql>
+
+    <!-- 添加comment -->
+    <insert id="addComment" useGeneratedKeys="true">
+        INSERT INTO comment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="comment.commentId != null">commentId,</if>
+            <if test="comment.commentBody != null">commentBody,</if>
+            <if test="comment.replyPostId != null">replyPostId,</if>
+            <if test="comment.createUser != null">createUser,</if>
+            <if test="comment.createTime != null">createTime,</if>
+            <if test="comment.updateUser != null">updateUser,</if>
+            <if test="comment.updateTime != null">updateTime,</if>
+            <if test="comment.like != null">like,</if>
+            <if test="comment.isEffective != null">isEffective,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="comment.commentId != null">#{comment.commentId},</if>
+            <if test="comment.commentBody != null">#{comment.commentBody},</if>
+            <if test="comment.replyPostId != null">#{comment.replyPostId},</if>
+            <if test="comment.createUser != null">#{comment.createUser},</if>
+            <if test="comment.createTime != null">#{comment.createTime},</if>
+            <if test="comment.updateUser != null">#{comment.updateUser},</if>
+            <if test="comment.updateTime != null">#{comment.updateTime},</if>
+            <if test="comment.like != null">#{comment.like},</if>
+            <if test="comment.isEffective != null">#{comment.isEffective},</if>
+        </trim>
+    </insert>
+
+    <!-- 更新comment -->
+    <update id="updateComment">
+        UPDATE comment a
+        <set>
+            <if test="comment.commentId != null">commentId=#{comment.commentId},</if>
+            <if test="comment.commentBody != null">commentBody=#{comment.commentBody},</if>
+            <if test="comment.replyPostId != null">replyPostId=#{comment.replyPostId},</if>
+            <if test="comment.createUser != null">createUser=#{comment.createUser},</if>
+            <if test="comment.createTime != null">createTime=#{comment.createTime},</if>
+            <if test="comment.updateUser != null">updateUser=#{comment.updateUser},</if>
+            <if test="comment.updateTime != null">updateTime=#{comment.updateTime},</if>
+            <if test="comment.like != null">a.like=#{comment.like},</if>
+            <if test="comment.isEffective != null">isEffective=#{comment.isEffective},</if>
+        </set>
+        WHERE commentId = #{comment.commentId};
+    </update>
+
+    <!-- 查询单条comment -->
+    <select id="findCommentListByCommentId" resultType="com.example.acm.entity.Comment">
+        SELECT
+        *
+        FROM comment a
+        <where>
+            <if test="commentId != null">
+                a.commentId = #{commentId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的comment的总数 -->
+    <select id="countCommentList" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        comment a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.commentId != null ">
+                AND a.commentId = #{map.commentId}
+            </if>
+            <if test="map.replyPostId != null ">
+                AND a.replyPostId = #{map.replyPostId}
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective = #{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的comment -->
+    <select id="findCommentMapListByQuery" resultType="java.util.Map">
+        SELECT
+        a.*
+        FROM
+        comment a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.commentId != null ">
+                AND a.commentId = #{map.commentId}
+            </if>
+            <if test="map.replyPostId != null ">
+                AND a.replyPostId = #{map.replyPostId}
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective = #{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            a.${map.order} ${map.aOrS}, a.commentId ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start},#{map.limit}
+        </if>
+    </select>
+</mapper>

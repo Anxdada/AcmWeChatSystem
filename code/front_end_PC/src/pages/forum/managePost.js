@@ -109,7 +109,7 @@ class PostTable extends React.Component {
                         <a disable><Link to={'/admin/forum/comment/'+record.postId}>查看评论</Link></a>
                         <Divider type="vertical" />
                         {
-                            record.userId != record.createUser ? null :
+                            record.isSame == false ? null :
                                 <span>
                                     <a><Link to={'/admin/forum/modifyPost/'+record.postId}>修改</Link></a>
                                     <Divider type="vertical" />
@@ -200,11 +200,6 @@ class PostTable extends React.Component {
             message.error('连接超时! 请检查服务器是否启动.');
         });
     }
-
-    updatePostData() {
-
-    }
-
 
     render() {
         return (
@@ -316,6 +311,7 @@ class PostView extends React.Component {
             timeOut: 3000,
         }).then ( 
             data => {
+                // console.log(data);
                 if (data.status == 0) {
                     if(data.resultBean.currentPage > 0) {
                         this.setState({ nowPage: data.resultBean.currentPage });

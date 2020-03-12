@@ -12,8 +12,7 @@ import java.util.Date;
 public class Comment {
     private Long commentId;
     private Object commentBody;
-    private Integer postId;
-    private Integer replyCommentId;
+    private Long replyPostId;
     private Long createUser;
     private Date createTime;
     private Long updateUser;
@@ -37,20 +36,12 @@ public class Comment {
         this.commentBody = commentBody;
     }
 
-    public Integer getPostId() {
-        return postId;
+    public Long getReplyPostId() {
+        return replyPostId;
     }
 
-    public void setPostId(Integer postId) {
-        this.postId = postId;
-    }
-
-    public Integer getReplyCommentId() {
-        return replyCommentId;
-    }
-
-    public void setReplyCommentId(Integer replyCommentId) {
-        this.replyCommentId = replyCommentId;
+    public void setReplyPostId(Long replyPostId) {
+        this.replyPostId = replyPostId;
     }
 
     public Long getCreateUser() {

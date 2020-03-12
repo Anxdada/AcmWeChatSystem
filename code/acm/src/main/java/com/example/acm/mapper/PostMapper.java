@@ -52,7 +52,7 @@ public interface PostMapper {
 
 
     /**
-     * 根据查询条件获取值班列表(Map)
+     * 根据查询条件获取帖子列表(Map)
      * @return 以map信息返回
      */
     public List<Map<String,Object>> findPostMapListByQuery(@Param("map") Map<String, Object> map);

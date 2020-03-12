@@ -61,7 +61,7 @@ constructor(props) {
 
     render() {
         return (
-            <div style={{margin:'10px 0'}}>
+            <div style={{ margin:'10px 0'}}>
                 <Row gutter={16} >
                     <Col span={12} >
                       <ReactHighcharts config={this.state.configUserRegister} />

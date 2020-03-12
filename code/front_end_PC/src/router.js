@@ -44,6 +44,8 @@ import OnDuty from './pages/onDuty';
 import About from './pages/about';
 import Feedback from './pages/feedback';
 
+import Ttest from './pages/Ttest';
+
 
 export default class IRouter extends React.Component {
     render() {
@@ -89,6 +91,8 @@ export default class IRouter extends React.Component {
                             <Route path='/admin/onduty' component={OnDuty} />
                             <Route path='/admin/feedback' component={Feedback} />
                             <Route path='/admin/about' component={About} />
+
+                            <Route path='/admin/test' component={Ttest} />
                             <Route component={NoMatch} />
                             </Switch>
                         </Admin>

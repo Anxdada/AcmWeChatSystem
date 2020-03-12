@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace用于绑定Dao接口 -->
+<mapper namespace="com.example.acm.mapper.ReplyMapper">
+    <!-- 查询初始所有reply -->
+    <select id="selectAll" resultType="com.example.acm.entity.Reply">
+        SELECT * FROM reply;
+    </select>
+
+    <sql id="reply_table">
+		a.replyId,
+		a.replyBody,
+		a.replyCommentId,
+        a.reverseReplyId,
+		a.createUser,
+		a.createTime,
+		a.updateUser,
+		a.updateTime,
+        a.like,
+		a.isEffective
+	</sql>
+
+    <!-- 添加reply -->
+    <insert id="addReply" useGeneratedKeys="true">
+        INSERT INTO reply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reply.replyId != null">replyId,</if>
+            <if test="reply.replyBody != null">replyBody,</if>
+            <if test="reply.replyCommentId != null">replyCommentId,</if>
+            <if test="reply.reverseReplyId != null">reverseReplyId,</if>
+            <if test="reply.createUser != null">createUser,</if>
+            <if test="reply.createTime != null">createTime,</if>
+            <if test="reply.updateUser != null">updateUser,</if>
+            <if test="reply.updateTime != null">updateTime,</if>
+            <if test="reply.like != null">like,</if>
+            <if test="reply.isEffective != null">isEffective,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reply.replyId != null">#{reply.replyId},</if>
+            <if test="reply.replyBody != null">#{reply.replyBody},</if>
+            <if test="reply.replyCommentId != null">#{reply.replyCommentId},</if>
+            <if test="reply.reverseReplyId != null">#{reply.reverseReplyId},</if>
+            <if test="reply.createUser != null">#{reply.createUser},</if>
+            <if test="reply.createTime != null">#{reply.createTime},</if>
+            <if test="reply.updateUser != null">#{reply.updateUser},</if>
+            <if test="reply.updateTime != null">#{reply.updateTime},</if>
+            <if test="reply.like != null">#{reply.like},</if>
+            <if test="reply.isEffective != null">#{reply.isEffective},</if>
+        </trim>
+    </insert>
+
+    <!-- 更新reply -->
+    <update id="updateReply">
+        UPDATE reply a
+        <set>
+            <if test="reply.replyId != null">replyId=#{reply.replyId},</if>
+            <if test="reply.replyBody != null">replyBody=#{reply.replyBody},</if>
+            <if test="reply.replyCommentId != null">replyCommentId=#{reply.replyCommentId},</if>
+            <if test="reply.reverseReplyId != null">reverseReplyId=#{reply.reverseReplyId},</if>
+            <if test="reply.createUser != null">createUser=#{reply.createUser},</if>
+            <if test="reply.createTime != null">createTime=#{reply.createTime},</if>
+            <if test="reply.updateUser != null">updateUser=#{reply.updateUser},</if>
+            <if test="reply.updateTime != null">updateTime=#{reply.updateTime},</if>
+            <if test="reply.like != null">a.like=#{reply.like},</if>
+            <if test="reply.isEffective != null">isEffective=#{reply.isEffective},</if>
+        </set>
+        WHERE replyId = #{reply.replyId};
+    </update>
+
+    <!-- 查询单条reply -->
+    <select id="findReplyListByReplyId" resultType="com.example.acm.entity.Reply">
+        SELECT
+        *
+        FROM reply a
+        <where>
+            <if test="replyId != null">
+                a.replyId = #{replyId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的reply的总数 -->
+    <select id="countReplyList" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        reply a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.replyId != null ">
+                AND a.replyId = #{map.replyId}
+            </if>
+            <if test="map.replyCommentId != null ">
+                AND a.replyCommentId = #{map.replyCommentId}
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective = #{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的reply -->
+    <select id="findReplyMapListByQuery" resultType="java.util.Map">
+        SELECT
+        a.*
+        FROM
+        reply a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.replyId != null ">
+                AND a.replyId = #{map.replyId}
+            </if>
+            <if test="map.replyCommentId != null ">
+                AND a.replyCommentId = #{map.replyCommentId}
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective = #{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            a.${map.order} ${map.aOrS}, a.replyId ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start},#{map.limit}
+        </if>
+    </select>
+</mapper>

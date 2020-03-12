@@ -1,52 +1,69 @@
 import React from 'react';
-import { Table, message, Pagination, Popconfirm, Card } from 'antd';
+import { Table, Pagination, Popconfirm, Card, message, notification, Skeleton } from 'antd';
 import {EventEmitter2} from 'eventemitter2';
-import cookie from 'react-cookies';
 import { connect } from 'react-redux';
 import { switchMenu } from './../../redux/actions';
-
+import Fetch from './../../fetch';
+import { SelectComment, DeleteComment, DeleteReply, SelectReply, DetailPostUrl } from '../../config/dataAddress';
 
 var emitter = new EventEmitter2()
+var emitter2 = new EventEmitter2()
 
-class SubComment extends React.Component {
+class ReplyView extends React.Component {
+
+    state = {
+        loading: true,
+    }
 
     constructor(props) {
         super(props);
         this.state = {
-            all: [],
-            nowPage: 1,
-            totalPage: 1,
-            pageSize: 1,
-            data: [],
+            allReply: [],
         }
         this.columns= [
             { 
                 title: '回复人', 
-                dataIndex: 'userName', 
-                key: 'userName' 
+                dataIndex: 'createUser', 
+                key: 'createUser',
+                align: 'center',
+            },
+            {   
+                title: '对话人', 
+                dataIndex: 'replyRealName', 
+                key: 'replyRealName',
+                align: 'center',
+                render:(text, record) => (
+                    record.reverseReplyId == -1 ? <span>层主</span> :
+                    <span style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>
+                        {record.replyRealName}
+                    </span>
+                )
             },
             {   
                 title: '回复信息', 
-                dataIndex: 'commentBody', 
-                key: 'commentBody', 
+                dataIndex: 'replyBody', 
+                key: 'replyBody',
+                align: 'center',
                 width:400,
                 render:(text, record) => (
                     <span style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>
-                    {record.commentBody}
+                        {record.replyBody}
                     </span>
                 )
             },
             {   
                 title: '回复时间', 
                 dataIndex: 'createTime', 
-                key: 'createTime' 
+                key: 'createTime',
+                align: 'center',
             },
             {
                 title: '操作',
                 key: 'action',
+                align: 'center',
                 render: (text, record) => (
                     <span>
-                        <Popconfirm title="确定删除?" onConfirm={() => this.handleDeleteComment(record.commentId)} okText="确定" cancelText="取消">
+                        <Popconfirm title="确定删除?" onConfirm={() => this.handleDeleteReply(record.replyId)} okText="确定" cancelText="取消">
                             <a  className="deleteHerf">删除</a>
                         </Popconfirm>
                     </span>
@@ -54,77 +71,128 @@ class SubComment extends React.Component {
             },
         ];
 
-        for (let i = 0; i < 103; ++i) {
-            this.state.data.push({
-                key: i,
-                userName: '谢仁义',
-                commentBody: 'iOS',
-                createTime: '2014-12-24 23:12:00',
-            });
-        }
+        emitter2.on("refresh2", this.refresh2.bind(this));
     }
 
-    handleDeleteComment = (commentId) => {
-        // fetch(DeleteComment,{   //Fetch方法
-        //     method: 'POST',
-        //     headers: {
-        //     'Authorization': cookie.load('token'),
-        //     'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-        //     },
-        //     body: 'commentId='+commentId
-        // }).then(res => res.json()).then(
-        //     data => {
-        //         if (data.code==0) {
-        //             message.success(data.msg);
-        //             emitter.emit('changeComment', 'this');
-        //         }
-        //         else {
-        //             message.error(data.msg)
-        //         }
-        //     }
-        // )
+    componentWillMount() {
+        this.getReplyData();
     }
-    
+
+    handleDeleteReply = (id) => {
+        Fetch.requestPost({
+            url: DeleteReply,
+            info: 'replyId='+id,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    message.success('删除成功!');
+                    emitter2.emit("refresh2", "删除评论");
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
+    refresh2 = (msg) => {
+        this.getReplyData();
+    }
+
+    getReplyData() {
+        this.setState({
+            loading: true,
+        })
+        // 因为使用的table自带的分页器, 所以只能全部取出喽.. 这种预期也不会很多
+        // 回复的顺序按 时间升序
+        Fetch.requestPost({
+            url: SelectReply,
+            info: 'replyCommentId='+this.props.commentId+'&pageSize=1000'+'&aOrs=0',
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                console.log(data);
+                if (data.status == 0) {
+                    this.setState({
+                        allReply: data.resultBean.items,
+                    })
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+                this.setState({
+                    loading: false,
+                })
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+            this.setState({
+                loading: false,
+            })
+        });
+    }
+
+    // this.state.allReply.length == 0 ? <p>不存在子评论</p> :
     render() {
         return (
-        <div>
-            {
-              this.state.data.length==0? <p>不存在子评论</p>:
-              <div>
+            <div>
+                <Skeleton active loading={this.state.loading}>
                 <Table
                     columns={this.columns}
-                    dataSource={this.state.data}
+                    dataSource={this.state.allReply}
                     pagination={true}
+                    rowKey={record => record.replyId}
                 />
-              </div>
-            }
-        </div>
+                </Skeleton>
+            </div>
         );
     }
 }
 
 class ManageCommentTable extends React.Component {
 
+    state = {
+        loading: true,
+    }
+
     constructor(props) {
         super(props);
         this.state = {
-            postTitle: '',
-            all:[],
             nowPage: 1,
             totalPage: 1,
             pageSize: 10,
-            data:[],
+            postTitle: '',
+            allComment: [],
         }
         this.columns= [
             { 
                 title: '评论人', 
-                dataIndex: 'userName', 
-                key: 'userName' 
+                dataIndex: 'createUser', 
+                key: 'createUser',
+                align: 'center'
             },
             {   
                 title: '评论信息', 
                 dataIndex: 'commentBody', 
-                key: 'commentBody', 
+                key: 'commentBody',
+                align: 'center',
                 width:300,
                 render:(text, record) => (
                     <span style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>
@@ -136,11 +204,13 @@ class ManageCommentTable extends React.Component {
                 title: '评论时间', 
                 dataIndex: 'createTime', 
                 key: 'createTime',
+                align: 'center',
                 sorter: (a, b) => a.createTime < b.createTime
             },
             {
                 title: '操作',
                 key: 'action',
+                align: 'center',
                 render: (text, record) => (
                     <span>
                         <Popconfirm title="确定删除?" onConfirm={() => this.handleDeleteComment(record.commentId)}>
@@ -150,97 +220,150 @@ class ManageCommentTable extends React.Component {
                 ),
             },
         ];
-        // emitter.on('changeComment', this.getComment.bind(this));
-        for (let i = 0; i < 3; ++i) {
-            this.state.data.push({
-                key: i,
-                userName: '谢仁义',
-                commentBody: 'iOS',
-                createTime: '2014-12-24 23:12:00',
-            });
-        }
+        emitter.on("refresh", this.refresh.bind(this));
     }
 
-    handleDeleteComment = (commentId) => {
-        // fetch(DeleteComment,{   //Fetch方法
-        //     method: 'POST',
-        //     headers: {
-        //         'Authorization': cookie.load('token'),
-        //         'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-        //     },
-        //     body: 'commentId='+commentId
-        //  }).then(res => res.json()).then(
-        //     data => {
-        //         //window.alert('code'+data.code);
-        //         if (data.code==0) {
-        //             message.info(data.msg)
-        //             this.getCommentData();
-        //         }
-        //         else {
-        //             message.error(data.msg)
-        //         }
-        //     }
-        // )
+    handleDeleteComment = (id) => {
+        Fetch.requestPost({
+            url: DeleteComment,
+            info: 'commentId='+id,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    message.success('删除成功!');
+                    emitter.emit("refresh", "删除评论");
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
-    componentDidMount(){
+    componentWillMount(){
+        this.getPostData();
         this.getCommentData();
     }
 
-    getCommentData = () => {
+    refresh = (msg) => {
+        this.getCommentData();
+    }
+
+    getPostData() {
+        Fetch.requestPost({
+            url: DetailPostUrl,
+            info: 'postId='+this.props.id,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    this.setState({
+                        postTitle: data.resultBean.postTitle,
+                    })
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            } 
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
+    getCommentData() {
         this.setState({
-            postTitle: 'HDU 2018',
+            loading: true,
         })
-        // fetch(SelectBackComment,{   //Fetch方法
-        //     method: 'POST',
-        //     headers: {
-        //     'Authorization': cookie.load('token'),
-        //     'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-        //     },
-        //     body: 'invitationId='+this.props.match.params.id+'&pageNum='+this.state.nowPage+'&pageSize='+this.state.pageSize
-        // }).then(res => res.json()).then(
-        //     data => {
-        //     //window.alert('code'+data.code);
-        //         if(data.code==0) {
-        //             console.log(data.resultBean.items)
-        //             this.setState({all:data.resultBean.items});
-        //             this.setState({nowPage: data.resultBean.currentPage});
-        //             this.setState({totalPage: data.resultBean.totalItems/data.resultBean.pageSize});
-        //         }
-        //         else {
-        //         message.error(data.msg);
-        //         }
-        //     }
-        // )
+        Fetch.requestPost({
+            url: SelectComment,
+            info: 'replyPostId='+this.props.id+'&pageNum='+this.state.nowPage,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                // console.log(data);
+                if (data.status == 0) {
+                    if(data.resultBean.currentPage > 0) {
+                        this.setState({ nowPage: data.resultBean.currentPage });
+                    } else {
+                        this.setState({ nowPage: 1 });
+                    }
+                    this.setState({
+                        totalPage: data.resultBean.totalItems/data.resultBean.pageSize,
+                        allComment: data.resultBean.items
+                    });
+                } else {
+                    this.setState({
+                        nowPage: 1,
+                        totalPage: 1,
+                        allComment: [],
+                    });
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+                this.setState({
+                    loading: false,
+                })
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+            this.setState({
+                loading: false,
+            })
+        });
     }
 
     expandedRowRender = (record) => {
-        console.log(record);
         return (
-            // <SubComment p_commentId={record.commentId} invitationId={this.props.match.params.id} all={record.subComment}/>
-            <SubComment p_commentId={record.commentId} all={record.subComment}/>
+            <ReplyView commentId={record.commentId} />
         );
     };
 
     handlePageChange = (page) => {
-        console.log(page);
-        this.setState({ nowPage: page }, () => this.getComment());
-        document.documentElement.scrollTop =0;
+        this.setState({ 
+            nowPage: page 
+        }, () => this.getCommentData());
     }
 
     render() {
         return (
             <div style={{ flex: 1, padding: "10px" }}>
             <Card title="评论">
-                <strong>帖子主题:&nbsp;&nbsp;{this.state.postTitle}</strong>
+                帖子主题:&nbsp;&nbsp;<strong>{this.state.postTitle}</strong>
                 <br /><br />
+                <Skeleton active loading={this.state.loading}>
                 <Table
                     className="components-table-demo-nested"
                     columns={this.columns}
                     expandedRowRender={record => this.expandedRowRender(record)}
-                    dataSource={this.state.data}
+                    dataSource={this.state.allComment}
                     pagination={false}
+                    rowKey={record => record.commentId}
                 />
+                </Skeleton>
                 <div className="tablePage">
                     <Pagination size="small" simple onChange={this.handlePageChange} total={this.state.totalPage*this.state.pageSize}
                         pageSize={this.state.pageSize} defaultCurrent={this.state.nowPage} showQuickJumper />
@@ -276,7 +399,7 @@ class ManageComment extends React.Component {
     render() {
         return (
             <div>
-                <ManageCommentTable />
+                <ManageCommentTable id={this.props.match.params.id}/>
             </div>
         );
     }

@@ -33,7 +33,8 @@ export default class Admin extends React.Component {
         // console.log(props);
         super(props);
         this.state = {
-            singup: cookie.load('token'),
+            // singup: cookie.load('token'),
+            singup: '调试中',
         }
         // console.log(cookie.load('token'));
         // console.log(cookie.load('userName'));

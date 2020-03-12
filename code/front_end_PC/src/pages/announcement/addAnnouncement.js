@@ -360,9 +360,9 @@ class AddAnnouncementEditView extends React.Component {
         // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
         editor.customConfig.onchange = html => {
             this.setState({
-                editorContent: html
+                editorContent: html,
+                editorContentText: editor.txt.text(),
             })
-            this.setState({editorContentText: editor.txt.text()})
         }
         editor.create()
     }

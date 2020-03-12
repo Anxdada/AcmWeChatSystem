@@ -40,7 +40,7 @@ public class FeedbackController extends BaseController {
 
     @PostMapping("/addFeedback")
     @ResponseBody
-    public ResultBean addFeedback(@RequestParam(value = "feedbackBody", defaultValue = "空值", required = false) String feedbackBody,
+    public ResultBean addFeedback(@RequestParam(value = "feedbackBody", required = true) String feedbackBody,
                                   HttpServletRequest request, HttpServletResponse response) {
 
         User user = getUserIdFromSession(request);

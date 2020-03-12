@@ -251,11 +251,13 @@ class FeedbackView extends React.Component {
 const Editor = ({ onChange, onSubmit, submitting, value }) => (
     <div>
         <Form.Item>
-            <TextArea rows={4} onChange={onChange} value={value} allowClear />
+            <TextArea rows={4} onChange={onChange} value={value} allowClear style={{ marginBottom: 0 }} />
         </Form.Item>
         <Form.Item>
-            <Button htmlType="submit" loading={submitting} onClick={onSubmit} type="primary">
-                Add Comment
+            <Button htmlType="submit" loading={submitting} onClick={onSubmit} type="primary" disabled={value == null || value == ''}
+                style={{ marginTop: 0 }}
+            >
+                发布
             </Button>
         </Form.Item>
     </div>

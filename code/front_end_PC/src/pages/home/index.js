@@ -1,7 +1,7 @@
 import React from 'react';
 import './index.less';
 import axios from 'axios';
-import { Carousel, Timeline, Button, Statistic, Card, Row, Col, Icon, message, notification } from 'antd';
+import { Carousel, Timeline, Button, Statistic, Card, Row, Col, Icon, message, notification, Alert } from 'antd';
 import { GetHomeData} from './../../config/dataAddress';
 import Fetch from './../../fetch';
 
@@ -55,7 +55,7 @@ class HomeView extends React.Component {
 
     render() {
         return (
-            <div className="content">
+            <div>
                 <Row gutter={16} className="first">
                     <Col span={6} className="first_one">
                         <Card title={<span><Icon type="like" />觉得系统好用的点个赞啊, 亲</span>}>
@@ -83,13 +83,16 @@ class HomeView extends React.Component {
                 </Row>
                 <Row gutter={16}>
                     <Col span={12}>
-                    <Carousel autoplay>
+                    <Carousel autoplay style={{ width: 580 }}>
                         <img src="/images/acm.jpg" alt="logo" />
                         <img src="/images/family.jpg" alt="合照" />
                     </Carousel>
-                    <Card>
-                        欢迎来到CUIT-ACM微信公众号后台,请严格遵守规定!
-                    </Card>
+                    <Alert
+                        message="Welcome!"
+                        description="欢迎来到CUIT-ACM微信公众号后台,请严格遵守规定!"
+                        type="info"
+                        style={{ marginTop: 20}}
+                    />
                     </Col>
                     <Col span={12}>
                     <Card title={<span>CUIT-ACM实验室大事件</span>} className="timeLineFormat">

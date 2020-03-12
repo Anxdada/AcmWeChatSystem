@@ -23,7 +23,7 @@ public interface PostDealService {
     public ResultBean addPost(User user, String postTitle, int postTag, String postBody);
 
     /**
-     * 普通管理员可删除, 用户本身的帖子
+     * 普通管理员可删除, 用户可删除本身的帖子
      * 管理员删除主要就是因为举报..
      *
      * @param user 删除操作人
@@ -46,7 +46,7 @@ public interface PostDealService {
      * @param isHot 热
      * @return 结果
      */
-    public ResultBean updatePost(User user, Long postId, String postTitle, int postTag, String postBody,
+    public ResultBean updatePost(User user, long postId, String postTitle, int postTag, String postBody,
                                     int isHead, int isGreat, int isHot);
 
     /**

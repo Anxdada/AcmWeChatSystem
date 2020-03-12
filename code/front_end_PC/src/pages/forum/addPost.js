@@ -31,7 +31,7 @@ class AddPostPublishView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            postTag: [],
+            postLabel: [],
             allLabel: [],
         }
     }
@@ -87,14 +87,14 @@ class AddPostPublishView extends React.Component {
             return ;
         }
 
-        if (this.state.postTag.length == 0) {
+        if (this.state.postLabel.length == 0) {
             message.error('请选择帖子的标签!');
             return ;
         }
 
         let labels = 0;
-        for (let i = 0 ; i < this.state.postTag.length ; ++ i) {
-            labels |= 1 << this.state.postTag[i];
+        for (let i = 0 ; i < this.state.postLabel.length ; ++ i) {
+            labels |= 1 << this.state.postLabel[i];
         }
 
         this.setState({
@@ -103,15 +103,15 @@ class AddPostPublishView extends React.Component {
 
         Fetch.requestPost({
             url: AddPostUrl,
-            info: 'postTitle='+this.props.postTitle+'&postBody='+encodeURI(getString(this.props.editorContent))
-                    +'&postTag='+labels,
+            info: 'postTitle='+this.props.postTitle+'&postTag='+labels
+                    +'&postBody='+encodeURI(getString(this.props.editorContent)),
             timeOut: 3000,
         }).then(
             data => {
                 if (data.status == 0) {
                     message.success('发布帖子成功!');
                     this.setState({
-                        postTag: [],
+                        postLabel: [],
                     }, () => this.props.refresh());
                 } else {
                     if (data.status < 100) {
@@ -136,7 +136,7 @@ class AddPostPublishView extends React.Component {
 
     handleSelectLabel = (value) => {
         this.setState({
-            postTag: value,
+            postLabel: value,
         })
     }
 
@@ -151,7 +151,7 @@ class AddPostPublishView extends React.Component {
                 <Card title="发帖参数配置">
                     <Select
                         mode="multiple"
-                        value={this.state.postTag}
+                        value={this.state.postLabel}
                         style={{ width: '100%' }}
                         placeholder="帖子的标签"
                         onChange={this.handleSelectLabel}
@@ -243,9 +243,9 @@ class AddPostEditView extends React.Component {
         // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
         editor.customConfig.onchange = html => {
             this.setState({
-                editorContent: html
+                editorContent: html,
+                editorContentText: editor.txt.text(),
             })
-            this.setState({editorContentText: editor.txt.text()})
         }
         editor.create()
     }
@@ -259,7 +259,7 @@ export default class AddPost extends React.Component {
             
             <div>
                 <Prompt message={"离开该页面, 不会保存该页面的信息和内容. 是否离开?"} />
-                <AddPostEditView />]
+                <AddPostEditView />
             </div>
             
             

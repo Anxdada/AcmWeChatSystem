@@ -1,21 +1,24 @@
-@import './default';
+@import './default.less';
 
 .container {
     display: flex;
     .nav-left {
         width: 15%;
-        min-width: 180px;
+        // min-width: 215px;
         height: calc(100vh);
         background-color: #ffffff;
+        position: fixed;
+        float: left;
     }
     .main {
         flex: 1;
-        height: calc(100vh);
         background-color: @colorL;
-        overflow: auto;
-    }
-    .content {
-        position: relative;
-        padding: 20px;
+        margin-left: 215px;
+        // overflow: auto;
+        // width: 
+        .content {
+            position: relative;
+            padding: 20px;
+        }
     }
 }

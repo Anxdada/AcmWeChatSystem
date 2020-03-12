@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Tag, DatePicker, Input, message, notification } from 'antd';
+import { Card, Tag, DatePicker, Input, message, notification, BackTop } from 'antd';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import './index.less';
@@ -117,6 +117,8 @@ class DetailAnnouncement extends React.Component {
         // console.log(this.state.needStartTime);
 
         return (
+            <div>
+            <BackTop />
             <Card title={this.state.announcementTitle}>
                 <strong>创建人:&nbsp;&nbsp;{this.state.createUser}</strong>
                 <br />
@@ -164,6 +166,7 @@ class DetailAnnouncement extends React.Component {
                 <strong>内容:</strong>&nbsp;&nbsp;
                 <div dangerouslySetInnerHTML={{__html: this.state.announcementBody}} />
             </Card>
+            </div>
         );
     }
 }

@@ -109,7 +109,7 @@ public class PostDealServiceImpl implements PostDealService {
      * @param isHot 热
      * @return 结果
      */
-    public ResultBean updatePost(User user, Long postId, String postTitle, int postTag, String postBody,
+    public ResultBean updatePost(User user, long postId, String postTitle, int postTag, String postBody,
                                     int isHead, int isGreat, int isHot) {
         try {
             List<Post> list = postService.findPostListByPostId(postId);
@@ -179,12 +179,13 @@ public class PostDealServiceImpl implements PostDealService {
 
             if (!list.isEmpty()) {
                 for (Map<String, Object> mapTemp : list) {
+                    mapTemp.put("isSame", user.getUserId() == (Long)mapTemp.get("createUser"));
+                    // 这个是用于判断当前这个帖子是不是登录管理员写的, 如果是那么他就可以修改他的帖子
                     List<User> listUsers = userService.findUserListByUserId((Long)mapTemp.get("createUser"));
 //                    System.out.println((Long)mapTemp.get("createUser"));
                     User tUs = null;
                     if (!listUsers.isEmpty()) tUs = listUsers.get(0);
                     if (tUs != null) mapTemp.put("createUser", tUs.getRealName());
-                    mapTemp.put("userId", user.getUserId());
                     mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd HH:mm:ss"));
                 }
             }

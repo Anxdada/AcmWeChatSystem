@@ -119,6 +119,10 @@ class AddPhotoView extends React.Component{
 
 class AboutView extends React.Component {
 
+    state = {
+        show: true
+    }
+
     handleLinkBtn = () => {
         Fetch.requestPost({
             url: DetailAnnouncementTag,
@@ -133,10 +137,25 @@ class AboutView extends React.Component {
         });
     }
 
+    handleClick = () => {
+        let show = this.state.show
+        this.setState(() => ({show: !show}))
+    }
+
     render() {
+        let show = this.state.show
         return (
             <div>
                 <Card title={<span>CUIT-ACM实验室大事件</span>} className="timeLineFormat">
+
+                    <div className={show ? 'show' : 'hide'}>Hello</div>
+                    <button onClick={this.handleClick}>css动画渐变</button>
+
+                    <div class="sky">
+                        <div class="cloud_one"></div>
+                        <div class="cloud_two"></div>
+                        <div class="cloud_three"></div>
+                    </div>
 
                     <TestEditTable />
 

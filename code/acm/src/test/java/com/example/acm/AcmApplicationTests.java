@@ -3,6 +3,7 @@ package com.example.acm;
 import com.example.acm.common.ResultBean;
 import com.example.acm.common.ResultCode;
 import com.example.acm.common.SysConst;
+import com.example.acm.config.RedisComponent;
 import com.example.acm.entity.Label;
 import com.example.acm.entity.OnDuty;
 import com.example.acm.entity.User;
@@ -77,7 +78,7 @@ class AcmApplicationTests {
     }
 
     @Test
-    void testOnduty() {
+    void testOnDuty() {
         OnDuty onDuty = new OnDuty();
         onDuty.setOnDutyUserName("!!!");
         System.out.println(onDuty.getOnDutyUserName());
@@ -126,10 +127,16 @@ class AcmApplicationTests {
         for (int i = 0 ; i < list.size() ; ++ i) {
             System.out.println(list.get(i).getFlag());
         }
+    }
 
+    @Autowired
+    private RedisComponent redisComponent;
 
-
-
+    // 测试redis的集合
+    @Test
+    void testRedisSet() {
+//        System.out.println(redisComponent.hasMemberForKey("reply9", "2"));
+        System.out.println(redisComponent.getSizeSetForKey("reply9"));
     }
 
 }

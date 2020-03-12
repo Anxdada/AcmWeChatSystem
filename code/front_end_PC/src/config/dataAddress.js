@@ -13,6 +13,7 @@ export const AddUserPC = localhost+"/user/addUserPC";
 export const UpdateUserPC = localhost+"/user/updateUserPC";
 export const SelectUserPC = localhost+"/user/selectUserPC";
 export const SelectUserStatistic = localhost+"/user/statistic";
+export const DetailUser = localhost+"/user/detailUser";
 // 用户 (前台操作, 手机端)的接口
 
 
@@ -64,6 +65,19 @@ export const DeletePost = localhost+"/post/deletePost";
 export const UpdatePost = localhost+"/post/updatePost";
 export const SelectPost = localhost+"/post/selectPost";
 export const DetailPostUrl = localhost+"/post/detailPost";
+// 讨论区的评论和回复
+// 评论指在帖子下的留言, 回复是帖子下留言下面的回复, 这个是不同的, 分两层
+// 评论
+export const AddComment = localhost+"/comment/addComment";
+export const DeleteComment = localhost+"/comment/deleteComment";
+export const SelectComment = localhost+"/comment/selectComment";
+// 回复
+export const AddReply = localhost+"/reply/addReply";
+export const DeleteReply = localhost+"/reply/deleteReply";
+export const SelectReply = localhost+"/reply/selectReply";
+
+// 评论和回复的点赞 就同一写在reply下面了. 反正是公用的记住
+export const ChangeLike = localhost+"/reply/changeLike";
 // 用于手机端用户操作的
 
 

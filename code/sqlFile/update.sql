@@ -14,5 +14,4 @@ UPDATE user tt SET tt.avatar = 'http://localhost:9999/avatar/ziqiao.jpg' WHERE t
 UPDATE user tt SET tt.avatar = 'http://localhost:9999/avatar/meijiao.jpg' WHERE tt.userId = 12;
 UPDATE user tt SET tt.avatar = 'http://localhost:9999/avatar/dali.jpg' WHERE tt.userId = 13;
 UPDATE user tt SET tt.avatar = 'http://localhost:9999/avatar/haitang.jpg' WHERE tt.userId = 14;
-UPDATE post tt SET tt.comments = 1 where tt.postId = 2;
-
+UPDATE reply tt SET tt.replyCommentId = 8 where tt.replyId = 4;

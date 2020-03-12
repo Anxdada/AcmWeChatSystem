@@ -46,10 +46,9 @@ public class PostController extends BaseController {
                               @RequestParam(value = "postBody", defaultValue = "", required = false) String postBody,
                               HttpServletRequest request, HttpServletResponse response) {
 //        System.out.println("xiexie");
-//        System.out.println(onDutyUserName);
-//        System.out.println( " " + onDutyStartTime);
-//        System.out.println(" " + onDutyEndTime);
-//        System.out.println( " " + onDutyTelephone);
+//        System.out.println(postTitle);
+//        System.out.println( " " + postTag);
+//        System.out.println(" " + postBody);
 
 
         User user = getUserIdFromSession(request);
@@ -89,6 +88,11 @@ public class PostController extends BaseController {
                                  @RequestParam(value = "isGreat", defaultValue = "0", required = false) int isGreat,
                                  @RequestParam(value = "isHot", defaultValue = "0", required = false) int isHot,
                                  HttpServletRequest request, HttpServletResponse response) {
+
+//        System.out.println("xiexie");
+//        System.out.println(postId);
+//        System.out.println( " " + postTitle);
+//        System.out.println(" " + postTag);
 
         User user = getUserIdFromSession(request);
         if (user == null) {
@@ -135,6 +139,9 @@ public class PostController extends BaseController {
     @ResponseBody
     public ResultBean detailPost(@RequestParam(value = "postId",  required = true) long postId,
                                  HttpServletRequest request, HttpServletResponse response) {
+
+//        System.out.println(postId);
+
         try {
             // log
             return postDealService.detailPost(postId);

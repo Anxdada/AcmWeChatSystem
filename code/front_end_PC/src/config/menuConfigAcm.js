@@ -87,5 +87,9 @@ const menuListAcm = [
         title:'系统反馈',
         key:'/admin/feedback',
     },
+    {
+        title:'测试组件',
+        key:'/admin/test',
+    },
 ];
 export default menuListAcm;
