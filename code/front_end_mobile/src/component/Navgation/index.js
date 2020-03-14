@@ -31,7 +31,7 @@ const data = [
 ];
 
 const data1 = Array.from(new Array(9)).map(() => ({
-  icon: 'https://gw.alipayobjects.com/zos/rmsportal/WXoqXTHrSnRcUwEaQgXJ.png',
+    icon: 'https://gw.alipayobjects.com/zos/rmsportal/WXoqXTHrSnRcUwEaQgXJ.png',
 }));
 
 
