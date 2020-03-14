@@ -1,9 +1,8 @@
 import React from 'react';
 import { TabBar } from 'antd-mobile';
 import { Icon, Input } from 'antd';
-import Home from './pages/Home';
-import Platform from './pages/Forum';
-import UserRelative from './pages/User';
+import HomePage from './pages/home';
+import UserRelative from './pages/user';
 import './style/common.less';
 
 
@@ -13,7 +12,6 @@ export default class MobileTabBarBottom extends React.Component {
         this.state = {
             selectedTab: 'FirstTab',
             fullScreen: true,
-            hidden: false,
         };
     }
 
@@ -44,7 +42,7 @@ export default class MobileTabBarBottom extends React.Component {
                 }}
                 data-seed="logId"
             >
-                <Home />
+                <HomePage />
             </TabBar.Item>
           
             <TabBar.Item
@@ -87,10 +85,10 @@ export default class MobileTabBarBottom extends React.Component {
                 }}
                 dot
             >
-                <UserRelative />
+                <div>111</div>
             </TabBar.Item>
-        </TabBar>
-        </div>
-      );
-  }
+            </TabBar>
+            </div>
+        );
+    }
 }
