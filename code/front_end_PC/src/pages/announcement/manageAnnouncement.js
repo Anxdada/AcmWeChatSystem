@@ -51,7 +51,7 @@ class AnnouncementTable extends React.Component {
                 align: 'center',
                 render: (text, record) => (
                     <span>
-                        <a><Link to={'/admin/announcement/detail/'+record.announcementId}>{text}</Link></a>
+                        <Link to={'/admin/announcement/detail/'+record.announcementId}>{text}</Link>
                     </span>
                 ),
             }, 
@@ -77,7 +77,7 @@ class AnnouncementTable extends React.Component {
                 dataIndex: 'createTime',
                 key: 'createTime',
                 align: 'center',
-                sorter: (a, b) => a.createTime < b.createTime
+                sorter: (a, b) => a.createTime < b.createTime,
             },
             {
                 title: '更新人',
@@ -100,10 +100,10 @@ class AnnouncementTable extends React.Component {
                     <span>
                         {
                             record.isRegister == 1 ? 
-                            <span><a><Link to={'/admin/announcement/registerPerson/'+record.announcementId}>查看报名用户</Link></a> <Divider type="vertical" /></span>
+                            <span><Link to={'/admin/announcement/registerPerson/'+record.announcementId}>查看报名用户</Link> <Divider type="vertical" /></span>
                             : null
                         } 
-                        <a><Link to={'/admin/announcement/modifyAnnouncement/'+record.announcementId}>修改</Link></a>
+                        <Link to={'/admin/announcement/modifyAnnouncement/'+record.announcementId}>修改</Link>
                         <Divider type="vertical" />
                         <Popconfirm title="确定删除?" onConfirm={() => this.handleDelete(record.announcementId)} okText="确定" cancelText="取消">
                             <a className="deleteHerf">删除</a>

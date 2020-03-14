@@ -319,7 +319,8 @@ class TagsTable extends React.Component {
         return (
             <div>
                 <Spin spinning={this.props.loading}>
-                    <Table columns={this.columns} dataSource={this.props.allTagData} pagination={false} />
+                    <Table columns={this.columns} dataSource={this.props.allTagData} 
+                        pagination={false} rowKey={record => record.announcementTagId}/>
                 </Spin>
             </div>
         );

@@ -281,7 +281,8 @@ class TagsTable extends React.Component {
         return (
             <div>
                 <Spin spinning={this.props.loading}>
-                    <Table columns={this.columns} dataSource={this.props.allTagData} pagination={false} />
+                    <Table columns={this.columns} dataSource={this.props.allTagData}
+                         pagination={false} rowKey={record => record.labelId} />
                 </Spin>
             </div>
         );
@@ -473,7 +474,7 @@ class TagsView extends React.Component {
     }
 }
 
-export default class CategoryAnnounce extends React.Component {
+export default class LabelsManageForum extends React.Component {
     render() {
         return (
             <div>

@@ -371,7 +371,8 @@ class OnDutyTable extends React.Component {
     render() {
         return (
             <div style={{ flex: 1 }}>
-                <Table bordered dataSource={this.props.allOnDutyData} columns={this.columns} pagination={false} />
+                <Table bordered dataSource={this.props.allOnDutyData} columns={this.columns} 
+                    pagination={false} rowKey={record => record.onDutyId} />
             </div>
         );
     }
@@ -391,7 +392,7 @@ class OnDutyView extends React.Component {
             totalPage: 1,
             pageSize: 10,
             onDutyId: '',
-            allOnDutyData: '',
+            allOnDutyData: [],
             searchUserName: '',
             onDutyUserName: '',
             telephone: '',
@@ -424,8 +425,7 @@ class OnDutyView extends React.Component {
             timeOut: 3000,
         }).then ( 
             data => {
-                console.log(data);
-
+                // console.log(data);
                 if (data.status == 0) {
                     this.setState({
                         staff: data.resultBean
@@ -469,7 +469,7 @@ class OnDutyView extends React.Component {
             timeOut: 3000,
         }).then ( 
             data => {
-                console.log(data);
+                // console.log(data);
                 if (data.status == 0) {
                     if(data.resultBean.currentPage>0) {
                         this.setState({nowPage: data.resultBean.currentPage});
@@ -484,7 +484,7 @@ class OnDutyView extends React.Component {
                     this.setState({
                         nowPage: 1,
                         totalPage: 1,
-                        allOnDutyData: '',
+                        allOnDutyData: [],
                     });
                     if (data.status < 100) {
                         message.error(data.msg);

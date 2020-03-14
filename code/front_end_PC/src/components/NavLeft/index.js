@@ -90,6 +90,5 @@ class NavLeft extends React.Component {
     }
 }
 
-// export default connect()(NavLeft);
-export default NavLeft;
+export default connect()(NavLeft);
 

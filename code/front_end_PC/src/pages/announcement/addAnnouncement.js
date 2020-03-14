@@ -241,8 +241,8 @@ class AddAnnouncementPublishView extends React.Component {
                             onChange={this.handlePublishTag} allowClear placeholder="选择类别" >
                             {
                                 this.state.allTag.map((item) =>
-                                    <Option value={item.announcementTagName}>
-                                        <Tag color={item.announcementTagColor} key={item.announcementTagName} > {item.announcementTagName} </Tag>
+                                    <Option value={item.announcementTagName} key={item.announcementTagId} >
+                                        <Tag color={item.announcementTagColor} key={item.announcementTagId} > {item.announcementTagName} </Tag>
                                     </Option>
                                 )
                             }

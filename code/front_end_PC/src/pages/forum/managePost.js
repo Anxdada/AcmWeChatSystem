@@ -60,7 +60,7 @@ class PostTable extends React.Component {
                 align: 'center',
                 render: (text, record) => (
                     <span>
-                        <a><Link to={'/admin/forum/detail/'+record.postId}>{text}</Link></a>
+                        <Link to={'/admin/forum/detail/'+record.postId}>{text}</Link>
                     </span>
                 ),
             }, 
@@ -106,12 +106,12 @@ class PostTable extends React.Component {
                 align: 'center',
                 render: (text, record) => (
                     <span>
-                        <a disable><Link to={'/admin/forum/comment/'+record.postId}>查看评论</Link></a>
+                        <Link to={'/admin/forum/comment/'+record.postId}>查看评论</Link>
                         <Divider type="vertical" />
                         {
                             record.isSame == false ? null :
                                 <span>
-                                    <a><Link to={'/admin/forum/modifyPost/'+record.postId}>修改</Link></a>
+                                    <Link to={'/admin/forum/modifyPost/'+record.postId}>修改</Link>
                                     <Divider type="vertical" />
                                 </span>
                         }

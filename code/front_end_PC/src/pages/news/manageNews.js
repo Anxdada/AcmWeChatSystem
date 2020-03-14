@@ -30,7 +30,7 @@ class NewsTable extends React.Component {
                 align: 'center',
                 render: (text, record) => (
                     <span>
-                        <a><Link to={'/admin/news/detail/'+record.newsId}>{text}</Link></a>
+                        <Link to={'/admin/news/detail/'+record.newsId}>{text}</Link>
                     </span>
                 ),
             }, 
@@ -77,7 +77,7 @@ class NewsTable extends React.Component {
                 align: 'center',
                 render: (text, record) => (
                     <span>
-                        <a><Link to={'/admin/news/modifyNews/'+record.newsId}>修改</Link></a>
+                        <Link to={'/admin/news/modifyNews/'+record.newsId}>修改</Link>
                         <Divider type="vertical" />
                         <Popconfirm title="确定删除?" onConfirm={() => this.handleDelete(record.newsId)} okText="确定" cancelText="取消">
                             <a className="deleteHerf">删除</a>
@@ -151,7 +151,8 @@ class NewsTable extends React.Component {
     render() {
         return (
             <div>
-                <Table columns={this.columns} dataSource={this.props.allNewsData} pagination={false} />
+                <Table columns={this.columns} dataSource={this.props.allNewsData} 
+                    pagination={false} rowKey={record => record.newsId} />
             </div>
         );
     }

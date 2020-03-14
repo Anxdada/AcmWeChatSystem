@@ -309,7 +309,7 @@ class FriendUrlTable extends React.Component {
             addFriendUrlName: '',
             friendUrlAddress:'',
             friendUrlTag: '个人博客',
-            allUrl: '',
+            allUrl: [],
         }
         this.columns = [
             {
@@ -453,7 +453,7 @@ class FriendUrlTable extends React.Component {
                     this.setState({
                         nowPage: 1,
                         totalPage: 1,
-                        allUrl: ''
+                        allUrl: [],
                     });
                     if (data.status < 100) {
                         message.error(data.msg);
@@ -636,6 +636,7 @@ class FriendUrlTable extends React.Component {
                         columns={this.columns}
                         dataSource={this.state.allUrl}
                         pagination={false}
+                        rowKey={record => record.friendUrlId}
                     />
                 </Spin>
                 <div className="tablePage">

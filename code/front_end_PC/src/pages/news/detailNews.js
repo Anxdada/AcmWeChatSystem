@@ -100,7 +100,7 @@ class DetailNews extends React.Component {
                 <strong>创建人:&nbsp;&nbsp;{this.state.createUser}</strong>
                 <br />
                 <strong>创建时间:</strong>&nbsp;&nbsp;
-                <DatePicker format="YYYY-MM-DD" value={moment(this.state.createTime)} disabled />
+                <DatePicker style={{ width: 200 }} format="YYYY-MM-DD HH:mm:ss" value={moment(this.state.createTime)} disabled />
                 <br /><br />
                 <strong>更新人:&nbsp;&nbsp;{this.state.updateUser}</strong>
                 <br />

@@ -277,6 +277,9 @@
             <if test="map.searchStartTime != null ">
                 AND a.createTime between #{map.searchStartTime} and #{map.searchEndTime}
             </if>
+            <if test="map.isPublish != null ">
+                AND a.isPublish=#{map.isPublish}
+            </if>
             <if test="map.isEffective != null ">
                 AND a.isEffective=#{map.isEffective}
                 AND b.isEffective=#{map.isEffective}

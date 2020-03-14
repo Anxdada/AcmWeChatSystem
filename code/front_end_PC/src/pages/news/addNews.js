@@ -161,7 +161,7 @@ class AddNewsPublishView extends React.Component {
                         onChange={this.handlePublishTag} allowClear placeholder="新闻类别" >
                         {
                             this.state.allTag.map((item) =>
-                                <Option value={item.newsTagName}>
+                                <Option value={item.newsTagName} key={item.newsTagId}>
                                     <Tag color={item.newsTagColor} key={item.newsTagName} > {item.newsTagName} </Tag>
                                 </Option>
                             )
@@ -242,7 +242,9 @@ class AddNewsEditView extends React.Component {
         editor.customConfig.uploadImgServer = UploadImg;
         editor.customConfig.uploadImgHooks = { 
             customInsert: function (insertImg, result, editor) { 
-                var url =result.data; 
+                var url = result.data;
+                console.log(url);
+                console.log('xierenyi');
                 insertImg(url); 
             } 
         };

@@ -80,7 +80,7 @@ class Header extends React.Component {
         return (
             <div className="header">
                 <Row className="header-top">
-                    <Col span="24">
+                    <Col span={24}>
                         <Avatar src={this.state.nowUser.avatar} />&nbsp;&nbsp;
                         <Dropdown overlay={menu}>
                             <span className="welcome">{this.state.nowUser.realName}, 欢迎回来<Icon type="down" /></span>
@@ -88,7 +88,7 @@ class Header extends React.Component {
                     </Col>
                 </Row>
                 <Row className="breadcrumb">
-                    <Col span="10" className="breadcrumb-title">
+                    <Col span={10} className="breadcrumb-title">
                         <Breadcrumb>
                             <Breadcrumb.Item>
                                 <Icon type="home"/>
@@ -96,15 +96,15 @@ class Header extends React.Component {
                             {
                                 this.props.menuName.map((item) => 
                                     <Breadcrumb.Item key={item.key}>
-                                        {
-                                            item.key != "none" ? <a><Link to={item.key}>{item.title}</Link></a> : <span>{item.title}</span>
-                                        }
+                                    {
+                                        item.key != "none" ? <span><Link to={item.key}>{item.title}</Link></span> : <span>{item.title}</span>
+                                    }
                                     </Breadcrumb.Item>
                                 )
                             }
                         </Breadcrumb>
                     </Col>
-                    <Col span="14" className="weather">
+                    <Col span={14} className="weather">
                         <span className="date"> {this.state.sysTime} </span>
                     </Col>
                 </Row>

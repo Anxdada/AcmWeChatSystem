@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Row, Col, Card, DatePicker, Dropdown, message, Menu, notification, Tag, Radio, Popconfirm, Divider, Avatar, Badge, Modal, AutoComplete, Icon, Pagination, BackTop, Tooltip, Input, Comment, Form, Button, Skeleton, Empty, Select } from 'antd';
+import { Row, Col, Card, DatePicker, Typography, Dropdown, message, Menu, notification, Tag, Radio, Popconfirm, Divider, Avatar, Badge, Modal, AutoComplete, Icon, Pagination, BackTop, Tooltip, Input, Comment, Form, Button, Skeleton, Empty, Select } from 'antd';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import { connect } from 'react-redux';
@@ -16,6 +16,7 @@ const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 const { Meta } = Card;
 const { TextArea } = Input;
 const { Option } = Select;
+const { Title, Paragraph, Text } = Typography;
 
 // react 跨组件传递数据
 const NowUser = React.createContext("当前登录用户信息");

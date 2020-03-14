@@ -79,12 +79,12 @@ class DetailAnnouncement extends React.Component {
                         announcementTagName: data.resultBean.announcementTagName,
                         announcementTagColor: data.resultBean.announcementTagColor,
                         createUser: data.resultBean.createUser,
-                        createTime: moment(data.resultBean.createTime).format('YYYY-MM-DD'),
+                        createTime: data.resultBean.createTime,
                         updateUser: data.resultBean.updateUser,
-                        updateTime: moment(data.resultBean.updateTime).format('YYYY-MM-DD HH:mm:ss'),
+                        updateTime: data.resultBean.updateTime,
                         isRegister: data.resultBean.isRegister,
-                        registerStartTime: moment(data.resultBean.registerStartTime).format('YYYY-MM-DD HH:mm:ss'),
-                        registerEndTime: moment(data.resultBean.registerEndTime).format('YYYY-MM-DD HH:mm:ss'),
+                        registerStartTime: data.resultBean.registerStartTime,
+                        registerEndTime: data.resultBean.registerEndTime,
                         needStartTime: data.resultBean.needStartTime,
                         startTime: data.resultBean.startTime,
                         lastTime: data.resultBean.lastTime,
@@ -123,7 +123,7 @@ class DetailAnnouncement extends React.Component {
                 <strong>创建人:&nbsp;&nbsp;{this.state.createUser}</strong>
                 <br />
                 <strong>创建时间:</strong>&nbsp;&nbsp;
-                <DatePicker format="YYYY-MM-DD" value={moment(this.state.createTime)} disabled />
+                <DatePicker style={{ width: 200 }} format="YYYY-MM-DD HH:mm:ss" value={moment(this.state.createTime)} disabled />
                 <br /><br />
                 <strong>更新人:&nbsp;&nbsp;{this.state.updateUser}</strong>
                 <br />
