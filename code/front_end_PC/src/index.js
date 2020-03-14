@@ -3,10 +3,9 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import Router from './router';
-import store from './redux/store/configureStore';
 import { Provider } from 'react-redux';
+import store from './redux/store/configureStore';
 
-// 通过provider把redux和react连接, store传递到react项目中
 ReactDOM.render(
     <Provider store={store}>
         <Router/>

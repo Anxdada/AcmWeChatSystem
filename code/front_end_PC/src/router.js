@@ -46,6 +46,8 @@ import Feedback from './pages/feedback';
 
 import Ttest from './pages/Ttest';
 
+// 下面是手机端的
+import MobileTabBarBottom from './mobile';
 
 export default class IRouter extends React.Component {
     render() {
@@ -97,6 +99,11 @@ export default class IRouter extends React.Component {
                             </Switch>
                         </Admin>
                     } />
+                    <Route path='/mobile' render={() => 
+                        <Switch>
+                        <Route path='/mobile/home' component={MobileTabBarBottom} />
+                        </Switch>
+                    } />
                     <Route component={NoMatch} />
                 </Switch>
                     {/* <Route path='/order/detail' component={Login} /> */}
@@ -106,6 +113,9 @@ export default class IRouter extends React.Component {
         );
     }
 }
+/*
+
+                    */
 
 /*
 <Route path='/admin/ui/buttons' component={Buttons} />
