@@ -9,6 +9,7 @@
 
     <sql id="on_duty_table">
 		a.onDutyId,
+		a.onDutyUserId,
 		a.onDutyUserName,
 		a.onDutyTelephone,
 		a.onDutyStartTime,
@@ -25,6 +26,7 @@
         INSERT INTO onDuty
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="onDuty.onDutyId != null">onDutyId,</if>
+            <if test="onDuty.onDutyUserId != null">onDutyUserId,</if>
             <if test="onDuty.onDutyUserName != null">onDutyUserName,</if>
             <if test="onDuty.onDutyTelephone != null">onDutyTelephone,</if>
             <if test="onDuty.onDutyStartTime != null">onDutyStartTime,</if>
@@ -38,6 +40,7 @@
         values
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="onDuty.onDutyId != null">#{onDuty.onDutyId},</if>
+            <if test="onDuty.onDutyUserId != null">#{onDuty.onDutyUserId},</if>
             <if test="onDuty.onDutyUserName != null">#{onDuty.onDutyUserName},</if>
             <if test="onDuty.onDutyTelephone != null">#{onDuty.onDutyTelephone},</if>
             <if test="onDuty.onDutyStartTime != null">#{onDuty.onDutyStartTime},</if>
@@ -55,6 +58,7 @@
         UPDATE onDuty
         <set>
             <if test="onDuty.onDutyId != null">onDutyId=#{onDuty.onDutyId},</if>
+            <if test="onDuty.onDutyUserId != null">onDutyUserId=#{onDuty.onDutyUserId},</if>
             <if test="onDuty.onDutyUserName != null">onDutyUserName=#{onDuty.onDutyUserName},</if>
             <if test="onDuty.onDutyTelephone != null">onDutyTelephone=#{onDuty.onDutyTelephone},</if>
             <if test="onDuty.onDutyStartTime != null">onDutyStartTime=#{onDuty.onDutyStartTime},</if>
@@ -110,12 +114,16 @@
             <if test="map.onDutyUserName != null ">
                 AND a.onDutyUserName like CONCAT ('%', #{map.onDutyUserName}, '%')
             </if>
+            <if test="map.onDutyUserId != null ">
+                AND a.onDutyUserId=#{map.onDutyUserId}
+            </if>
             <if test="map.isEffective != null ">
                 AND a.isEffective=#{map.isEffective}
             </if>
             <if test="map.onDutyStartTime != null ">
                 AND ( a.onDutyStartTime between #{map.onDutyStartTime} and #{map.onDutyEndTime}
-                OR a.onDutyEndTime between #{map.onDutyStartTime} and #{map.onDutyEndTime} )
+                OR a.onDutyEndTime between #{map.onDutyStartTime} and #{map.onDutyEndTime}
+                OR (a.onDutyStartTime &lt;= #{map.onDutyStartTime} AND a.onDutyEndTime &gt;= #{map.onDutyEndTime}))
             </if>
         </trim>
         <if test="map.order != null ">

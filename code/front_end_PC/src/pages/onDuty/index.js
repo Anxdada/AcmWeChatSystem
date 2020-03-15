@@ -53,6 +53,7 @@ class Modify extends React.Component {
         super(props);
         this.state = {
             onDutyId: '',
+            onDutyUserId: '',
             onDutyUserName: '',
             telephone: '',
             startTime: null,
@@ -71,6 +72,7 @@ class Modify extends React.Component {
                 if (data.status == 0) {
                     this.setState({
                         onDutyId: data.resultBean.onDutyId,
+                        onDutyUserId: data.resultBean.onDutyUserId,
                         onDutyUserName: data.resultBean.onDutyUserName,
                         telephone: data.resultBean.onDutyTelephone,
                         startTime: moment(data.resultBean.onDutyStartTime).format('YYYY-MM-DD'),
@@ -116,7 +118,7 @@ class Modify extends React.Component {
 
         Fetch.requestPost({
             url: UpdateOnDuty,
-            info: 'onDutyId='+this.state.onDutyId+'&onDutyUserName='+this.state.onDutyUserName
+            info: 'onDutyId='+this.state.onDutyId+'&onDutyUserName='+this.state.onDutyUserName+'&onDutyUserId='+this.state.onDutyUserId
                     +'&onDutyTelephone='+this.state.telephone+'&onDutyStartTime='+moment(this.state.startTime).format('YYYY-MM-DD')
                     +'&onDutyEndTime='+moment(this.state.endTime).format('YYYY-MM-DD'),
             timeOut: 3000,
@@ -394,10 +396,13 @@ class OnDutyView extends React.Component {
             onDutyId: '',
             allOnDutyData: [],
             searchUserName: '',
+            onDutyUserId: '',
             onDutyUserName: '',
             telephone: '',
             startTime: null,
             endTime: null,
+            searchStartTime: null,
+            searchEndTime: null,
             staff: [],
         }
         emitter.on("refresh", this.refresh.bind(this)); 
@@ -452,13 +457,13 @@ class OnDutyView extends React.Component {
         // console.log("!!!xiegetData");
 
         let startTime = '';
-        if (this.state.startTime != null) {
-            startTime = moment(this.state.startTime).format('YYYY-MM-DD');
+        if (this.state.searchStartTime != null) {
+            startTime = moment(this.state.searchStartTime).format('YYYY-MM-DD');
         }
 
         let endTime = '';
-        if (this.state.endTime != null) {
-            endTime = moment(this.state.endTime).format('YYYY-MM-DD');
+        if (this.state.searchEndTime != null) {
+            endTime = moment(this.state.searchEndTime).format('YYYY-MM-DD');
         }
 
         Fetch.requestPost({
@@ -514,13 +519,17 @@ class OnDutyView extends React.Component {
             return ;
         }
 
+        console.log("xierenyi");
+        console.log(this.state.onDutyUserId);
+
         this.setState({
             submitLoading: true,
         })
 
         Fetch.requestPost({
             url: AddOnDuty,
-            info: 'onDutyUserName='+this.state.onDutyUserName+'&onDutyTelephone='+this.state.telephone
+            info: 'onDutyUserId='+this.state.onDutyUserId
+                    +'&onDutyUserName='+this.state.onDutyUserName+'&onDutyTelephone='+this.state.telephone
                     +'&onDutyStartTime='+moment(this.state.startTime).format('YYYY-MM-DD')
                     +'&onDutyEndTime='+moment(this.state.endTime).format('YYYY-MM-DD'),
             timeOut: 3000,
@@ -566,8 +575,8 @@ class OnDutyView extends React.Component {
         console.log(dates.length);
         if (dates.length < 1) {
             this.setState({
-                startTime: null,
-                endTime: null,
+                searchStartTime: null,
+                searchEndTime: null,
             }, () => this.getOnDutyData());
             return ;
         }
@@ -575,8 +584,8 @@ class OnDutyView extends React.Component {
         // console.log(dates[0].format('YYYY-MM-DD'));
         // console.log(dates[1].format('YYYY-MM-DD'));
         this.setState({
-            startTime: dates[0].format('YYYY-MM-DD'),
-            endTime: dates[1].format('YYYY-MM-DD'),
+            searchStartTime: dates[0].format('YYYY-MM-DD'),
+            searchEndTime: dates[1].format('YYYY-MM-DD'),
         }, () => this.getOnDutyData());
     }
 
@@ -618,11 +627,14 @@ class OnDutyView extends React.Component {
         console.log(value);
         const staff = this.state.staff;
         for (let i in staff) {
-            console.log(staff[i].realName)
+            // console.log(staff[i].realName)
+            // console.log(staff[i]);
             if (staff[i].realName == value) {
+
                 this.setState({
                     onDutyUserName: value,
                     telephone: staff[i].telephone,
+                    onDutyUserId: staff[i].userId,
                 })
                 break;
             }
@@ -650,18 +662,22 @@ class OnDutyView extends React.Component {
     }
 
     render() {
-        let rangeTime;
+        let searchRangeTime, addRangeTime;
+        if (this.state.searchStartTime != null)
+            searchRangeTime = [moment(this.state.searchStartTime), moment(this.state.searchEndTime)];
+        else searchRangeTime = [null, null];
+        
         if (this.state.startTime != null)
-            rangeTime = [moment(this.state.startTime), moment(this.state.endTime)];
-        else rangeTime = [null, null];
+            addRangeTime = [moment(this.state.startTime), moment(this.state.endTime)];
+        else addRangeTime = [null, null];
         return(
             <div style={{ flex: 1, padding: "10px" }}>
                 <Card title="值班管理" >
                     <Input placeholder="值班人姓名" value={this.state.searchUserName} onChange={this.handleSearchUserNameText} 
                         style={{ height: 30, width: 150}} className="searchF" allowClear />
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <RangePicker value={rangeTime} onChange={this.handleSearchRangeTime} placeholder={["开始时间", "结束时间"]} />
-                    <Button type="primary" shape="circle" icon="search" onClick={this.handleSearchRangeTimeBtn}/>
+                    <RangePicker value={searchRangeTime} onChange={this.handleSearchRangeTime} placeholder={["开始时间", "结束时间"]} />
+                    <Button style={{ marginLeft: 3 }} type="primary" shape="circle" icon="search" onClick={this.handleSearchRangeTimeBtn}/>
                     <div className="addUrlBtn">
                         <Button type="primary" onClick={this.handleShowModal}> 安排值班 </Button>
                         <Modal
@@ -697,7 +713,7 @@ class OnDutyView extends React.Component {
                         </div>
                         <div className="modalInput">
                             值&nbsp;&nbsp;班&nbsp;&nbsp;&nbsp;&nbsp;周&nbsp;&nbsp;期：
-                            <RangePicker value={rangeTime} onChange={this.handleModalAddRangeTime} placeholder={["开始时间", "结束时间"]} />
+                            <RangePicker value={addRangeTime} onChange={this.handleModalAddRangeTime} placeholder={["开始时间", "结束时间"]} />
                         </div>
                         </Modal>
                     </div>

@@ -44,18 +44,20 @@ public class OnDutyDealServiceImpl implements OnDutyDealService {
      * 如果要永久修改, 还是直接建议修改User表的这个字段
      *
      * @param user 添加的人
+     * @param onDutyUserId 值班人员在user 表的中的id, 手机端的需求..
      * @param onDutyUserName 当条值班人姓名
      * @param onDutyTelephone 值班人员的联系方式
      * @param onDutyStartTime 值班周期开始时间
      * @param onDutyEndTime 值班周期结束时间
      * @return 结果
      */
-    public ResultBean addOnDuty(User user, String onDutyUserName, String onDutyTelephone, String onDutyStartTime, String onDutyEndTime) {
+    public ResultBean addOnDuty(User user, long onDutyUserId, String onDutyUserName, String onDutyTelephone, String onDutyStartTime, String onDutyEndTime) {
         try {
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
             OnDuty onDuty = new OnDuty();
+            onDuty.setOnDutyUserId(onDutyUserId);
             onDuty.setOnDutyUserName(onDutyUserName);
             onDuty.setOnDutyTelephone(onDutyTelephone);
             onDuty.setOnDutyStartTime(sdf.parse(onDutyStartTime));
@@ -109,6 +111,7 @@ public class OnDutyDealServiceImpl implements OnDutyDealService {
     /**
      *
      * @param user 修改的人
+     * @param onDutyUserId 值班人员在user 表的中的id, 手机端的需求..
      * @param onDutyId 修改的值班id
      * @param onDutyUserName 值班人姓名
      * @param onDutyTelephone 值班人员的联系方式
@@ -116,7 +119,7 @@ public class OnDutyDealServiceImpl implements OnDutyDealService {
      * @param onDutyEndTime 值班周期结束时间
      * @return 结果
      */
-    public ResultBean updateOnDuty(User user, Long onDutyId, String onDutyUserName, String onDutyTelephone,
+    public ResultBean updateOnDuty(User user, long onDutyUserId, long onDutyId, String onDutyUserName, String onDutyTelephone,
                                    String onDutyStartTime, String onDutyEndTime) {
         try {
 
@@ -130,6 +133,7 @@ public class OnDutyDealServiceImpl implements OnDutyDealService {
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
+            onDuty.setOnDutyUserId(onDutyUserId);
             onDuty.setOnDutyUserName(onDutyUserName);
             onDuty.setOnDutyTelephone(onDutyTelephone);
             onDuty.setOnDutyStartTime(sdf.parse(onDutyStartTime));
@@ -190,9 +194,15 @@ public class OnDutyDealServiceImpl implements OnDutyDealService {
                     User tUs = null;
                     if (listUsers.size() > 0) tUs = listUsers.get(0);
                     if (tUs != null) mapTemp.put("updateUser", tUs.getRealName());
-                    mapTemp.put("onDutyStartTime", DateUtil.convDateToStr((Date) mapTemp.get("onDutyStartTime"), "yyyy-MM-dd"));
-                    mapTemp.put("onDutyEndTime", DateUtil.convDateToStr((Date) mapTemp.get("onDutyEndTime"), "yyyy-MM-dd"));
+                    mapTemp.put("onDutyStartTime", DateUtil.convDateToStr((Date) mapTemp.get("onDutyStartTime"), "yyyy-MM-dd HH:mm:ss"));
+                    mapTemp.put("onDutyEndTime", DateUtil.convDateToStr((Date) mapTemp.get("onDutyEndTime"), "yyyy-MM-dd HH:mm:ss"));
                     mapTemp.put("updateTime", DateUtil.convDateToStr((Date) mapTemp.get("updateTime"), "yyyy-MM-dd HH:mm:ss"));
+
+                    // 手机端需求
+                    listUsers = userService.findUserListByUserId((Long)mapTemp.get("onDutyUserId"));
+                    tUs = null;
+                    if (listUsers.size() > 0) tUs = listUsers.get(0);
+                    if (tUs != null) mapTemp.put("avatar", tUs.getAvatar());
 
 //                    if ((Long) mapTemp.get("onDutyId") == 1 ) {
 //                        System.out.println(mapTemp.get("onDutyStartTime"));

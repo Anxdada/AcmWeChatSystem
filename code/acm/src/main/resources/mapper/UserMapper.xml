@@ -450,7 +450,7 @@
 	<!-- 找满足身份的人 -->
 	<select id="findSatisfyAuthUser" resultType="java.util.Map">
 		SELECT
-		tt.realName, tt.telephone
+		tt.userId, tt.realName, tt.telephone
 		FROM
 		user tt
 		<trim prefix="WHERE" prefixOverrides="AND|OR">

@@ -15,9 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
+import java.awt.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
@@ -137,6 +140,14 @@ class AcmApplicationTests {
     void testRedisSet() {
 //        System.out.println(redisComponent.hasMemberForKey("reply9", "2"));
         System.out.println(redisComponent.getSizeSetForKey("reply9"));
+    }
+
+    @Test
+    void testDate() {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        calendar.setTime(new Date());
+        calendar.set(Calendar.YEAR, 2014);
+        System.out.println(calendar.getTime());
     }
 
 }

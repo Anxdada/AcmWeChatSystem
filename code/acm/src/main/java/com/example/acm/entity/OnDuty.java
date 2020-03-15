@@ -9,6 +9,7 @@ import java.util.Date;
  */
 public class OnDuty {
     private Long onDutyId;
+    private Long onDutyUserId;
     private String onDutyUserName;
     private String onDutyTelephone;
     private Date onDutyStartTime;
@@ -26,6 +27,14 @@ public class OnDuty {
 
     public void setOnDutyId(Long onDutyId) {
         this.onDutyId = onDutyId;
+    }
+
+    public Long getOnDutyUserId() {
+        return onDutyUserId;
+    }
+
+    public void setOnDutyUserId(Long onDutyUserId) {
+        this.onDutyUserId = onDutyUserId;
     }
 
     public String getOnDutyUserName() {

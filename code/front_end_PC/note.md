@@ -20,8 +20,9 @@
 // return 里面只能写简单的 ?: , 其它定义变量或者条件语句都是在render下面, return上面, 或者在函数里面写
 // 移动端组件打头一定以 mobile 开头
 // antd 3.26 antd-mobile 2.3.1 版本号要对应
-// antd 和 antd-mobile 的分页器 的tatol 参数 , 后者直接代表总页数... 前者才是总的数量
+// antd 和 antd-mobile 的分页器 的tatol 参数 , 后者直接代表总页数... 前者才是总的数量 (然后样式的话随机看嘛, 那个合适就用那个上面的)
 // a 标签里面不要套link, 直接用link就好, 也有指向的图标. 不然后台很多错误, 虽然不影响逻辑, 但是后台看着很难看(console)
+// this.props.history.push 用于路由跳转, 注意子组件使用时, 一定父组件需要传递一下props, 用析构规则传递即可 {...this.props}
 
 
 很重要的一些坑点:

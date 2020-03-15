@@ -13,8 +13,10 @@ export const AddUserPC = localhost+"/user/addUserPC";
 export const UpdateUserPC = localhost+"/user/updateUserPC";
 export const SelectUserPC = localhost+"/user/selectUserPC";
 export const SelectUserStatistic = localhost+"/user/statistic";
-export const DetailUser = localhost+"/user/detailUser";
 // 用户 (前台操作, 手机端)的接口
+
+// PC/mobile 公用的接口
+export const DetailUser = localhost+"/user/detailUser";
 
 
 
@@ -98,6 +100,9 @@ export const SelectOnDuty = localhost+"/onduty/selectOnDuty";
 export const DetailOnDuty = localhost+"/onduty/detailOnDuty";
 // 选择队员
 export const GetTeamStaff = localhost+"/onduty/getOnDutyStaff";
+// 手机端需求
+// 获取当日值班人员信息
+export const GetNowDayOnDutyUser = localhost+"/onduty/getNowDayOnDutyUser";
 
 
 

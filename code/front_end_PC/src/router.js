@@ -49,6 +49,16 @@ import Ttest from './pages/Ttest';
 // 下面是手机端的
 import MobileTabBarBottom from './mobile';
 
+import MobileAnnouncementPage from './mobile/announcement/announcementPage';
+import MobileDetailAnnouncement from './mobile/announcement/showAnnouncement';
+
+import MobileNewsPage from './mobile/news/newsPage';
+
+import MobileFriendUrlPage from './mobile/friendUrl';
+
+import MobileOnDutyPage from './mobile/onDuty/onDutyPage';
+import MobileNeedToDo from './mobile/onDuty/needToDo';
+
 export default class IRouter extends React.Component {
     render() {
         return (
@@ -102,6 +112,17 @@ export default class IRouter extends React.Component {
                     <Route path='/mobile' render={() => 
                         <Switch>
                         <Route path='/mobile/home' component={MobileTabBarBottom} />
+                        
+                        <Route path='/mobile/announcement/showallannouncement' component={MobileAnnouncementPage} />
+                        <Route path='/mobile/announcement/detail/:id' component={(props) => <MobileDetailAnnouncement {...props} /> } />
+
+                        <Route path='/mobile/news/showallnews' component={MobileNewsPage} />
+
+                        <Route path='/mobile/friendurl' component={MobileFriendUrlPage} />
+                        
+                        <Route path='/mobile/onduty/showallonduty' component={MobileOnDutyPage} />
+                        <Route path='/mobile/onduty/needtodo' component={MobileNeedToDo} />
+                        
                         </Switch>
                     } />
                     <Route component={NoMatch} />
