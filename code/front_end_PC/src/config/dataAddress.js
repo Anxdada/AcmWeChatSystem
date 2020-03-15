@@ -52,6 +52,8 @@ export const AddRegisterTable = localhost+"/register/addRegister";
 export const DeleteRegisterTable = localhost+"/register/deleteRegister";
 export const UpdateRegisterTable = localhost+"/register/updateRegister"; 
 export const SelectRegisterTable = localhost+"/register/selectRegister";
+// 手机端更新浏览量需求
+export const UpdateAnnouncementView = localhost+"/announcement/updateAnnouncementView";
 
 
 

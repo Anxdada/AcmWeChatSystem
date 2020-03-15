@@ -65,7 +65,7 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
             List<AnnouncementTag> listAnnouncementTags = announcementTagService.findAnnouncementTagListByAnnouncementTagId(announcementTagId);
 
             if (listAnnouncementTags.isEmpty()) {
-                return new ResultBean(ResultCode.PARAM_ERROR, "不存在该公告类别");
+                return new ResultBean(ResultCode.SQL_NULL_RECODE, "不存在该公告类别");
             }
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -116,7 +116,7 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
             List<Announcement> announcements = announcementService.findAnnouncementListByAnnouncementId(announcementId);
 
             if (announcements.size() < 1) {
-                return new ResultBean(ResultCode.PARAM_ERROR, "不存在该公告");
+                return new ResultBean(ResultCode.SQL_NULL_RECODE, "不存在该公告");
             }
 
             Announcement announcement = announcements.get(0);
@@ -159,13 +159,13 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
             List<Announcement> announcements = announcementService.findAnnouncementListByAnnouncementId(announcementId);
 
             if (announcements.isEmpty()) {
-                return new ResultBean(ResultCode.PARAM_ERROR, "不存在该公告");
+                return new ResultBean(ResultCode.SQL_NULL_RECODE, "不存在该公告");
             }
 
             List<AnnouncementTag> listAnnouncementTags = announcementTagService.findAnnouncementTagListByAnnouncementTagId(announcementTagId);
 
             if (listAnnouncementTags.isEmpty()) {
-                return new ResultBean(ResultCode.PARAM_ERROR, "不存在该公告类别");
+                return new ResultBean(ResultCode.SQL_NULL_RECODE, "不存在该公告类别");
             }
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -224,7 +224,7 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
      * @return 结果
      */
     public ResultBean selectAnnouncement(String announcementTitle, long searchTagId, String searchStartTime,
-                                            String searchEndTime, int aOrs, String order, int pageNum, int pageSize) {
+                                            String searchEndTime, int isPublish, int aOrs, String order, int pageNum, int pageSize) {
 
         try {
             Map<String, Object> map = new HashMap<>();
@@ -240,6 +240,7 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
             if (searchTagId != -1) map.put("searchTagId", searchTagId);
             if (!StringUtil.isNull(searchStartTime)) map.put("searchStartTime", searchStartTime);
             if (!StringUtil.isNull(searchEndTime)) map.put("searchEndTime", searchEndTime);
+            if (isPublish != -1) map.put("isPublish", isPublish);
             map.put("start", start);
             map.put("limit", limit);
             map.put("order", order);
@@ -266,8 +267,7 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
                     if (listUsers.size() > 0) tUs = listUsers.get(0);
                     if (tUs != null) mapTemp.put("createUser", tUs.getRealName());
 
-
-                    mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd"));
+                    mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd HH:mm:ss"));
                     mapTemp.put("updateTime", DateUtil.convDateToStr((Date) mapTemp.get("updateTime"), "yyyy-MM-dd HH:mm:ss"));
                 }
             }
@@ -281,17 +281,19 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
 
 
         } catch (Exception e) {
+            // log
             e.printStackTrace();
-            return new ResultBean(ResultCode.SYSTEM_FAILED);
+            return new ResultBean(ResultCode.SYSTEM_FAILED, String.valueOf(e));
         }
     }
 
     /**
      *
+     * @param user 当前的操作用户, 手机端需要这个数据
      * @param announcementId 公告Id
      * @return
      */
-    public ResultBean detailAnnouncement(long announcementId) {
+    public ResultBean detailAnnouncement(User user, long announcementId) {
         try {
 
             Map<String, Object> map = new HashMap<>();
@@ -300,11 +302,13 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
 
             List<Map<String, Object>> list = announcementService.findAnnouncementMapListByQueryJoinTagTable(map);
 
-            if (list.size() < 1) {
-                return new ResultBean(ResultCode.SYSTEM_FAILED);
+            if (list.isEmpty()) {
+                return new ResultBean(ResultCode.SQL_NULL_RECODE, "不存在该公告!");
             }
 
             Map<String, Object> mapTemp = list.get(0);
+
+            mapTemp.put("nowUser", user);
 
             List<User> listUsers = userService.findUserListByUserId((Long)mapTemp.get("updateUser"));
             User tUs = null;
@@ -315,7 +319,10 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
             listUsers = userService.findUserListByUserId((Long)mapTemp.get("createUser"));
             tUs = null;
             if (listUsers.size() > 0) tUs = listUsers.get(0);
-            if (tUs != null) mapTemp.put("createUser", tUs.getRealName());
+            if (tUs != null) {
+                mapTemp.put("createUser", tUs.getRealName());
+                mapTemp.put("avatar", tUs.getAvatar());
+            }
 
 //            System.out.println((Integer) mapTemp.get("announcementTagId"));
 //            List<AnnouncementTag> list2 = announcementTagService.findAnnouncementTagListByAnnouncementTagId(Long.parseLong(mapTemp.get("announcementTagId").toString()));
@@ -323,7 +330,7 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
             if (!list2.isEmpty()) mapTemp.put("needStartTime", list2.get(0).getNeedStartTime());
 
 
-            mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd"));
+            mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd HH:mm:ss"));
             mapTemp.put("updateTime", DateUtil.convDateToStr((Date) mapTemp.get("updateTime"), "yyyy-MM-dd HH:mm:ss"));
 
 //            System.out.println(mapTemp.get("registerStartTime"));

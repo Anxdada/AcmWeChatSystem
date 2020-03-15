@@ -15,3 +15,12 @@ UPDATE user tt SET tt.avatar = 'http://localhost:9999/avatar/meijiao.jpg' WHERE 
 UPDATE user tt SET tt.avatar = 'http://localhost:9999/avatar/dali.jpg' WHERE tt.userId = 13;
 UPDATE user tt SET tt.avatar = 'http://localhost:9999/avatar/haitang.jpg' WHERE tt.userId = 14;
 UPDATE reply tt SET tt.replyCommentId = 8 where tt.replyId = 4;
+
+26 - 31
+
+UPDATE announcement tt SET tt.view = 201 where tt.announcementId = 26;
+UPDATE announcement tt SET tt.view = 102 where tt.announcementId = 27;
+UPDATE announcement tt SET tt.view = 88 where tt.announcementId = 28;
+UPDATE announcement tt SET tt.view = 67 where tt.announcementId = 29;
+UPDATE announcement tt SET tt.view = 15 where tt.announcementId = 30;
+UPDATE announcement tt SET tt.view = 31 where tt.announcementId = 31;

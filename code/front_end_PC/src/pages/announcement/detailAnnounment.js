@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Tag, DatePicker, Input, message, notification, BackTop } from 'antd';
+import { Card, Tag, DatePicker, Input, message, notification, BackTop, Icon } from 'antd';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import './index.less';
@@ -35,6 +35,7 @@ class DetailAnnouncement extends React.Component {
             startTime: null,
             lastTime: '',
             isPublish: '',
+            view: 0,
         }
     }
     
@@ -89,6 +90,7 @@ class DetailAnnouncement extends React.Component {
                         startTime: data.resultBean.startTime,
                         lastTime: data.resultBean.lastTime,
                         isPublish: data.resultBean.isPublish,
+                        view: data.resultBean.view,
                     });
                 } else {
                     if (data.status < 100) {
@@ -165,6 +167,7 @@ class DetailAnnouncement extends React.Component {
                 <br />
                 <strong>内容:</strong>&nbsp;&nbsp;
                 <div dangerouslySetInnerHTML={{__html: this.state.announcementBody}} />
+                <Icon type="eye" /> {this.state.view}
             </Card>
             </div>
         );

@@ -39,6 +39,9 @@ public class Announcement implements Serializable {
     
     private Integer isEffective;
 
+    // 后加的字段
+    private Integer view;
+
     public Long getAnnouncementId() {
         return announcementId;
     }
@@ -157,5 +160,13 @@ public class Announcement implements Serializable {
 
     public void setIsEffective(Integer isEffective) {
         this.isEffective = isEffective;
+    }
+
+    public Integer getView() {
+        return view;
+    }
+
+    public void setView(Integer view) {
+        this.view = view;
     }
 }

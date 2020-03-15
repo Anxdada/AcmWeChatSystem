@@ -40,6 +40,9 @@ public class AnnouncementController extends BaseController {
     @Autowired
     private AnnouncementDealService announcementDealService;
 
+    @Autowired
+    private AnnouncementService announcementService;
+
 
     @PostMapping("/addAnnouncement")
     @ResponseBody
@@ -118,12 +121,28 @@ public class AnnouncementController extends BaseController {
     }
 
 
+    /**
+     *
+     * @param announcementTitle
+     * @param searchTagId
+     * @param searchStartTime
+     * @param searchEndTime
+     * @param isPublish 这个字段是手机端展示是需要的字段数据
+     * @param aOrs
+     * @param order
+     * @param pageNum
+     * @param pageSize
+     * @param request
+     * @param response
+     * @return
+     */
     @PostMapping("/selectAnnouncement")
     @ResponseBody
     public ResultBean selectAnnouncement(@RequestParam(value = "announcementTitle", defaultValue = "", required = false) String announcementTitle,
                                          @RequestParam(value = "searchTagId", defaultValue = "-1", required = false) long searchTagId,
                                            @RequestParam(value = "searchStartTime", defaultValue = "", required = false) String searchStartTime,
                                            @RequestParam(value = "searchEndTime", defaultValue = "", required = false) String searchEndTime,
+                                           @RequestParam(value = "isPublish", defaultValue = "-1", required = false) int isPublish,
                                            @RequestParam(value = "aOrs", defaultValue = "1", required = false) int aOrs,
                                            @RequestParam(value = "order", defaultValue = "createTime", required = false) String order,
                                            @RequestParam(value = "pageNum", defaultValue = "1", required = false) int pageNum,
@@ -144,10 +163,11 @@ public class AnnouncementController extends BaseController {
         }
 
         return announcementDealService.selectAnnouncement(announcementTitle, searchTagId, searchStartTime,
-                                                searchEndTime, aOrs,  order,  pageNum,  pageSize);
+                                                searchEndTime, isPublish, aOrs,  order,  pageNum,  pageSize);
 
     }
 
+    // @param user 当前的操作用户, 手机端需要这个数据
     @PostMapping("/detailAnnouncement")
     @ResponseBody
     public ResultBean detailAnnouncement(@RequestParam(value = "announcementId", required = true) long announcementId,
@@ -155,7 +175,44 @@ public class AnnouncementController extends BaseController {
 
 //        System.out.println(announcementId);
 
-        return announcementDealService.detailAnnouncement(announcementId);
+        User user = getUserIdFromSession(request);
+        if (user == null) {
+            // 如果忘记传头部信息过来, 默认设置为超级管理员的改动
+            user = new User();
+            user.setUserId(longTwo);
+        }
+
+        return announcementDealService.detailAnnouncement(user, announcementId);
+
+    }
+
+    // view 更新, 手机端每点进去一次 详情, view + 1
+    @PostMapping("/updateAnnouncementView")
+    @ResponseBody
+    public ResultBean updateAnnouncementView(@RequestParam(value = "announcementId", required = true) long announcementId,
+                                             @RequestParam(value = "view", required = true) int view,
+                                             HttpServletRequest request, HttpServletResponse response) {
+
+        try {
+
+            List<Announcement> announcements = announcementService.findAnnouncementListByAnnouncementId(announcementId);
+
+            if (announcements.isEmpty()) {
+                return new ResultBean(ResultCode.SQL_NULL_RECODE, "不存在该公告");
+            }
+
+            Announcement announcement = announcements.get(0);
+            announcement.setView(view);
+
+            announcementService.updateAnnouncement(announcement);
+
+            return new ResultBean(ResultCode.SUCCESS);
+
+        } catch (Exception e) {
+            // log
+            e.printStackTrace();
+            return new ResultBean(ResultCode.SYSTEM_FAILED, String.valueOf(e));
+        }
 
     }
 

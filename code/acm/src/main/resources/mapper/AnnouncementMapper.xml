@@ -177,6 +177,7 @@
             lastTime=#{announcement.lastTime},
             <if test="announcement.isPublish != null">isPublish=#{announcement.isPublish},</if>
             <if test="announcement.isEffective != null">isEffective=#{announcement.isEffective},</if>
+            <if test="announcement.view != null">view=#{announcement.view},</if>
         </set>
         WHERE announcementId = #{announcement.announcementId};
     </update>

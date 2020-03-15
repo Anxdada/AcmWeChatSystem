@@ -71,6 +71,7 @@ public interface AnnouncementDealService {
      * @param searchTagId 类别的id
      * @param searchStartTime 搜索的开始时间
      * @param searchEndTime 搜索的截止时间
+     * @param isPublish 是否发布, 手机端显示数据需要
      * @param aOrs 升序还是降序
      * @param order 按那个字段排序
      * @param pageNum 第几页
@@ -78,12 +79,12 @@ public interface AnnouncementDealService {
      * @return 结果
      */
     public ResultBean selectAnnouncement(String announcementTitle, long searchTagId, String searchStartTime,
-                                            String searchEndTime, int aOrs, String order, int pageNum, int pageSize);
+                                            String searchEndTime, int isPublish, int aOrs, String order, int pageNum, int pageSize);
 
     /**
-     *
+     * @param user 当前的操作用户, 手机端需要这个数据
      * @param announcementId 公告Id
      * @return
      */
-    public ResultBean detailAnnouncement(long announcementId);
+    public ResultBean detailAnnouncement(User user, long announcementId);
 }
