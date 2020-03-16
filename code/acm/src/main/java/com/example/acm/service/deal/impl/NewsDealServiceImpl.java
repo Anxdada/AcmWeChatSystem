@@ -3,6 +3,7 @@ package com.example.acm.service.deal.impl;
 import com.example.acm.common.ResultBean;
 import com.example.acm.common.ResultCode;
 import com.example.acm.common.SysConst;
+import com.example.acm.config.RedisComponent;
 import com.example.acm.entity.News;
 import com.example.acm.entity.NewsTag;
 import com.example.acm.entity.User;
@@ -40,6 +41,10 @@ public class NewsDealServiceImpl implements NewsDealService {
     @Autowired
     private UserService userService;
 
+    // 点赞操作的
+    @Autowired
+    private RedisComponent redisComponent;
+
     /**
      * 添加新闻
      *
@@ -49,9 +54,10 @@ public class NewsDealServiceImpl implements NewsDealService {
      * @param newsBody 内容
      * @param newsTagId 类别
      * @param isPublish 是否发布
+     * @param firstImg 列表展示的小图
      * @return 结果
      */
-    public ResultBean addNews(User user, String newsTitle, String newsBody, long newsTagId, int isPublish) {
+    public ResultBean addNews(User user, String newsTitle, String newsBody, long newsTagId, int isPublish, String firstImg) {
         try {
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -68,6 +74,8 @@ public class NewsDealServiceImpl implements NewsDealService {
             news.setUpdateTime(new Date());
             news.setIsPublish(isPublish);
             news.setIsEffective(SysConst.LIVE);
+            if (!StringUtil.isNull(firstImg)) news.setFirstImg(firstImg);
+            news.setView(0);
 
             newsService.addNews(news);
 
@@ -163,6 +171,7 @@ public class NewsDealServiceImpl implements NewsDealService {
      * @param searchTagId 类别的id
      * @param searchStartTime 搜索的开始时间
      * @param searchEndTime 搜索的截止时间
+     * @param isPublish 是否发布, 手机端显示只要发布了的..
      * @param aOrs 升序还是降序
      * @param order 按那个字段排序
      * @param pageNum 第几页
@@ -170,7 +179,7 @@ public class NewsDealServiceImpl implements NewsDealService {
      * @return 结果
      */
     public ResultBean selectNews(String newsTitle, long searchTagId, String searchStartTime,
-                                 String searchEndTime, int aOrs, String order, int pageNum, int pageSize) {
+                                 String searchEndTime, int isPublish, int aOrs, String order, int pageNum, int pageSize) {
 
         try {
             Map<String, Object> map = new HashMap<>();
@@ -186,6 +195,7 @@ public class NewsDealServiceImpl implements NewsDealService {
             if (searchTagId != -1) map.put("searchTagId", searchTagId);
             if (!StringUtil.isNull(searchStartTime)) map.put("searchStartTime", searchStartTime);
             if (!StringUtil.isNull(searchEndTime)) map.put("searchEndTime", searchEndTime);
+            if (isPublish != -1) map.put("isPublish", isPublish);
             map.put("start", start);
             map.put("limit", limit);
             map.put("order", order);
@@ -221,8 +231,7 @@ public class NewsDealServiceImpl implements NewsDealService {
                     if (listUsers.size() > 0) tUs = listUsers.get(0);
                     if (tUs != null) mapTemp.put("createUser", tUs.getRealName());
 
-
-                    mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd"));
+                    mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd HH:mm:ss"));
                     mapTemp.put("updateTime", DateUtil.convDateToStr((Date) mapTemp.get("updateTime"), "yyyy-MM-dd HH:mm:ss"));
                 }
             }
@@ -246,7 +255,7 @@ public class NewsDealServiceImpl implements NewsDealService {
      * @param newsId 新闻Id
      * @return
      */
-    public ResultBean detailNews(long newsId) {
+    public ResultBean detailNews(User user, long newsId) {
         try {
 
             Map<String, Object> map = new HashMap<>();
@@ -270,12 +279,20 @@ public class NewsDealServiceImpl implements NewsDealService {
             listUsers = userService.findUserListByUserId((Long)mapTemp.get("createUser"));
             tUs = null;
             if (listUsers.size() > 0) tUs = listUsers.get(0);
-            if (tUs != null) mapTemp.put("createUser", tUs.getRealName());
+            if (tUs != null) {
+                mapTemp.put("createUser", tUs.getRealName());
+                mapTemp.put("avatar", tUs.getAvatar());
+            }
 
 
-            mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd"));
+            mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd HH:mm:ss"));
             mapTemp.put("updateTime", DateUtil.convDateToStr((Date) mapTemp.get("updateTime"), "yyyy-MM-dd HH:mm:ss"));
 
+            // 点赞的
+            String key = "news" + mapTemp.get("newsId");
+//                    mapTemp.put("likeTotal", redisComponent.getSizeSetForKey(key));
+            mapTemp.put("isNowUserLikeThisNews", redisComponent.hasMemberForKey(key, String.valueOf(user.getUserId())));
+            mapTemp.put("like", redisComponent.getSizeSetForKey(key)); // 表中没有这个字段, 所以需要获取
 
 //            System.out.println(newsId);
             return new ResultBean(ResultCode.SUCCESS, mapTemp);

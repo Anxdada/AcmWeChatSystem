@@ -49,14 +49,15 @@ import Ttest from './pages/Ttest';
 // 下面是手机端的
 import MobileTabBarBottom from './mobile';
 
-import MobileAnnouncementPage from './mobile/announcement/announcementPage';
-import MobileDetailAnnouncement from './mobile/announcement/showAnnouncement';
+import MobileAnnouncementList from './mobile/announcement/announcementList';
+import MobileDetailAnnouncement from './mobile/announcement/detailAnnouncement';
 
-import MobileNewsPage from './mobile/news/newsPage';
+import MobileNewsList from './mobile/news/newsList';
+import MobileDetailNews from './mobile/news/detailNews';
 
 import MobileFriendUrlPage from './mobile/friendUrl';
 
-import MobileOnDutyPage from './mobile/onDuty/onDutyPage';
+import MobileOnDutyList from './mobile/onDuty/onDutyList';
 import MobileNeedToDo from './mobile/onDuty/needToDo';
 
 export default class IRouter extends React.Component {
@@ -113,14 +114,16 @@ export default class IRouter extends React.Component {
                         <Switch>
                         <Route path='/mobile/home' component={MobileTabBarBottom} />
                         
-                        <Route path='/mobile/announcement/showallannouncement' component={MobileAnnouncementPage} />
+                        <Route path='/mobile/announcement/showallannouncement' component={MobileAnnouncementList} />
                         <Route path='/mobile/announcement/detail/:id' component={(props) => <MobileDetailAnnouncement {...props} /> } />
 
-                        <Route path='/mobile/news/showallnews' component={MobileNewsPage} />
+                        <Route path='/mobile/news/showallnews' component={MobileNewsList} />
+                        <Route path='/mobile/news/detail/:id' component={(props) => <MobileDetailNews {...props} /> } />
+
 
                         <Route path='/mobile/friendurl' component={MobileFriendUrlPage} />
                         
-                        <Route path='/mobile/onduty/showallonduty' component={MobileOnDutyPage} />
+                        <Route path='/mobile/onduty/showallonduty' component={MobileOnDutyList} />
                         <Route path='/mobile/onduty/needtodo' component={MobileNeedToDo} />
                         
                         </Switch>

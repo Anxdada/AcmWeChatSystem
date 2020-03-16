@@ -106,6 +106,7 @@ public class ReplyDealServiceImpl implements ReplyDealService {
      * 只能删除掉..
      *
      * 这个操作目前只用来更新点赞数.. like
+     * 记住回复没有修改... 所以这个只给点赞用, 那么那个判断才成立.. 评论也是一样的.
      *
      * @param user 修改的人
      * @param replyId 修改回复id

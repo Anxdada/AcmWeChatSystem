@@ -24,3 +24,15 @@ UPDATE announcement tt SET tt.view = 88 where tt.announcementId = 28;
 UPDATE announcement tt SET tt.view = 67 where tt.announcementId = 29;
 UPDATE announcement tt SET tt.view = 15 where tt.announcementId = 30;
 UPDATE announcement tt SET tt.view = 31 where tt.announcementId = 31;
+
+UPDATE news tt SET tt.createTime = "2020-03-16 08:46:26" where tt.newsId = 41;
+
+UPDATE news tt SET tt.fromWhere = "测试";
+
+UPDATE news tt SET tt.fromWhere = "学校官网" where newsId = 46;
+
+UPDATE news tt SET tt.fromWhere = "知乎" where newsId = 45;
+UPDATE news tt SET tt.fromWhere = "个人写手" where newsId = 44;
+UPDATE news tt SET tt.fromWhere = "快手" where newsId = 43;
+UPDATE news tt SET tt.fromWhere = "字节跳动" where newsId = 42;
+UPDATE news tt SET tt.fromWhere = "学校官网" where newsId = 41;

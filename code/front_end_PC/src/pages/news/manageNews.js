@@ -28,6 +28,7 @@ class NewsTable extends React.Component {
                 dataIndex: 'newsTitle',
                 key: 'newsTitle',
                 align: 'center',
+                width: 300,
                 render: (text, record) => (
                     <span>
                         <Link to={'/admin/news/detail/'+record.newsId}>{text}</Link>

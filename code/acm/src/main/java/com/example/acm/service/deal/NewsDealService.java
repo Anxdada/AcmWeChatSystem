@@ -19,9 +19,10 @@ public interface NewsDealService {
      * @param newsBody 内容
      * @param newsTagId 类别
      * @param isPublish 存为草稿?
+     * @param firstImg 列表展示的小图
      * @return 结果
      */
-    public ResultBean addNews(User user, String newsTitle, String newsBody, long newsTagId, int isPublish);
+    public ResultBean addNews(User user, String newsTitle, String newsBody, long newsTagId, int isPublish, String firstImg);
 
     /**
      *
@@ -55,6 +56,7 @@ public interface NewsDealService {
      * @param searchTagId 类别的id
      * @param searchStartTime 搜索的开始时间
      * @param searchEndTime 搜索的截止时间
+     * @param isPublish 是否发布, 手机端显示只要发布了的..
      * @param aOrs 升序还是降序
      * @param order 按那个字段排序
      * @param pageNum 第几页
@@ -62,12 +64,13 @@ public interface NewsDealService {
      * @return 结果
      */
     public ResultBean selectNews(String newsTitle, long searchTagId, String searchStartTime,
-                                 String searchEndTime, int aOrs, String order, int pageNum, int pageSize);
+                                 String searchEndTime, int isPublish, int aOrs, String order, int pageNum, int pageSize);
 
     /**
      *
+     * @param user 操作的人, 点赞需求
      * @param newsId 新闻Id
      * @return
      */
-    public ResultBean detailNews(long newsId);
+    public ResultBean detailNews(User user, long newsId);
 }

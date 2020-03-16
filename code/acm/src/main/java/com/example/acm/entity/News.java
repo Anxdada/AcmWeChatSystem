@@ -19,6 +19,12 @@ public class News {
     private Integer isPublish;
     private Integer isEffective;
 
+    // 后加的字段
+    private String firstImg;
+    private Integer view;
+    private String fromWhere;
+
+
     public Long getNewsId() {
         return newsId;
     }
@@ -97,5 +103,29 @@ public class News {
 
     public void setIsEffective(Integer isEffective) {
         this.isEffective = isEffective;
+    }
+
+    public String getFirstImg() {
+        return firstImg;
+    }
+
+    public void setFirstImg(String firstImg) {
+        this.firstImg = firstImg;
+    }
+
+    public Integer getView() {
+        return view;
+    }
+
+    public void setView(Integer view) {
+        this.view = view;
+    }
+
+    public String getFromWhere() {
+        return fromWhere;
+    }
+
+    public void setFromWhere(String fromWhere) {
+        this.fromWhere = fromWhere;
     }
 }

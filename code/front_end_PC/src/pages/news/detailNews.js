@@ -1,14 +1,16 @@
 import React from 'react';
-import { Card, DatePicker, Tag, message, notification } from 'antd';
+import { Card, DatePicker, Tag, message, notification, Icon, Typography } from 'antd';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import { connect } from 'react-redux';
 import { switchMenu, addMenu } from './../../redux/actions'; 
-import { DetailNewsUrl } from './../../config/dataAddress';
+import { DetailNewsUrl, UpdateNewsViewAndLike } from './../../config/dataAddress';
 import cookie from 'react-cookies';
 import Fetch from './../../fetch';
 
 moment.locale('zh-cn');
+
+const { Title, Paragraph, Text } = Typography;
 
 class DetailNews extends React.Component {
 
@@ -24,6 +26,10 @@ class DetailNews extends React.Component {
             updateUser: '',
             updateTime: '',
             isPublish: '',
+            view: 0,
+            fromWhere: '',
+            likeTotal: 0,
+            isNowUserLikeThisNews: '',
         }
     }
 
@@ -71,6 +77,10 @@ class DetailNews extends React.Component {
                         updateUser: data.resultBean.updateUser,
                         updateTime: data.resultBean.updateTime,
                         isPublish: data.resultBean.isPublish,
+                        view: data.resultBean.view,
+                        fromWhere: data.resultBean.fromWhere,
+                        likeTotal: data.resultBean.like,
+                        isNowUserLikeThisNews: data.resultBean.isNowUserLikeThisNews,
                     });
                 } else {
                     if (data.status < 100) {
@@ -89,11 +99,22 @@ class DetailNews extends React.Component {
         });
     }
 
+    handleClickLike = () => {
+        const { likeTotal, isNowUserLikeThisNews } = this.state;
+        let num = isNowUserLikeThisNews ? -1 : 1; 
+        this.setState({
+            likeTotal: likeTotal + num,
+            isNowUserLikeThisNews: !isNowUserLikeThisNews,
+        })
+    }
+
     render() {
         let rangeTime;
         if (this.state.registerStartTime != null)
             rangeTime = [moment(this.state.registerStartTime), moment(this.state.registerEndTime)];
         else rangeTime = [null, null];
+
+        const { isNowUserLikeThisNews } = this.state;
 
         return (
             <Card title={this.state.newsTitle}>
@@ -118,9 +139,44 @@ class DetailNews extends React.Component {
                 <br />
                 <br />
                 <strong>内容:</strong>&nbsp;&nbsp;
-                <div dangerouslySetInnerHTML={{__html: this.state.newsBody}} />
+                <Paragraph>
+                    <div dangerouslySetInnerHTML={{__html: this.state.newsBody}} />
+                </Paragraph>
+                <Icon type="eye" /> {this.state.view}&nbsp;&nbsp;
+                <Icon type="like" theme={isNowUserLikeThisNews ? 'filled' : 'outlined'} 
+                        onClick={() => this.handleClickLike()} /> {this.state.likeTotal}
+                <span className="newsFromWhere" style={{ fontSize: 10, color: '#9C9C9C' }}>来源: {this.state.fromWhere}</span>
             </Card>
         );
+    }
+
+    // 主要是更新点赞的情况. 因为浏览量只能在手机端增加
+    // 所以这是view == -1, 不更新数据库
+    componentWillUnmount() {
+
+        let like = this.state.isNowUserLikeThisNews ? 1 : 0; 
+
+        Fetch.requestPost({
+            url: UpdateNewsViewAndLike,
+            info: 'newsId='+this.props.match.params.id+'&view=-1'
+                    +'&like='+like,
+            timeOut: 3000,
+        }).then(
+            data => {
+                if (data.status == 0) ;
+                else if (data.status < 100) {
+                    message.error(data.msg);
+                } else {
+                    notification.error({
+                        message: data.error,
+                        description: data.message
+                    });
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 }
 

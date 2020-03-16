@@ -16,6 +16,9 @@
             <if test="news.updateTime != null">updateTime,</if>
             <if test="news.isPublish != null">isPublish,</if>
             <if test="news.isEffective != null">isEffective,</if>
+            <if test="news.firstImg != null">firstImg,</if>
+            <if test="news.view != null">view,</if>
+            <if test="news.fromWhere != null">fromWhere,</if>
         </trim>
         values
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -29,6 +32,9 @@
             <if test="news.updateTime != null">#{news.updateTime},</if>
             <if test="news.isPublish != null">#{news.isPublish},</if>
             <if test="news.isEffective != null">#{news.isEffective},</if>
+            <if test="news.firstImg != null">#{news.firstImg},</if>
+            <if test="news.view != null">#{news.view},</if>
+            <if test="news.fromWhere != null">#{news.fromWhere},</if>
         </trim>
     </insert>
 
@@ -46,6 +52,9 @@
             <if test="news.updateTime != null">updateTime=#{news.updateTime},</if>
             <if test="news.isPublish != null">isPublish=#{news.isPublish},</if>
             <if test="news.isEffective != null">isEffective=#{news.isEffective},</if>
+            <if test="news.firstImg != null">firstImg=#{news.firstImg},</if>
+            <if test="news.view != null">view=#{news.view},</if>
+            <if test="news.fromWhere != null">fromWhere=#{news.fromWhere},</if>
         </set>
         WHERE newsId = #{news.newsId};
     </update>
@@ -62,6 +71,9 @@
 		tt.updateTime,
 		tt.isPublish,
 		tt.isEffective,
+		tt.firstImg,
+		tt.view,
+        tt.fromWhere,
 	</sql>
 
     <!-- 多了和类别的字段 -->
@@ -76,6 +88,9 @@
 		tt.updateTime,
 		tt.isPublish,
 		tt.isEffective,
+		tt.firstImg,
+		tt.view,
+        tt.fromWhere,
 		tb.newsTagName,
 		tb.newsTagColor
 	</sql>
@@ -107,11 +122,17 @@
             <if test="map.searchTagId != null ">
                 AND a.newsTagId=#{map.searchTagId}
             </if>
+            <if test="map.isPublish != null ">
+                AND a.isPublish=#{map.isPublish}
+            </if>
             <if test="map.searchStartTime != null ">
                 AND a.createTime between #{map.searchStartTime} and #{map.searchEndTime}
             </if>
             <if test="map.isEffective != null ">
                 AND a.isEffective=#{map.isEffective}
+            </if>
+            <if test="map.fromWhere != null ">
+                AND a.fromWhere like CONCAT ('%', #{map.fromWhere}, '%')
             </if>
         </trim>
     </select>
@@ -119,9 +140,9 @@
     <!-- 通过很多限制条件查询满足的news inner join 没有匹配的行不会列出 -->
     <select id="findNewsMapListByQueryJoinTagTable" resultType="java.util.Map">
         SELECT
-            a.*, b.newsTagName, b.newsTagColor
+        a.*, b.newsTagName, b.newsTagColor
         FROM
-            news a inner join newsTag b
+        news a inner join newsTag b
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             AND a.newsTagId = b.newsTagId
             <if test="map.newsId != null ">
@@ -133,6 +154,9 @@
             <if test="map.searchTagId != null ">
                 AND a.newsTagId=#{map.searchTagId}
             </if>
+            <if test="map.isPublish != null ">
+                AND a.isPublish=#{map.isPublish}
+            </if>
             <if test="map.searchStartTime != null ">
                 AND a.createTime between #{map.searchStartTime} and #{map.searchEndTime}
             </if>
@@ -140,10 +164,13 @@
                 AND a.isEffective=#{map.isEffective}
                 AND b.isEffective=#{map.isEffective}
             </if>
+            <if test="map.fromWhere != null ">
+                AND a.fromWhere like CONCAT ('%', #{map.fromWhere}, '%')
+            </if>
         </trim>
         <if test="map.order != null ">
             ORDER BY
-                a.${map.order} ${map.aOrS}
+            a.${map.order} ${map.aOrS}
         </if>
         <if test="map.start != null ">
             limit #{map.start},#{map.limit}

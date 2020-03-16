@@ -8,6 +8,8 @@ import { EventEmitter2 } from 'eventemitter2';
 
 
 const { Option } = Select;
+const { TextArea } = Input;
+
 var emitter = new EventEmitter2()
 
 function getString(s) {
@@ -71,7 +73,7 @@ class AddNewsPublishView extends React.Component {
             message.error('新闻标题不能为空!');
             return ;
         }
-        if (this.props.newsTitle.length > 20) {
+        if (this.props.newsTitle.length > 50) {
             message.error('新闻标题过长!');
             return ;
         }
@@ -92,10 +94,12 @@ class AddNewsPublishView extends React.Component {
             loading: true,
         });
 
+        // console.log(this.props.firstImg);
+
         Fetch.requestPost({
             url: AddNewsUrl,
             info: 'newsTitle='+this.props.newsTitle+'&newsBody='+encodeURI(getString(this.props.editorContent))
-                    +'&newsTagId='+this.state.newsTagId+'&isPublish='+type,
+                    +'&newsTagId='+this.state.newsTagId+'&isPublish='+type+'&firstImg='+this.props.firstImg,
             timeOut: 3000,
         }).then(
             data => {
@@ -167,10 +171,12 @@ class AddNewsPublishView extends React.Component {
                             )
                         }
                     </Select>
-                    <Button type="dashed" onClick={() => this.handlePublish(0)} loading={this.state.loading}> 
-                        存为草稿 
-                    </Button>
-                    <Button type="primary" onClick={() => this.handlePublish(1)} loading={this.state.loading}>发布</Button>
+                    <div style={{ marginTop: 5}} >
+                        <Button style={{ marginLeft: 8}} type="primary" onClick={() => this.handlePublish(1)} loading={this.state.loading}>发布</Button>
+                        <Button style={{ marginLeft: 5}} type="dashed" onClick={() => this.handlePublish(0)} loading={this.state.loading}> 
+                            存为草稿 
+                        </Button>
+                    </div>
                 </Card>
             </div>
         );
@@ -188,6 +194,7 @@ class AddNewsEditView extends React.Component {
             editor: '',
             editorContent: '',
             editorContentText: '',
+            firstImg: '',
         }
     }
 
@@ -198,6 +205,7 @@ class AddNewsEditView extends React.Component {
             editor: '',
             editorContent: '',
             editorContentText: '',
+            firstImg: '',
         })
     }
 
@@ -208,21 +216,24 @@ class AddNewsEditView extends React.Component {
     }
 
     render() {
+
+        const {editorContent, editorContentText, firstImg } = this.state;
+
         return (
           <div style={{ flex: 1 }}>
             <Row>
                 <Col span={18}>
                     <Card title="添加新闻" >
                         <div>
-                        <Input size="small" placeholder="新闻标题" style={{ height:30, width: 400 }} allowClear
+                        <TextArea style={{ width: 600 }} placeholder="新闻标题" allowClear autoSize
                              onChange={this.handleAddNewsTitle} value={this.state.newsTitle} />
                         </div><br />
                         <div ref="editorElem" className="toolbar" />
                     </Card>
                 </Col>
                 <Col span={6} >
-                    <AddNewsPublishView newsTitle={this.state.newsTitle} editorContent={this.state.editorContent} 
-                        editorContentText={this.state.editorContentText} refresh={this.refresh}
+                    <AddNewsPublishView newsTitle={this.state.newsTitle} editorContent={editorContent} 
+                        editorContentText={editorContentText} refresh={this.refresh} firstImg={firstImg}
                     />
                 </Col>
             </Row>
@@ -237,16 +248,19 @@ class AddNewsEditView extends React.Component {
         this.setState({
             editor: editor,
         })
+
+        // 只要第一张图
+        let tmpFirstImg = this.state.firstImg;
+
         editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
         editor.customConfig.uploadFileName = 'myFileName';
         editor.customConfig.uploadImgServer = UploadImg;
         editor.customConfig.uploadImgHooks = { 
             customInsert: function (insertImg, result, editor) { 
                 var url = result.data;
-                console.log(url);
-                console.log('xierenyi');
-                insertImg(url); 
-            } 
+                insertImg(url);
+                if (tmpFirstImg == '') tmpFirstImg = url;
+            }
         };
     
         // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
@@ -254,6 +268,7 @@ class AddNewsEditView extends React.Component {
             this.setState({
                 editorContent: html,
                 editorContentText: editor.txt.text(),
+                firstImg: tmpFirstImg,
             })
         }
         editor.create()

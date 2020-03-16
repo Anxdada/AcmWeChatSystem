@@ -32,6 +32,8 @@ export const DeleteNews = localhost+"/news/deleteNews";
 export const UpdateNews = localhost+"/news/updateNews";
 export const SelectNews = localhost+"/news/selectNews";
 export const DetailNewsUrl = localhost+"/news/detailNews";
+// 手机端更新浏览量需求
+export const UpdateNewsViewAndLike = localhost+"/news/updateNewsViewAndLike";
 
 
 

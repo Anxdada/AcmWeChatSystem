@@ -56,6 +56,7 @@ public class RedisComponent {
     }
 
     // 操作Set数据, 用于评论以及回复点赞功能, 格式为comment+commentId(reply+replyId) -> set(点赞的uid)
+    // 3.16 新增新闻点赞功能.. newsId -> set(点赞Id)
     // redis 的是无法直接删除一个set, 当一个set中的元素都无了后, 那么这个实际上也就是被删除了.
     // 因为在展示人一个set的时候, 不存在的set那么就是 empty
     public void setCommentReplyLike(String type, long id, long uid, int like) {
