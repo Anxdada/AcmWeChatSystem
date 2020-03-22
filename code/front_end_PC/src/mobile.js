@@ -2,17 +2,26 @@ import React from 'react';
 import { TabBar } from 'antd-mobile';
 import { Icon, Input } from 'antd';
 import MobileHomePage from './mobile/home';
-import MobileUserRelative from './mobile/user';
+import MobileUserInfo from './mobile/user/myIndex';
+import MobilePostList from './mobile/forum/postList';
 import './style/common.less';
 
 
 export default class MobileTabBarBottom extends React.Component {
+
+    // 默认的只能通过是否选中来改变, 对应的属性就是selected
     constructor(props) {
         super(props);
         this.state = {
-            selectedTab: 'FirstTab',
+            selectedTab: 3,
             fullScreen: true,
         };
+    }
+
+    componentWillMount() {
+        this.setState({
+            selectedTab: this.props.match.params.id,
+        })
     }
 
     render() {
@@ -34,14 +43,14 @@ export default class MobileTabBarBottom extends React.Component {
                 selectedIcon={
                     <Icon type="home" style={{ fontSize: '23px', color: '#33A3F4'}} />
                 }
-                selected={this.state.selectedTab === 'FirstTab'}
+                selected={this.state.selectedTab == 1}
                 onPress={() => {
                     this.setState({
-                        selectedTab: 'FirstTab',
+                        selectedTab: 1,
                     });
                 }}
                 data-seed="logId"
-            >
+            >   
                 <MobileHomePage />
             </TabBar.Item>
           
@@ -54,18 +63,15 @@ export default class MobileTabBarBottom extends React.Component {
                 selectedIcon={
                     <Icon type="wechat" style={{ fontSize: '23px', color: '#33A3F4', }} />
                 }
-                selected={this.state.selectedTab === 'SecondTab'}
+                selected={this.state.selectedTab == 2}
                 onPress={() => {
                     this.setState({
-                        selectedTab: 'SecondTab',
+                        selectedTab: 2,
                     });
                 }}
                 data-seed="logId1"
             >
-                <div>
-                111
-                <Icon type="step-backward" />
-                </div>
+                <MobilePostList {...this.props}/>
             </TabBar.Item>
 
             <TabBar.Item
@@ -77,15 +83,15 @@ export default class MobileTabBarBottom extends React.Component {
                 selectedIcon={
                     <Icon type="user" style={{ fontSize: '23px', color: '#33A3F4', }} />
                 }
-                selected={this.state.selectedTab === 'ThirdTab'}
+                selected={this.state.selectedTab == 3}
                 onPress={() => {
                     this.setState({
-                        selectedTab: 'ThirdTab',
+                        selectedTab: 3,
                     });
                 }}
                 dot
             >
-                <div>111</div>
+                <MobileUserInfo {...this.props}/>
             </TabBar.Item>
             </TabBar>
             </div>

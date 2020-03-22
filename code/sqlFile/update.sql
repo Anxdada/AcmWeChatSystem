@@ -36,3 +36,5 @@ UPDATE news tt SET tt.fromWhere = "个人写手" where newsId = 44;
 UPDATE news tt SET tt.fromWhere = "快手" where newsId = 43;
 UPDATE news tt SET tt.fromWhere = "字节跳动" where newsId = 42;
 UPDATE news tt SET tt.fromWhere = "学校官网" where newsId = 41;
+
+UPDATE user tt SET tt.sex = 1 where userId = 10;

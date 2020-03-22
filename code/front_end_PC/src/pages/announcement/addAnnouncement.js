@@ -79,7 +79,7 @@ class AddAnnouncementPublishView extends React.Component {
             message.error('公告标题不能为空!');
             return ;
         }
-        if (this.props.announcementTitle.length > 20) {
+        if (this.props.announcementTitle.length > 50) {
             message.error('公告标题过长!');
             return ;
         }
@@ -282,10 +282,12 @@ class AddAnnouncementPublishView extends React.Component {
                                 </span>
                         }
                     </div>
-                    <Button type="dashed" onClick={() => this.handlePublish(0)} loading={this.state.loading}> 
-                        存为草稿 
-                    </Button>
-                    <Button type="primary" onClick={() => this.handlePublish(1)} loading={this.state.loading}>发布</Button>
+                    <div style={{ marginTop: 5}} >
+                        <Button style={{ marginLeft: 8}} type="primary" onClick={() => this.handlePublish(1)} loading={this.state.loading}>发布</Button>
+                        <Button style={{ marginLeft: 5}} type="dashed" onClick={() => this.handlePublish(0)} loading={this.state.loading}> 
+                            存为草稿 
+                        </Button>
+                    </div>
                 </Card>
             </div>
         );

@@ -41,10 +41,8 @@ public class UserController extends BaseController {
     private TokenManager tokenManager;
 
     /**
-     * 切记 只返回有用的值, 其它用户信息不能返回, 特别是密码等信息
-     * 否则这个属于一个很**的Bug, 能返回回去的信息一定都是不重要的!
+     * 获取目前的登录用户信息
      *
-     *  因为我前段组件的原因只能这样获取了..
      */
     @GetMapping("/getLoginUser")
     @ResponseBody

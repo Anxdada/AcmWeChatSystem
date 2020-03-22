@@ -165,7 +165,7 @@ class AddPostPublishView extends React.Component {
                         )
                     }
                     </Select>
-                    <Button type="primary" onClick={this.handlePublish}>发布</Button>
+                    <Button type="primary" onClick={this.handlePublish} style={{ marginTop: 7 }}>发布</Button>
                 </Card>
             </div>
         );

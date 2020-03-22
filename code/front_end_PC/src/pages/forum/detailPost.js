@@ -198,6 +198,8 @@ class ReplyView extends React.Component {
         submitting: false,
     }
 
+    // initLikeTotal 用于判断当前的点赞是否变化过, 如果没有就不更新后台了, 小优化.
+    // 还是采用组件消失更新的策略, 重新去数据的代价比较大.
     constructor(props) {
         super(props);
         this.state = {
@@ -205,6 +207,7 @@ class ReplyView extends React.Component {
             replyUserName: '请输入你的观点',
             replyBody: '',
             likeTotal: 0,
+            initLikeTotal: 0,
             isNowUserLikeThisReply: false,
         }
     }
@@ -212,6 +215,7 @@ class ReplyView extends React.Component {
     componentWillMount() {
         this.setState({
             likeTotal: this.props.item.like,
+            initLikeTotal: this.props.item.like,
             isNowUserLikeThisReply: this.props.item.isNowUserLikeThisReply,
         })
     }
@@ -370,6 +374,9 @@ class ReplyView extends React.Component {
 
     componentWillUnmount() {
         // console.log(this.props.uid);
+        // 没有变化就不更新
+        const { initLikeTotal, likeTotal } = this.state;
+        if (initLikeTotal == likeTotal) return ;
         const like = this.state.isNowUserLikeThisReply == false ? 0 : 1;
         handleChangeLike({
             type: 'reply',
@@ -577,6 +584,7 @@ class CommentView extends React.Component {
             showReplyBox: false,
             replyNum: this.props.item.replyNum,
             likeTotal: 0,
+            initLikeTotal: 0,
             isNowUserLikeThisComment: false,
         }
     }
@@ -584,6 +592,7 @@ class CommentView extends React.Component {
     componentWillMount() {
         this.setState({
             likeTotal: this.props.item.like,
+            initLikeTotal: this.props.item.like,
             isNowUserLikeThisComment: this.props.item.isNowUserLikeThisComment,
         })
     }
@@ -678,6 +687,10 @@ class CommentView extends React.Component {
     }
 
     componentWillUnmount() {
+
+        // 没有变化就不更新
+        const { initLikeTotal, likeTotal } = this.state;
+        if (initLikeTotal == likeTotal) return ;
         const like = this.state.isNowUserLikeThisComment == false ? 0 : 1;
         handleChangeLike({
             type: 'comment',

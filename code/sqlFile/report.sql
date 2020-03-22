@@ -4,7 +4,7 @@
 DROP TABLE IF EXISTS `report`;
 CREATE TABLE `report` (
   `reportId` bigint(20) NOT NULL AUTO_INCREMENT,
-  `type` int(11) NOT NULL,
+  `type` varchar(50) NOT NULL,
   `typeId` int(20) NOT NULL,
   `reportBody` varchar(200) DEFAULT NULL,
   `reason` varchar(50) DEFAULT NULL,
@@ -21,5 +21,5 @@ CREATE TABLE `report` (
 -- ----------------------------
 -- Records of report
 -- ----------------------------
-INSERT INTO `report` VALUES ('1', '1', '2', '具有严重的挑衅行为', '引战', '14', '2020-03-02 00:00:00', '2', '2020-03-02 01:00:00', '对不起, 经查证不存在该行为', '1', '1');
-INSERT INTO `report` VALUES ('2', '1', '2', '双标狗', '其它', '15', '2020-02-29 14:51:23', NULL, NULL, NULL, '0', '1');
+INSERT INTO `report` VALUES ('1', 'post', '2', '具有严重的挑衅行为', '不友善/色情/低俗内容', '14', '2020-03-02 00:00:00', '2', '2020-03-02 01:00:00', '对不起, 经查证不存在该行为', '1', '1');
+INSERT INTO `report` VALUES ('2', 'post', '2', '双标狗', '其它', '15', '2020-02-29 14:51:23', NULL, NULL, NULL, '0', '1');

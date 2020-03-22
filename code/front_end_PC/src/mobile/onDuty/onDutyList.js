@@ -2,8 +2,8 @@ import React from 'react';
 import './index.less';
 import { Pagination, Icon, Divider, Card, Table, message, notification, Avatar } from 'antd';
 import { WingBlank, NavBar, WhiteSpace, List } from 'antd-mobile';
-import Fetch from './../../fetch';
-import { SelectOnDuty } from './../../config/dataAddress';
+import Fetch from '../../fetch';
+import { SelectOnDuty } from '../../config/dataAddress';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 
@@ -42,7 +42,7 @@ class ShowList extends React.Component{
     }
 }
 
-class ShowOnDuty extends React.Component {
+class ShowOnDutyList extends React.Component {
 
     constructor(props) {
         super(props);
@@ -111,11 +111,12 @@ class ShowOnDuty extends React.Component {
                 <NavBar
                     mode="light"
                     icon={<Icon type="left" />}
-                    onLeftClick={() =>  window.history.back(-1)}
+                    onLeftClick={() =>  window.location.href="/#/mobile/home/1"}
                 >
                     值班表
                 </NavBar>
                 <Divider style={{ margin: 0}} />
+
                 <WingBlank size="sm">
                 <span style={{fontSize: 5, color: '#B5B5B5' }}>首页 > 值班表 </span><br />
                 <List>
@@ -139,7 +140,7 @@ class ShowOnDuty extends React.Component {
 }
 
 
-export default class MobileOnDutyPage extends React.Component {
+export default class MobileOnDutyList extends React.Component {
 
     constructor(props) {
         super(props);
@@ -148,7 +149,7 @@ export default class MobileOnDutyPage extends React.Component {
     render() {
         return (
             <div>
-                <ShowOnDuty {...this.props}/>
+                <ShowOnDutyList {...this.props}/>
             </div>
         );
     }

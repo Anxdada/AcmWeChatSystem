@@ -24,6 +24,9 @@ public class User implements Serializable {
 	private String openId;   // 微信的用户标识字段
 	private Integer isEffective;
 
+	// 新增字段
+	private Integer sex;
+
 	public Long getUserId() {
 		return userId;
 	}
@@ -118,6 +121,14 @@ public class User implements Serializable {
 
 	public void setIsEffective(Integer isEffective) {
 		this.isEffective = isEffective;
+	}
+
+	public Integer getSex() {
+		return sex;
+	}
+
+	public void setSex(Integer sex) {
+		this.sex = sex;
 	}
 }
 

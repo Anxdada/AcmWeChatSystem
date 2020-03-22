@@ -74,7 +74,7 @@ class ShowTable extends React.Component{
     }
 }
 
-class ShowAnnouncement extends React.Component{
+class ShowAnnouncementList extends React.Component{
     constructor(props) {
         super(props);
         this.state={
@@ -196,7 +196,7 @@ class ShowAnnouncement extends React.Component{
                 <NavBar
                     mode="light"
                     icon={<Icon type="left" />}
-                    onLeftClick={() =>  window.history.back(-1)}
+                    onLeftClick={() =>  window.location.href="/#/mobile/home/1"}
                 >
                     公告列表
                 </NavBar>
@@ -226,12 +226,12 @@ class ShowAnnouncement extends React.Component{
     }
 }
 
-export default class MobileAnnouncementPage extends React.Component {
+export default class MobileAnnouncementList extends React.Component {
 
     render() {
         return (
             <div>
-                <ShowAnnouncement />
+                <ShowAnnouncementList />
             </div>
         );
     }

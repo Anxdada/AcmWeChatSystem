@@ -12,7 +12,7 @@ import Gallery from './pages/ui/gallery';
 import Carousels from './pages/ui/carousel';
 import FormLogin from './pages/login/login';
 import Register from './pages/login/register'
-import NoMatch from './pages/nomatch';
+import NoMatch from './pages/nomatch/computer';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 
 import UserAnalysis from './pages/user/userAnalysis';
@@ -48,7 +48,7 @@ import Ttest from './pages/Ttest';
 
 // 下面是手机端的
 import MobileTabBarBottom from './mobile';
-
+// 下面是首页的四个小功能
 import MobileAnnouncementList from './mobile/announcement/announcementList';
 import MobileDetailAnnouncement from './mobile/announcement/detailAnnouncement';
 
@@ -59,6 +59,28 @@ import MobileFriendUrlPage from './mobile/friendUrl';
 
 import MobileOnDutyList from './mobile/onDuty/onDutyList';
 import MobileNeedToDo from './mobile/onDuty/needToDo';
+
+// 讨论区相关
+import MobileDetailPost from './mobile/forum/detailPost';
+import MobileReportPost from './mobile/forum/reportPost';
+import MobileSearchPostPage from './mobile/forum/searchPost';
+import MobileDetailComment from './mobile/forum/detailComment';
+import MobileAddPostPage from './mobile/forum/addPost';
+import MobilePostLabelSelectPage from './mobile/forum/postLabelSelect';
+
+
+// 用户相关
+import MobileReportUser from './mobile/user/reportUser';
+import MobileFollowUserList from './mobile/user/followUserList';
+import MobileFanUserList from './mobile/user/fanUserList';
+import MobileOtherUserDetailPage from './mobile/user/otherIndex';
+import MobileUserPersonalInfo from './mobile/user/personalInfo';
+
+
+// 手机端无法匹配网址
+import MobileNoMatch from './pages/nomatch/mobile';
+// 举报的结果页面
+import MobileReportResultPage from './mobile/report';
 
 export default class IRouter extends React.Component {
     render() {
@@ -112,7 +134,7 @@ export default class IRouter extends React.Component {
                     } />
                     <Route path='/mobile' render={() => 
                         <Switch>
-                        <Route path='/mobile/home' component={MobileTabBarBottom} />
+                        <Route path='/mobile/home/:id' component={(props) => <MobileTabBarBottom {...props} /> } />
                         
                         <Route path='/mobile/announcement/showallannouncement' component={MobileAnnouncementList} />
                         <Route path='/mobile/announcement/detail/:id' component={(props) => <MobileDetailAnnouncement {...props} /> } />
@@ -120,11 +142,31 @@ export default class IRouter extends React.Component {
                         <Route path='/mobile/news/showallnews' component={MobileNewsList} />
                         <Route path='/mobile/news/detail/:id' component={(props) => <MobileDetailNews {...props} /> } />
 
-
                         <Route path='/mobile/friendurl' component={MobileFriendUrlPage} />
                         
                         <Route path='/mobile/onduty/showallonduty' component={MobileOnDutyList} />
                         <Route path='/mobile/onduty/needtodo' component={MobileNeedToDo} />
+
+
+
+                        <Route path='/mobile/forum/detail/:id' component={(props) => <MobileDetailPost {...props} /> } />
+                        <Route path='/mobile/forum/report/:id' component={(props) => <MobileReportPost {...props} /> } />
+                        <Route path='/mobile/forum/search' component={MobileSearchPostPage} />
+                        <Route path='/mobile/forum/addPost' component={MobileAddPostPage} />
+                        <Route path='/mobile/forum/postLabelSelect' component={MobilePostLabelSelectPage} />
+                        <Route path='/mobile/forum/comment/:id' component={(props) => <MobileDetailComment {...props} /> } />
+
+
+
+                        <Route path='/mobile/user/report/:id' component={(props) => <MobileReportUser {...props} /> } />
+                        <Route path='/mobile/user/follow/:id' component={(props) => <MobileFollowUserList {...props} /> } />
+                        <Route path='/mobile/user/fan/:id' component={(props) => <MobileFanUserList {...props} /> } />
+                        <Route path='/mobile/user/otherUser/:id' component={(props) => <MobileOtherUserDetailPage {...props} /> } />
+                        <Route path='/mobile/user/personalInfo' component={MobileUserPersonalInfo} />
+                        
+
+                        <Route path='/mobile/report/resultPage' component={MobileReportResultPage} />
+                        <Route component={MobileNoMatch} />
                         
                         </Switch>
                     } />

@@ -3,8 +3,8 @@ import './index.less';
 import { Divider, Typography, Icon, Comment, Avatar, message, notification, Tag} from 'antd';
 import { Link } from "react-router-dom";
 import { Modal, WingBlank, NavBar, WhiteSpace, Button, Toast } from 'antd-mobile';
-import Fetch from './../../fetch';
-import { DetailAnnouncementUrl, UpdateAnnouncementView } from './../../config/dataAddress';
+import Fetch from '../../fetch';
+import { DetailAnnouncementUrl, UpdateAnnouncementView } from '../../config/dataAddress';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 

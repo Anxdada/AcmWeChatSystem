@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import './index.less';
 
 
+// 目前只有首页的4个导航项
 
 const data = [
     {

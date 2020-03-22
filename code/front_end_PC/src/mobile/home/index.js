@@ -108,7 +108,7 @@ class MobileHomeCard extends React.Component {
 
         const { nowOnDutyUser } = this.state;
         // 这里为什么是undefined... 
-        console.log(this.state.visible);
+        // console.log(this.state.visible);
         return (
             <div>
             <WingBlank size="sm" >

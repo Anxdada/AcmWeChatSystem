@@ -143,7 +143,7 @@ class ShowFriendUrl extends React.Component {
                 <NavBar
                     mode="light"
                     icon={<Icon type="left" />}
-                    onLeftClick={() =>  window.history.back(-1)}
+                    onLeftClick={() =>  window.location.href="/#/mobile/home/1"}
                 >
                     友情链接
                 </NavBar>

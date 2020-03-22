@@ -35,7 +35,7 @@ class TagsModify extends React.Component {
     }
 
     handleOkModal = (e) => {
-        console.log(e);
+        // console.log(e);
         this.setState({
             submitting: true,
         }, () => this.updateSingleTagData());
@@ -57,13 +57,13 @@ class TagsModify extends React.Component {
             timeOut: 3000,
         }).then ( 
             data => {
-                console.log(data);
+                // console.log(data);
                 if (data.status == 0) {
                     this.setState({
                         tagId: data.resultBean.announcementTagId,
                         tagName: data.resultBean.announcementTagName,
                         tagColor: data.resultBean.announcementTagColor,
-                        needStartTime: data.resultBean.needStartTime == 0 ? "否" : "是",
+                        needStartTime: data.resultBean.needStartTime,
                     })
                 } else {
                     if (data.status < 100) {
@@ -129,20 +129,21 @@ class TagsModify extends React.Component {
     } 
 
     handleModalTagName = (e) => {
-        console.log(e)
+        // console.log(e)
         this.setState({
             tagName: e.target.value
         });
     }
 
     handleModalNeedStartTime = (value) => {
+        console.log(value);
         this.setState({
             needStartTime: value
         });
     }
 
     handleModalTagColorBtn = (value) => {
-        console.log(value);
+        // console.log(value);
         this.setState({
             visibleColorPicker: !this.state.visibleColorPicker,
         });
@@ -150,7 +151,7 @@ class TagsModify extends React.Component {
 
     handleModalColorPickerChange = (value)=>{
         let colorInPicker = value.hex;
-        console.log(colorInPicker);
+        // console.log(colorInPicker);
         this.setState({ 
             tagColor: colorInPicker 
         });
@@ -182,8 +183,8 @@ class TagsModify extends React.Component {
             <div className="modalInput">
                 设置开始时间: <Select placeholder="是否需要开始时间" onChange={this.handleModalNeedStartTime} 
                                 style={{ height:30 , width:100 }} value={this.state.needStartTime}>
-                            <Option value={0}>否</Option>
-                            <Option value={1}>是</Option>
+                            <Option value={0} key={0}>否</Option>
+                            <Option value={1} key={1}>是</Option>
                         </Select>
             </div>
             <div className="modalInput">
@@ -488,12 +489,12 @@ class TagsView extends React.Component {
 
     handleAddColorPickerChange = (value) => {
         let tagAddColor = value.hex;
-        console.log(tagAddColor);
+        // console.log(tagAddColor);
         this.setState({ tagAddColor });
     }
 
     handlePageChange = (page) => {
-        console.log(page);
+        // console.log(page);
         this.setState({ nowPage: page }, () => this.getTagData());
     }
 

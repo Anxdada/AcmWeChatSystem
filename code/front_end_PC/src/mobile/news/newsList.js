@@ -151,7 +151,7 @@ class ShowNewsList extends React.Component {
         let tmpSearchTag = '';
         console.log(color[0])
         for (let i = 0 ; i < allTag.length ; ++ i) {
-            console.log(allTag[i].newsTagColor);
+            // console.log(allTag[i].newsTagColor);
             if(allTag[i].newsTagColor == color[0]) {
                 tmpSearchTag = allTag[i].newsTagId;
                 break;
@@ -194,7 +194,7 @@ class ShowNewsList extends React.Component {
                 <NavBar
                     mode="light"
                     icon={<Icon type="left" />}
-                    onLeftClick={() =>  window.history.back(-1)}
+                    onLeftClick={() =>  window.location.href="/#/mobile/home/1"}
                 >
                     新闻列表
                 </NavBar>

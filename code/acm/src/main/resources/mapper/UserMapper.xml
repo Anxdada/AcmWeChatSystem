@@ -15,7 +15,8 @@
 		a.telephone,
 		a.realName,
 		a.openId,
-		a.isEffective
+		a.isEffective,
+		a.sex,
 	</sql>
 
 
@@ -422,7 +423,7 @@
 		FROM
 			user a
 		<trim prefix="WHERE" prefixOverrides="AND|OR">
-			<if test="map.userName != null">
+			<if test="map.userName != null">findUserListByQueryMap
 				AND a.userName like CONCAT ('%', #{map.userName}, '%')
 			</if>
 			<if test="map.studentId != null">
