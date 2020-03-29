@@ -4,11 +4,11 @@ import moment from 'moment';
 import 'moment/locale/zh-cn';
 import { connect } from 'react-redux';
 import { switchMenu,addMenu } from './../../redux/actions';
-import { GetLoginUser, DetailUser, SelectLabel, AddComment, DetailPostUrl, SelectComment, SelectReply, DeleteComment, ChangeLike, AddReply, DeleteReply } from '../../config/dataAddress';
+import { GetLoginUser, DetailUser, SelectLabel, AddComment, DetailPostUrl, SelectComment, SelectReply, DeleteComment, ChangeCommentReplyLike, AddReply, DeleteReply } from '../../config/dataAddress';
 import Fetch from './../../fetch';
 import FloatNav from './FloatNav';
 import { authArray } from '../../config/userAuthAbout';
-import {EventEmitter2} from 'eventemitter2';
+import { EventEmitter2 } from 'eventemitter2';
 
 moment.locale('zh-cn');
 
@@ -392,7 +392,7 @@ class ReplyView extends React.Component {
 const handleChangeLike = (props) => {
     // console.log(props);
     Fetch.requestPost({
-        url: ChangeLike,
+        url: ChangeCommentReplyLike,
         info: 'type='+props.type+'&id='+props.id
                 +'&uid='+props.uid+ '&like='+props.like,
         timeOut: 3000,
@@ -705,7 +705,7 @@ class CommentView extends React.Component {
 const Editor = ({ onChange, onSubmit, submitting, value }) => (
     <div>
         <TextArea value={value} rows={4} onChange={onChange} placeholder="写下你的评论..." allowClear autoSize={{ minRows: 4, maxRows: 10 }}/>
-        <Button htmlType="submit" loading={submitting} onClick={onSubmit} type="primary" disabled={value == null || value == ''}>
+        <Button htmlType="submit" loading={submitting} onClick={onSubmit} type="primary" disabled={value == null || value == ''} style={{ marginTop: 5 }}>
             发布
         </Button>
     </div>
@@ -743,7 +743,7 @@ class CommentList extends React.Component {
     }
 
     refreshComment = (msg) => {
-        console.log(msg);
+        // console.log(msg);
         this.getCommentData();
     } 
 
@@ -989,9 +989,9 @@ class DetailPost extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            createUser: '',
+            createRealName: '',
             createTime: null,
-            updateUser: '',
+            updateRealName: '',
             updateTime: null,
             postTitle: '',
             postTag: '',
@@ -1067,9 +1067,9 @@ class DetailPost extends React.Component {
 
                 if (data.status == 0) {
                     this.setState({
-                        createUser: data.resultBean.createUser,
+                        createRealName: data.resultBean.createRealName,
                         createTime: data.resultBean.createTime,
-                        updateUser: data.resultBean.updateUser,
+                        updateRealName: data.resultBean.updateRealName,
                         updateTime: data.resultBean.updateTime,
                         postTitle: data.resultBean.postTitle,
                         postTag: data.resultBean.postTag,
@@ -1119,12 +1119,12 @@ class DetailPost extends React.Component {
                         }
                     </span>
                 }>
-                    <strong>创建人:&nbsp;&nbsp;{this.state.createUser}</strong>
+                    <strong>创建人:&nbsp;&nbsp;{this.state.createRealName}</strong>
                     <br />
                     <strong>创建时间:</strong>&nbsp;&nbsp;
                     <DatePicker format="YYYY-MM-DD" value={moment(this.state.createTime)} disabled />
                     <br /><br />
-                    <strong>最近一次更新人:&nbsp;&nbsp;{this.state.updateUser}</strong>
+                    <strong>最近一次更新人:&nbsp;&nbsp;{this.state.updateRealName}</strong>
                     <br />
                     <strong>最近一次更新时间:</strong>&nbsp;&nbsp;
                     <DatePicker  style={{ width: 200 }} format="YYYY-MM-DD HH:mm:ss" value={moment(this.state.updateTime)} disabled />

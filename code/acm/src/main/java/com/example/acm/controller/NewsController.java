@@ -96,6 +96,7 @@ public class NewsController extends BaseController {
                                  @RequestParam(value = "newsBody", required = true) String newsBody,
                                  @RequestParam(value = "newsTagId", required = true) long newsTagId,
                                  @RequestParam(value = "isPublish", required = true) int isPublish,
+                                 @RequestParam(value = "firstImg", required = true) String firstImg,
                                  HttpServletRequest request, HttpServletResponse response) {
 
 //        System.out.println("Xie");
@@ -103,7 +104,7 @@ public class NewsController extends BaseController {
 //        System.out.println(" " + newsTitle);
 //        System.out.println(" " + newsBody);
 //        System.out.println(" " + newsTagId);
-//        System.out.println(" " + isPublish);
+//        System.out.println(" " + firstImg);
 
         User user = getUserIdFromSession(request);
         if (user == null) {
@@ -111,7 +112,7 @@ public class NewsController extends BaseController {
             user.setUserId(longTwo);
         }
 
-        return newsDealService.updateNews(user, newsId, newsTitle, newsBody, newsTagId, isPublish);
+        return newsDealService.updateNews(user, newsId, newsTitle, newsBody, newsTagId, isPublish, firstImg);
     }
 
 
@@ -165,7 +166,7 @@ public class NewsController extends BaseController {
 
     }
 
-    // 跟新新闻的浏览量 和 点赞数
+    // 更新新闻的浏览量 和 点赞数
     // 前者只能在手机端做, 后者使用redis储存
     // 因为点赞后台和手机都能做, 所以通过view的值判断是那个传来的.
     @PostMapping("/updateNewsViewAndLike")
@@ -194,7 +195,7 @@ public class NewsController extends BaseController {
 
             // 更新点赞
             String key = "news" + newsId;
-            redisComponent.setCommentReplyLike("news", newsId, uid, like);
+            redisComponent.setTypeUidLike("news", newsId, uid, like);
 
             // 从电脑端的需求, 则不更新数据库, 优化一部分需求
             if (view == -1) return new ResultBean(ResultCode.SUCCESS);

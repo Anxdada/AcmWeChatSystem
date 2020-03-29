@@ -81,29 +81,14 @@ export default class MobileAddPostPage extends React.Component{
         Toast.success('Load success !!!', 1);
     }
 
-    handleOk = () => {
-        this.setState({
-            visible: false,
-        });
-    };
-    
-    handleCancel = () => {
-        this.setState({
-            visible: false,
-        });
-    };
-
 	render() {
-
-
-
 		return(
             <div>
                 <NavBar
                     mode="dark"
                     icon={<Icon type="left" />}
                     onLeftClick={() =>  window.history.back(-1)}
-                    rightContent={<Icon type="upload" style={{ fontSize: 23 }} onClick={this.handlePublish} />}
+                    rightContent={<span style={{ fontSize: 13 }} onClick={() => this.props.history.push('/mobile/forum/result')}>下一步</span>}
                 >发表帖子</NavBar>
                 
                 <TextareaItem
@@ -116,17 +101,6 @@ export default class MobileAddPostPage extends React.Component{
                 <div style={{ backgroundColor: '#ffffff' }}>
                     <div ref="editorElem" className="toolbar" />
                 </div>
-
-                <Modal
-                    title="Basic Modal"
-                    visible={this.state.visible}
-                    onOk={this.handleOk}
-                    onCancel={this.handleCancel}
-                >
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
-                </Modal>
             </div>
 		);
 	}

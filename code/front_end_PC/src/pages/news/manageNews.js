@@ -48,8 +48,8 @@ class NewsTable extends React.Component {
             },
             {
                 title: '创建人',
-                dataIndex: 'createUser',
-                key: 'createUser',
+                dataIndex: 'createRealName',
+                key: 'createRealName',
                 align: 'center',
             }, 
             {
@@ -61,8 +61,8 @@ class NewsTable extends React.Component {
             },
             {
                 title: '更新人',
-                dataIndex: 'updateUser',
-                key: 'updateUser',
+                dataIndex: 'updateRealName',
+                key: 'updateRealName',
                 align: 'center',
             }, 
             {

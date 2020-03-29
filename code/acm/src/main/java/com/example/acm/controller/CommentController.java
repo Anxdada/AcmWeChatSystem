@@ -94,4 +94,21 @@ public class CommentController extends BaseController {
 
         return commentDealService.selectComment(user, replyPostId, aOrs,  order,  pageNum,  pageSize);
     }
+
+
+    @PostMapping("/detailComment")
+    @ResponseBody
+    public ResultBean detailComment(@RequestParam(value = "commentId", required = true) long commentId,
+                                    HttpServletRequest request, HttpServletResponse response) {
+
+//        System.out.println(commentId);
+
+        User user = getUserIdFromSession(request);
+        if (user == null) {
+            user = new User();
+            user.setUserId(longTwo);
+        }
+
+        return commentDealService.detailComment(user, commentId);
+    }
 }

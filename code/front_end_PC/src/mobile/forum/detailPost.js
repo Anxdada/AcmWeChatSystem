@@ -1,13 +1,20 @@
 import React from 'react';
 import './index.less';
 import Fetch from '../../fetch';
-import { LoginUrl } from '../../config/dataAddress';
-import { Divider, message, notification, Icon, Avatar, Pagination, Empty } from 'antd';
-import { TabBar, NavBar, TextareaItem, ActionSheet } from 'antd-mobile';
+import { DetailPostUrl, SelectLabel, UpdatePostViewAndLike, SelectComment, ChangeCommentReplyLike, SelectReply, DeletePost, AddComment } from '../../config/dataAddress';
+import { Divider, message, notification, Icon, Avatar, Pagination, Empty, Tag, Input, Button } from 'antd';
+import { TabBar, NavBar, TextareaItem, ActionSheet, Modal } from 'antd-mobile';
 import 'moment/locale/zh-cn';
 import moment from 'moment';
+import { EventEmitter2 } from 'eventemitter2';
+
 
 moment.locale('zh-cn');
+
+var emitterComment = new EventEmitter2();
+
+const alert = Modal.alert;
+const { TextArea } = Input;
 
 const HeartSvg = () => (
     <svg width="1em" height="1em" fill="currentColor" viewBox="0 0 1024 1024">
@@ -17,39 +24,155 @@ const HeartSvg = () => (
 
 const HeartIcon = props => <Icon component={HeartSvg} {...props} />;
 
+// 点赞处理函数
+const handleChangeLike = (props) => {
+    // console.log(props);
+    Fetch.requestPost({
+        url: ChangeCommentReplyLike,
+        info: 'type='+props.type+'&id='+props.id
+                +'&uid='+props.uid+ '&like='+props.like,
+        timeOut: 3000,
+    }).then( 
+        data => {
+            if (data.status == 0) ;
+            else if (data.status < 100) {
+                message.error(data.msg);
+            } else {
+                notification.error({
+                    message: data.error,
+                    description: data.message
+                });
+            }
+        }
+    ).catch( err => {
+        // console.log("err", err);
+        message.error('连接超时! 请检查服务器是否启动.');
+    })
+}
 
-class CommentView extends React.Component {
 
-    state = {
-        avatar: 'http://localhost:9999/avatar/dali.jpg',
-        userName: '诸葛大力',
-        commentBody: '热爱可抵岁月漫长',
-        createTime: '2020-01-01 02:32:05',
-        type: 1,
+class ReplyListViewMaxTwo extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            allReply: [],
+        }
     }
 
-    handleClickComment = () => {
-        this.props.history.push('/mobile/forum/comment/'+2);
+    componentWillMount() {
+        this.getReplyCommentData();
+    }
+
+    // 把pageSize调大就是为了取所有的, 预计不会太大, 为了获取所有的数量, 这样写方便点
+    getReplyCommentData() {
+        Fetch.requestPost({
+            url: SelectReply,
+            info: 'replyCommentId='+this.props.commentId+'&pageNum=1+&pageSize=100',
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    this.setState({
+                        allReply: data.resultBean.items,
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     render() {
+
+        const { allReply } = this.state;
+
         return (
-            <div style={{ padding: 15}}>
-                <div>
-                    <Avatar src={this.state.avatar} style={{ height: 25, width: 25}}/>
-                    <a style={{ paddingLeft: 5, fontSize: 14 }}>{this.state.userName}</a>
-                    <span style={{ color: '#B5B5B5', float: 'right'}}><Icon type="like" theme={this.state.type == 1 ? 'filled' : 'outlined'} /> 5</span>
-                    <div style={{ paddingLeft: 30, marginTop: 0 }} onClick={this.handleClickComment} >
-                        <span style={{ color: '#B5B5B5', fontSize: 12 }}>1楼 {this.state.createTime}</span><br />
-                        <span>{this.state.commentBody}</span>
-                        <div style={{ backgroundColor: '#FFFAFA', padding: 5 }}>
-                            <span style={{ fontSize: 6, color: '#828282'}}><a>张伟</a> : 一定要站在你所热爱的世界里闪闪发光</span>
-                            <div style={{ fontSize: 6, color: '#828282'}}><a>张伟</a> 回复 <a>大力</a> : 从黎明到黄昏，阳光充足，胜过一切过去的诗</div>
-                            <span style={{ fontSize: 6, marginTop: 0, paddingLeft: 230 }}>共 <a>15</a> 条回复</span>
+            <div>
+            {
+                allReply.length == 0 ? null : 
+                <div style={{ backgroundColor: '#FFFAFA', padding: 5 }}>
+                    <span style={{ fontSize: 6, color: '#828282'}}><a>{allReply[0].createUserDetail.userName}</a> : {allReply[0].replyBody}</span>
+                    {
+                        allReply.length < 2 ? null :
+                        <div style={{ fontSize: 6, color: '#828282'}}>
+                            <a>{allReply[1].createUserDetail.userName}</a> 
+                            {
+                                allReply[1].reverseReplyId == -1 ? null :
+                                <span>
+                                    &nbsp;回复 <a>{allReply[1].replyUserName}</a>
+                                </span>
+                            } 
+                            &nbsp;: {allReply[1].replyBody}
+                        </div>
+                    }
+                    <span style={{ fontSize: 6, marginTop: 0, paddingLeft: 230 }}>共 <a>{allReply.length}</a> 条回复</span>
+                </div>
+            }
+            </div>
+        );
+    }
+}
+
+class CommentView extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            isNowUserLikeThisComment: this.props.item.isNowUserLikeThisComment,
+            likeTotal: this.props.item.like,
+        }
+    }
+
+    handleChangeLikeForComment = () => {
+        const num = this.state.isNowUserLikeThisComment ? -1 : 1;
+        this.setState({
+            isNowUserLikeThisComment: !this.state.isNowUserLikeThisComment,
+            likeTotal: this.state.likeTotal + num,
+        }, () => this.updateLikeCommentRealTime());
+    }
+
+    updateLikeCommentRealTime() {
+        // 不实时更新, 导致数据没有及时更新而导致显示bug...
+        // 主要是和detailComment中的冲突了..
+        const like = this.state.isNowUserLikeThisComment ? 1 : 0;
+        handleChangeLike({
+            type: 'comment',
+            id: this.props.item.commentId,
+            uid: 2,
+            like: like,
+        });
+    }
+
+    render() {
+
+        const { item } = this.props;
+
+        return (
+            <div>
+                <div style={{ padding: 15}}>
+                    <div>
+                        <Avatar src={item.createUserDetail.avatar} style={{ height: 25, width: 25}}/>
+                        <a style={{ paddingLeft: 5, fontSize: 14 }}>{item.createUser}</a>
+                        <span style={{ color: '#B5B5B5', float: 'right'}} onClick={this.handleChangeLikeForComment}><Icon type="like" theme={this.state.isNowUserLikeThisComment ? 'filled' : 'outlined'} /> {this.state.likeTotal}</span>
+                        <div style={{ paddingLeft: 30, marginTop: 0 }} onClick={() => this.props.history.push('/mobile/forum/comment/'+item.commentId)} >
+                            <span style={{ color: '#B5B5B5', fontSize: 12 }}>{item.floor}楼 {item.createTime}</span><br />
+                            <span>{item.commentBody}</span>
+                            <ReplyListViewMaxTwo commentId={item.commentId} />
                         </div>
                     </div>
                 </div>
-                
+                <Divider style={{ marginTop: 0, marginBottom: 0}}/>
             </div>
         );
     }
@@ -57,13 +180,69 @@ class CommentView extends React.Component {
 
 class CommentList extends React.Component {
 
-    state = {
-        order: 'createTime',
-        aOrs: 0,
-    }
-
     constructor(props) {
         super(props);
+        this.state = {
+            nowPage: 1,
+            totalPage: 1,
+            pageSize: 10,
+            aOrs: 0,
+            order: 'createTime',
+            allComment: [],
+            postId: this.props.id,
+        };
+        emitterComment.on("refreshComment", this.refreshComment.bind(this));
+    }
+
+    // 首先注册必须和函数在同一个组件内
+    // 但是不在该组件的也能调用..(emit方法)
+    refreshComment = (msg) => {
+        // console.log(msg);
+        this.getCommentData();
+    } 
+
+    componentWillMount() {
+        this.getCommentData();
+    }
+
+    getCommentData() {
+        Fetch.requestPost({
+            url: SelectComment,
+            info: 'replyPostId='+this.state.postId+'&aOrs='+this.state.aOrs
+                    +'&order='+this.state.order+'&pageNum='+this.state.nowPage,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    if(data.resultBean.currentPage > 0) {
+                        this.setState({ nowPage: data.resultBean.currentPage });
+                    } else {
+                        this.setState({ nowPage: 1 });
+                    }
+                    this.setState({
+                        totalPage: data.resultBean.totalItems/data.resultBean.pageSize,
+                        allComment: data.resultBean.items
+                    });
+                } else {
+                    this.setState({
+                        nowPage: 1,
+                        totalPage: 1,
+                        allComment: [],
+                    });
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     handleShowCommentSortActionSheet = () => {
@@ -98,8 +277,14 @@ class CommentList extends React.Component {
         });
     }
 
+    handlePageChange = (page) => {
+        // console.log(page);
+        this.setState({ 
+            nowPage: page,
+        }, () => this.getCommentData());
+    }
+
     render() {
-        let len = 0;
 
         let sortRule;
         if (this.state.order == 'like') {
@@ -110,17 +295,35 @@ class CommentList extends React.Component {
             sortRule = <span style={{ color: '#B5B5B5' }}><Icon type="fall" />较近在前</span>;
         }
 
+        for (let i = 0 ; i < this.state.allComment.length ; ++ i) {
+            this.state.allComment[i].floor = i + 1;
+        }
+
         return (
-            <div style={{ marginTop: 10, backgroundColor: '#ffffff' }}>
-                <div style={{ height: 30 }} >
-                    <div style={{ padding: 5 }}>
-                    {5}条回帖
-                    <span style={{ float: 'right'}} onClick={this.handleShowCommentSortActionSheet}>{sortRule}</span>
+            <div style={{ marginTop: 5 }}>
+                <div style={{ backgroundColor: '#ffffff' }}>
+                    <div style={{ height: 30 }} >
+                        <div style={{ padding: 5 }}>
+                        {this.state.allComment.length}条回帖
+                        <span style={{ float: 'right'}} onClick={this.handleShowCommentSortActionSheet}>{sortRule}</span>
+                        </div>
                     </div>
+                    <Divider style={{ marginTop: 0, marginBottom: 0}}/>
+                    {
+                        this.state.allComment.length == 0 ? <Empty description="暂无评论" /> : 
+                        <div>
+                        {
+                            this.state.allComment.map((item) => 
+                                <CommentView item={item} {...this.props} key={item.commentId} />
+                            )
+                        }
+                        </div>
+                    }
                 </div>
-                <Divider style={{ marginTop: 0, marginBottom: 0}}/>
-                <CommentView {...this.props}/>
-                <Empty />
+                <div className="postPagination" style={{ marginTop: 5}}>
+                    <Pagination total={this.state.totalPage * this.state.pageSize} current={this.state.nowPage} 
+                        onChange={this.handlePageChange} pageSize={this.state.pageSize} />
+                </div>
             </div>
         );
     }
@@ -128,32 +331,121 @@ class CommentList extends React.Component {
 
 export default class MobileDetailPost extends React.Component {
 
-    state = {
-        avatar: 'http://localhost:9999/avatar/zhangwei.jpg',
-        userName: '谢仁义解放后带建设方科技',
-        createTime: '2020-02-01 20:23:01',
-        title: '这是一个标题',
-        brief: '少年就是少年，他们看春风不喜，看夏蝉不烦，看秋风不悲，看冬雪不叹，看满身富贵...',
-        auth: '谢仁义',
-        like: 5,
-        view: 1000,
-        comment: 10,
-        img: 'http://localhost:9999/photo/0036bcd3-a5e9-478e-8ee4-cdc8443ba525.jpg',
-        isLike: 0,
-    }
-
     constructor(props) {
         super(props);
+        this.state = {
+            avatar: '',
+            createUserName: '',
+            createTime: '',
+            postTitle: '',
+            postTag: '',
+            postBody: '',
+            isHead: 0,
+            isGreat: 0,
+            isHot: 0,
+            like: 0,
+            views: 0,
+            isSame: 0,
+            labels: [],
+            commentBody: '',
+            submitting: false,
+        }
+    }
+
+    componentWillMount() {
+        this.getLabelData();
+        this.getPostData();
+    }
+
+    getLabelData() {
+        // 用于取出目前所有的标签
+        Fetch.requestPost({
+            url: SelectLabel,
+            info: 'pageSize=100',
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    this.setState({
+                        labels: data.resultBean.items,
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     getPostData() {
         Fetch.requestPost({
-            url: LoginUrl,
-            info: 'userName='+this.state.userName+'&password='+this.state.password,
+            url: DetailPostUrl,
+            info: 'postId='+this.props.match.params.id,
             timeOut: 3000,
         }).then ( 
             data => {
-                
+                if (data.status == 0) {
+                    this.setState({
+                        avatar: data.resultBean.avatar,
+                        createUserName: data.resultBean.createUserName,
+                        createTime: data.resultBean.createTime,
+                        postTitle: data.resultBean.postTitle,
+                        postTag: data.resultBean.postTag,
+                        postBody: data.resultBean.postBody,
+                        isHead: data.resultBean.isHead,
+                        isGreat: data.resultBean.isGreat,
+                        isHot: data.resultBean.isHot,
+                        views: data.resultBean.views+1,
+                        likeTotal: data.resultBean.like,
+                        isNowUserLikeThisPost: data.resultBean.isNowUserLikeThisPost,
+                        isSame: data.resultBean.isSame,
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
+    deletePostData() {
+        Fetch.requestPost({
+            url: DeletePost,
+            info: 'postId='+this.props.match.params.id,
+            timeOut: 3000,
+        }).then(
+            data => {
+                if (data.status == 0) {
+                    message.success("删除成功");
+                    window.history.back();
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
             }
         ).catch( err => {
             // console.log("err", err);
@@ -162,29 +454,110 @@ export default class MobileDetailPost extends React.Component {
     }
 
     handleChangLikePost = () => {
+        const { likeTotal, isNowUserLikeThisPost } = this.state;
+        let num = isNowUserLikeThisPost ? -1 : 1; 
         this.setState({
-            isLike: 1 - this.state.isLike,
+            likeTotal: likeTotal + num,
+            isNowUserLikeThisPost: !isNowUserLikeThisPost,
         })
     }
 
     handleShowDetailPostActionSheet = () => {
-        let BUTTONS = ['举报', '取消'];   // ordinnary
-        // BUTTONS = ['编辑', '删除', '设置评论', '取消']; // my
-        ActionSheet.showActionSheetWithOptions({
-            options: BUTTONS,
-            cancelButtonIndex: BUTTONS.length - 1,
-            maskClosable: true,
-        },
-        (buttonIndex) => {
-            if (buttonIndex == 0) this.props.history.push('/mobile/forum/report/'+2);
+        let BUTTONS = ['回复', '举报', '取消'];   // ordinnary
+        if (this.state.isSame) {
+            BUTTONS = ['修改帖子', '设置评论', '回复', '删除', '取消']; // my 因为点击的事件都变了, 所以得重新写一个
+            ActionSheet.showActionSheetWithOptions({
+                options: BUTTONS,
+                cancelButtonIndex: BUTTONS.length - 1,
+                destructiveButtonIndex: BUTTONS.length - 2,
+                maskClosable: true,
+            },
+            (buttonIndex) => {
+                console.log(buttonIndex);
+                if (buttonIndex == 0) this.props.history.push('/mobile/forum/report/'+2);
+                else if (buttonIndex == 1) console.log('设置评论, 允许任何人评论, 关闭评论');
+                else if (buttonIndex == 2) this.customFocusInst.focus();
+                else if (buttonIndex == 3) 
+                alert('删除这篇帖子后将无法恢复,是否确定删除?', '', [
+                    { text: '取消' },
+                    {
+                        text: '确定',
+                        onPress: () => this.deletePostData(),
+                    },
+                ]);
+            });
+        } else {
+            ActionSheet.showActionSheetWithOptions({
+                options: BUTTONS,
+                cancelButtonIndex: BUTTONS.length - 1,
+                maskClosable: true,
+            },
+            (buttonIndex) => {
+                if (buttonIndex == 0) this.customFocusInst.focus();
+                else if (buttonIndex == 1) this.props.history.push('/mobile/forum/report/'+2);
+            });
+        }
+    }
+
+    addCommentData() {
+        console.log('xierenyi');
+        Fetch.requestPost({
+            url: AddComment,
+            info: 'commentBody='+this.state.commentBody+'&replyPostId='+this.props.match.params.id,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    message.success('评论发布成功');
+                    emitterComment.emit("refreshComment", "添加评论成功");
+                    this.setState({
+                        commentBody: '',
+                    })
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+                this.setState({
+                    submitting: false,
+                });
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+            this.setState({
+                submitting: false,
+            });
         });
     }
 
+    handlePublishComment = () => {
+        this.setState({
+            submitting: true,
+        }, () => this.addCommentData());
+    }
+
+    handleChangeCommentBody = (value) => {
+        // console.log(e);
+        this.setState({
+            commentBody: value,
+        })
+    }
+
+    // 不定死.. 就不会回到原来的网址, 果然还是App好写啊.. 这个back实现好sb..
     render() {
-
-        // console.log(this.props.history);
-
-        // 不定死.. 就不会回到原来的网址, 果然还是App好写啊.. 这个back实现好sb..
+        const { labels } = this.state;
+        let postLabels = [];
+        for (let i = 0 ; i < labels.length ; ++ i) {
+            if (!(this.state.postTag & (1<<labels[i].flag))) continue;
+            postLabels.push(labels[i]);
+        }
+        // console.log(this.state.commentBody);
         return (
             <div >
                 <NavBar
@@ -194,25 +567,87 @@ export default class MobileDetailPost extends React.Component {
                     rightContent={<Icon key="1" type="ellipsis" style={{ fontSize: 25 }} onClick={this.handleShowDetailPostActionSheet}/>}
                 >帖子详情</NavBar>
                 <div style={{ backgroundColor: '#ffffff', padding: 15}}>
-                    <strong style={{ fontSize: 20 }}>{this.state.title}</strong>
+                    <div>
+                        <strong style={{ fontSize: 20 }}>{this.state.postTitle}</strong>&nbsp;&nbsp;
+                        <span>
+                        {
+                            this.state.isHead == 0 ? null : <Tag color="magenta">置顶&nbsp;&nbsp;</Tag>
+                        }
+                        {
+                            this.state.isGreat == 0 ? null : <Tag color="volcano">精&nbsp;&nbsp;</Tag>
+                        }
+                        {
+                            this.state.isHot == 0 ? null : <Tag color="red">热&nbsp;&nbsp;</Tag>
+                        }
+                        </span>
+                    </div>
                     <div style={{ marginRight: 10, paddingTop: 10, fontSize: 12}}>
                         <Avatar src={this.state.avatar} style={{ height: 25, width: 25}}/>
-                        <a style={{ paddingLeft: 5, fontSize: 14 }}>{this.state.userName}</a>
+                        <a style={{ paddingLeft: 5, fontSize: 14 }}>{this.state.createUserName}</a>
                     </div>
                     <span style={{ color: '#B5B5B5', paddingTop: 5, paddingRight: 10, fontSize: 12 }}>{this.state.createTime}</span>
                     <div style={{ paddingTop: 5}}>
-                        <p>{this.state.brief}</p>
+                        <div dangerouslySetInnerHTML={{__html: this.state.postBody}} />
                     </div>
                     <div>
-                        <Icon type="eye" style={{ color: '#FF8C69', paddingRight: 1 }}/><span style={{ fontSize: 6 ,color: '#B5B5B5', paddingRight: 5 }}>{this.state.view}</span>
-                        <span onClick={this.handleChangLikePost}><HeartIcon style={{ color: this.state.isLike == 1 ? 'hotpink' : 'grey', paddingRight: 1, paddingLeft: 5 }} /><span style={{ fontSize: 6 ,color: '#B5B5B5' }}>{this.state.like}</span></span>
+                        <Icon type="eye" style={{ color: '#FF8C69', paddingRight: 1 }}/><span style={{ fontSize: 6 ,color: '#B5B5B5', paddingRight: 5 }}>{this.state.views}</span>
+                        <span onClick={this.handleChangLikePost}><HeartIcon style={{ color: this.state.isNowUserLikeThisPost ? 'hotpink' : 'grey', paddingRight: 1, paddingLeft: 5 }} /><span style={{ fontSize: 6 ,color: '#B5B5B5' }}>{this.state.likeTotal}</span></span>
+                    </div>
+                    <div style={{ fontSize: 7, marginTop: 8 }}>
+                    标签:&nbsp;&nbsp;
+                    {
+                        postLabels.map((item) => 
+                                <Tag color={item.labelColor} key={item.labelId}>{item.labelName}</Tag>
+                        )
+                    }
                     </div>
                 </div>
-                <CommentList {...this.props}/>
-                <div className="postPagination" style={{ marginTop: 5}}>
-                    <Pagination />
+                <div style={{ marginTop: 5 }}>
+                    <TextareaItem
+                        title={
+                            <Button type="primary" size="small" onClick={this.handlePublishComment} 
+                                disabled={this.state.commentBody == '' ? true : false } loading={this.state.submitting}
+                            > 发表 </Button>
+                        }
+                        placeholder="写下你的观点..."
+                        data-seed="logId"
+                        autoHeight
+                        value={this.state.commentBody}
+                        onChange={this.handleChangeCommentBody}
+                        ref={el => this.customFocusInst = el}
+                        style={{ fontSize: 14 }}
+                    />
                 </div>
+                <CommentList id={this.props.match.params.id} {...this.props} />
             </div>
         );
+    }
+
+    // 更新此帖子的浏览量(和可能的点赞)
+    componentWillUnmount() {
+
+        let like = this.state.isNowUserLikeThisPost ? 1 : 0; 
+
+        Fetch.requestPost({
+            url: UpdatePostViewAndLike,
+            info: 'postId='+this.props.match.params.id+'&views='+this.state.views
+                    +'&like='+like,
+            timeOut: 3000,
+        }).then(
+            data => {
+                if (data.status == 0) ;
+                else if (data.status < 100) {
+                    message.error(data.msg);
+                } else {
+                    notification.error({
+                        message: data.error,
+                        description: data.message
+                    });
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 }

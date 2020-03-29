@@ -24,9 +24,9 @@ class DetailAnnouncement extends React.Component {
             announcementBody: '',
             announcementTagName: '',
             announcementTagColor: '',
-            createUser: '',
+            createRealName: '',
             createTime: '',
-            updateUser: '',
+            updateRealName: '',
             updateTime: '',
             isRegister: '讲座',
             registerStartTime: null,
@@ -79,9 +79,9 @@ class DetailAnnouncement extends React.Component {
                         announcementBody: data.resultBean.announcementBody,
                         announcementTagName: data.resultBean.announcementTagName,
                         announcementTagColor: data.resultBean.announcementTagColor,
-                        createUser: data.resultBean.createUser,
+                        createRealName: data.resultBean.createRealName,
                         createTime: data.resultBean.createTime,
-                        updateUser: data.resultBean.updateUser,
+                        updateRealName: data.resultBean.updateRealName,
                         updateTime: data.resultBean.updateTime,
                         isRegister: data.resultBean.isRegister,
                         registerStartTime: data.resultBean.registerStartTime,
@@ -122,12 +122,12 @@ class DetailAnnouncement extends React.Component {
             <div>
             <BackTop />
             <Card title={this.state.announcementTitle}>
-                <strong>创建人:&nbsp;&nbsp;{this.state.createUser}</strong>
+                <strong>创建人:&nbsp;&nbsp;{this.state.createRealName}</strong>
                 <br />
                 <strong>创建时间:</strong>&nbsp;&nbsp;
                 <DatePicker style={{ width: 200 }} format="YYYY-MM-DD HH:mm:ss" value={moment(this.state.createTime)} disabled />
                 <br /><br />
-                <strong>更新人:&nbsp;&nbsp;{this.state.updateUser}</strong>
+                <strong>更新人:&nbsp;&nbsp;{this.state.updateRealName}</strong>
                 <br />
                 <strong>更新时间:</strong>&nbsp;&nbsp;
                 <DatePicker  style={{ width: 200 }} format="YYYY-MM-DD HH:mm:ss" value={moment(this.state.updateTime)} disabled />

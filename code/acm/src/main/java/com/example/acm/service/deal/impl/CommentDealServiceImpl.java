@@ -8,6 +8,7 @@ import com.example.acm.entity.Comment;
 import com.example.acm.entity.Comment;
 import com.example.acm.entity.User;
 import com.example.acm.service.CommentService;
+import com.example.acm.service.PostService;
 import com.example.acm.service.ReplyService;
 import com.example.acm.service.UserService;
 import com.example.acm.service.deal.CommentDealService;
@@ -38,6 +39,9 @@ public class CommentDealServiceImpl implements CommentDealService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PostService postService;
 
     @Autowired
     private RedisComponent redisComponent;
@@ -105,6 +109,8 @@ public class CommentDealServiceImpl implements CommentDealService {
     /**
      * 只有评论的发表人才有权利修改, 管理员都是只能删除, 不能修改其它用户的评论
      * 应该不会要修改的功能了, 只能删除.. 然后不影响层级关系
+     *
+     * 主要是对照的几个平台(牛客, 简书等)都没有评论修改功能, 所以我也不做修改功能...
      *
      * 只用来更新like数量.. 内容没有更新操作
      *
@@ -180,6 +186,7 @@ public class CommentDealServiceImpl implements CommentDealService {
                     if (!listUsers.isEmpty()) tUs = listUsers.get(0);
                     if (tUs != null) mapTemp.put("createUser", tUs.getRealName());
                     if (tUs != null) mapTemp.put("createUserDetail", tUs);
+                    // 直接把这个用户的信息都传过来了, 因为电脑端需要再当前页面展示, 所以需要传...
                     mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd HH:mm:ss"));
 
                     Map<String, Object> map2 = new HashMap<>();
@@ -212,18 +219,38 @@ public class CommentDealServiceImpl implements CommentDealService {
      * 这个是为了解决一个bug, 删除表格一个元素后, 实际的记录还在, 当点修改时存来的记录就是已经删除的了
      * 所以修改需要通过id重新读取信息
      *
+     * @param user 操作的用户, 手机端判断楼主需要的信息
      * @param commentId 评论Id
      * @return
      */
-    public ResultBean detailComment(long commentId) {
+    public ResultBean detailComment(User user, long commentId) {
         try {
-            List<Comment> list = commentService.findCommentListByCommentId(commentId);
+            Map<String, Object> map = new HashMap<>();
+            map.put("commentId", commentId);
+            map.put("isEffective", SysConst.LIVE);
+
+            List<Map<String, Object>> list = commentService.findCommentMapListByQuery(map);
 
             if (list.isEmpty()) return new ResultBean(ResultCode.SQL_NULL_RECODE, "数据库无记录!");
 
-            Comment comment = list.get(0);
+            Map<String, Object> mapTemp = list.get(0);
 
-            return new ResultBean(ResultCode.SUCCESS, comment);
+            // 手机端回复, 删除相关
+            mapTemp.put("isSame", user.getUserId() == (Long)mapTemp.get("createUser"));
+
+            // 需要用户的信息
+            List<User> listUsers = userService.findUserListByUserId((Long)mapTemp.get("createUser"));
+            User tUs = new User();
+            if (!listUsers.isEmpty()) tUs = listUsers.get(0);
+            mapTemp.put("createUserDetail", tUs);
+
+            mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd HH:mm:ss"));
+
+            // 点赞相关
+            String key = "comment" + mapTemp.get("commentId");
+            mapTemp.put("isNowUserLikeThisComment", redisComponent.hasMemberForKey(key, String.valueOf(user.getUserId())));
+
+            return new ResultBean(ResultCode.SUCCESS, mapTemp);
         } catch (Exception e) {
             // log
             e.printStackTrace();

@@ -14,6 +14,10 @@ import {HashRouter as Router, Link, Redirect, Route} from 'react-router-dom';
 const { Option } = Select;
 var emitter = new EventEmitter2()
 
+// 判断第一张是否换图或者删除.. 
+function checkFirstImgIsExist(s, substr) {
+    return s.indexOf(substr);
+}
 
 function getString(s) {
     s = s.replace(/\+/g, "%2B");
@@ -106,7 +110,7 @@ class ModifyPostPublishView extends React.Component {
         Fetch.requestPost({
             url: UpdatePost,
             info: 'postId='+this.props.id+'&postTitle='+this.props.postTitle+'&postTag='+labels
-                    +'&postBody='+encodeURI(getString(this.props.editorContent)),
+                    +'&postBody='+encodeURI(getString(this.props.editorContent))+'&firstImg='+this.props.firstImg,
             timeOut: 3000,
         }).then ( 
             data => {
@@ -185,6 +189,7 @@ class ModifyPostEditView extends React.Component {
             editorContent: '',
             editorContentText: '',
             postTag: 0,
+            firstImg: '',
         }
     }
 
@@ -205,6 +210,7 @@ class ModifyPostEditView extends React.Component {
                         postTitle: data.resultBean.postTitle,
                         editorContent: this.state.editor.txt.html(data.resultBean.postBody),
                         postTag: data.resultBean.postTag,
+                        firstImg: data.resultBean.firstImg,
                     });
                 }
                 else {
@@ -232,6 +238,9 @@ class ModifyPostEditView extends React.Component {
     }
 
     render() {
+
+        const {editorContent, editorContentText, firstImg } = this.state;
+
         return (
             <div style={{ flex: 1 }}>
             <Row>
@@ -245,9 +254,9 @@ class ModifyPostEditView extends React.Component {
                     </Card>
                 </Col>
                 <Col span={6} >
-                    <ModifyPostPublishView id={this.props.id} postTitle={this.state.postTitle} editorContent={this.state.editorContent} 
-                        editorContentText={this.state.editorContentText} postTag={this.state.postTag} handleIsChange={this.props.handleIsChange}
-                        history={this.props.history}
+                    <ModifyPostPublishView id={this.props.id} postTitle={this.state.postTitle} editorContent={editorContent} 
+                        editorContentText={editorContentText} postTag={this.state.postTag} handleIsChange={this.props.handleIsChange}
+                        history={this.props.history} firstImg={firstImg}
                     />
                 </Col>
             </Row>
@@ -256,27 +265,37 @@ class ModifyPostEditView extends React.Component {
     }
 
     componentDidMount() {
-        const elem = this.refs.editorElem
-        const editor = new E(elem)
+        const elem = this.refs.editorElem;
+        const editor = new E(elem);
         this.setState({
             editor: editor,
-        })
+        });
+
+        // 只要第一张图
+        let tmpFirstImg = this.state.firstImg;
+
         editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
         editor.customConfig.uploadFileName = 'myFileName';
         editor.customConfig.uploadImgServer = UploadImg;
         editor.customConfig.uploadImgHooks = { 
             customInsert: function (insertImg, result, editor) { 
                 var url =result.data; 
-                insertImg(url); 
+                insertImg(url);
+                if (tmpFirstImg == '') tmpFirstImg = url;
             } 
         };
     
         // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
         editor.customConfig.onchange = html => {
+            // 检测第一张图是否被替换(删除后又上传另一张)或者删除.
+            let res = checkFirstImgIsExist(html, tmpFirstImg);
+            if (res == -1) tmpFirstImg = '';
             this.setState({
                 editorContent: html,
                 editorContentText: editor.txt.text(),
-            }, () => this.props.handleIsChange(1));
+                firstImg: tmpFirstImg,
+            })
+            // console.log('xierenyi' + this.state.firstImg);
         }
         editor.create()
     }

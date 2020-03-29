@@ -106,23 +106,26 @@ public class ReplyController extends BaseController {
 
     // 回复和评论的点赞功能, 高度相似, 就同一个函数, 写在reply下了
     // id 是 commentId or replyId
-    @PostMapping("/changeLike")
+    @PostMapping("/changeCommentReplyLike")
     @ResponseBody
     public ResultBean changeLike(@RequestParam(value = "type",  required = true) String type,
-                                  @RequestParam(value = "id",  required = true) long id,
-                                  @RequestParam(value = "uid",  required = true) int uid,
-                                  @RequestParam(value = "like",  required = true) int like,
+                                 @RequestParam(value = "id",  required = true) long id,
+                                 @RequestParam(value = "like",  required = true) int like,
+                                 @RequestParam(value = "uid", defaultValue = "2", required = false) long uid,
                                   HttpServletRequest request, HttpServletResponse response) {
 
-//        System.out.println(replyId + " " + uid + " " + like);
+//        System.out.println("xierenyiqq");
+//        System.out.println(uid + " " + like);
 
+        // 这个uid 好像就能于请求来的这个用户, 好像并不用传, 直接在请求中获取就好了
+        // 后面看一下是否真是这样, 先保留这个参数
         User user = getUserIdFromSession(request);
-        if (user == null) {
-            user = new User();
-            user.setUserId(longTwo);
+        if (user != null) {
+            // 保留参数
+            uid = user.getUserId();
         }
 
-        redisComponent.setCommentReplyLike(type, id, uid, like);
+        redisComponent.setTypeUidLike(type, id, uid, like);
         // 目前只有评论和回复才会做到这
 //        System.out.println(type);
 //        System.out.println(type == "comment"); // 字符串不能这样判断了? 有时间研究下..

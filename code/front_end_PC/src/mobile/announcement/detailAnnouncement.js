@@ -27,7 +27,7 @@ export default class MobileDetailAnnouncement extends React.Component {
             announcementTagName: '',
             announcementTagColor: '',
             avatar: '',
-            createUser: '',
+            createUserName: '',
             createTime: '',
             isRegister: 0,
             registerStartTime: null,
@@ -58,7 +58,7 @@ export default class MobileDetailAnnouncement extends React.Component {
                         announcementTagName: data.resultBean.announcementTagName,
                         announcementTagColor: data.resultBean.announcementTagColor,
                         avatar: data.resultBean.avatar,
-                        createUser: data.resultBean.createUser,
+                        createUserName: data.resultBean.createUserName,
                         createTime: data.resultBean.createTime,
                         isRegister: data.resultBean.isRegister,
                         registerStartTime: data.resultBean.registerStartTime,
@@ -148,7 +148,7 @@ export default class MobileDetailAnnouncement extends React.Component {
                                 alt="Han Solo"
                             />
                         }
-                        author={this.state.createUser}
+                        author={this.state.createUserName}
                         content={this.state.createTime}
                         style={{
                             marginTop: 0,

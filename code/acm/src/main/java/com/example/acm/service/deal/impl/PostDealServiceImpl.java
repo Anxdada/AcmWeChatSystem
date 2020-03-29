@@ -3,8 +3,10 @@ package com.example.acm.service.deal.impl;
 import com.example.acm.common.ResultBean;
 import com.example.acm.common.ResultCode;
 import com.example.acm.common.SysConst;
+import com.example.acm.config.RedisComponent;
 import com.example.acm.entity.Post;
 import com.example.acm.entity.User;
+import com.example.acm.service.CommentService;
 import com.example.acm.service.PostService;
 import com.example.acm.service.UserService;
 import com.example.acm.service.deal.PostDealService;
@@ -31,7 +33,13 @@ public class PostDealServiceImpl implements PostDealService {
     private PostService postService;
 
     @Autowired
+    private CommentService commentService;
+
+    @Autowired
     private UserService userService;
+
+    @Autowired
+    private RedisComponent redisComponent;
 
     /**
      * 添加帖子
@@ -42,9 +50,10 @@ public class PostDealServiceImpl implements PostDealService {
      * @param postTag 帖子的标签(二进制)
      * @param postTitle 帖子标题
      * @param postBody 帖子内容
+     * @param firstImg 列表展示的小图
      * @return 结果
      */
-    public ResultBean addPost(User user, String postTitle, int postTag, String postBody) {
+    public ResultBean addPost(User user, String postTitle, int postTag, String postBody, String firstImg) {
         try {
 
             Post post = new Post();
@@ -55,6 +64,7 @@ public class PostDealServiceImpl implements PostDealService {
             post.setCreateTime(new Date());
             post.setUpdateUser(user.getUserId());
             post.setUpdateTime(new Date());
+            if (!StringUtil.isNull(firstImg)) post.setFirstImg(firstImg);
 
             postService.addPost(post);
 
@@ -107,10 +117,11 @@ public class PostDealServiceImpl implements PostDealService {
      * @param isHead 置顶
      * @param isGreat 精
      * @param isHot 热
+     * @param firstImg 小图
      * @return 结果
      */
     public ResultBean updatePost(User user, long postId, String postTitle, int postTag, String postBody,
-                                    int isHead, int isGreat, int isHot) {
+                                    int isHead, int isGreat, int isHot, String firstImg) {
         try {
             List<Post> list = postService.findPostListByPostId(postId);
 
@@ -125,6 +136,7 @@ public class PostDealServiceImpl implements PostDealService {
             post.setIsHot(isHot);
             post.setUpdateUser(user.getUserId());
             post.setUpdateTime(new Date());
+            post.setFirstImg(firstImg);  // 更新的空就是删除掉了.. 所以逻辑上不用判断了..
 
             postService.updatePost(post);
 
@@ -179,13 +191,23 @@ public class PostDealServiceImpl implements PostDealService {
 
             if (!list.isEmpty()) {
                 for (Map<String, Object> mapTemp : list) {
+
+                    // 查评论数(不包括后面回复评论的, 只在手机端展示列表时需要这个数据)
+                    Map<String, Object> mapComment = new HashMap<>();
+                    mapComment.put("replyPostId", mapTemp.get("postId"));
+                    mapTemp.put("totComment", commentService.findCommentMapListByQuery(map).size());
+
                     mapTemp.put("isSame", user.getUserId() == (Long)mapTemp.get("createUser"));
                     // 这个是用于判断当前这个帖子是不是登录管理员写的, 如果是那么他就可以修改他的帖子
                     List<User> listUsers = userService.findUserListByUserId((Long)mapTemp.get("createUser"));
 //                    System.out.println((Long)mapTemp.get("createUser"));
                     User tUs = null;
                     if (!listUsers.isEmpty()) tUs = listUsers.get(0);
-                    if (tUs != null) mapTemp.put("createUser", tUs.getRealName());
+                    if (tUs != null) {
+                        mapTemp.put("createRealName", tUs.getRealName());  // 后端需要真实姓名
+                        mapTemp.put("createUserName", tUs.getUserName());  // 手机端需要用户名
+                        mapTemp.put("avatar", tUs.getAvatar());
+                    }
                     mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd HH:mm:ss"));
                 }
             }
@@ -209,10 +231,11 @@ public class PostDealServiceImpl implements PostDealService {
      * 这个是为了解决一个bug, 删除表格一个元素后, 实际的记录还在, 当点修改时存来的记录就是已经删除的了
      * 所以修改需要通过id重新读取信息
      *
+     * @param user 当前的登录用户, 用户判定是否可以修改
      * @param postId 帖子Id
      * @return
      */
-    public ResultBean detailPost(long postId) {
+    public ResultBean detailPost(User user, long postId) {
         try {
             Map<String, Object> map = new HashMap<>();
             map.put("postId", postId);
@@ -226,20 +249,36 @@ public class PostDealServiceImpl implements PostDealService {
 
             Map<String, Object> mapTemp = list.get(0);
 
+            // 判定修改删除(移动端上需要)
+            // 可能上线后需要改变一下取登录用户的id的方式.. 先标记
+            mapTemp.put("isSame", user.getUserId() == (Long)mapTemp.get("createUser"));
+
             List<User> listUsers = userService.findUserListByUserId((Long)mapTemp.get("updateUser"));
             User tUs = null;
             if (listUsers.size() > 0) tUs = listUsers.get(0);
-            if (tUs != null) mapTemp.put("updateUser", tUs.getRealName());
+            if (tUs != null) {
+                mapTemp.put("updateRealName", tUs.getRealName());  // 后端需要真实姓名
+                mapTemp.put("updateUserName", tUs.getUserName());  // 手机端需要用户名
+            }
 
 
             listUsers = userService.findUserListByUserId((Long)mapTemp.get("createUser"));
             tUs = null;
             if (listUsers.size() > 0) tUs = listUsers.get(0);
-            if (tUs != null) mapTemp.put("createUser", tUs.getRealName());
+            if (tUs != null) if (tUs != null) {
+                mapTemp.put("createRealName", tUs.getRealName());  // 后端需要真实姓名
+                mapTemp.put("createUserName", tUs.getUserName());  // 手机端需要用户名
+                mapTemp.put("avatar", tUs.getAvatar());
+            }
 
-
-            mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd"));
+            mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd HH:mm:ss"));
             mapTemp.put("updateTime", DateUtil.convDateToStr((Date) mapTemp.get("updateTime"), "yyyy-MM-dd HH:mm:ss"));
+
+            // 点赞的
+            String key = "post" + mapTemp.get("postId");
+            mapTemp.put("isNowUserLikeThisPost", redisComponent.hasMemberForKey(key, String.valueOf(user.getUserId())));
+//            mapTemp.put("like", redisComponent.getSizeSetForKey(key)); // 帖子表中有这个字段(因为需要点赞的排序, 和comment有点像) 所以不需要获取
+
 
             return new ResultBean(ResultCode.SUCCESS, mapTemp);
         } catch (Exception e) {

@@ -1,47 +1,155 @@
 import React from 'react';
-import { Avatar, Icon, Divider, Modal, Input, Pagination } from 'antd';
-import { NavBar, ActionSheet, Toast  } from 'antd-mobile';
+import { Avatar, Icon, Divider, Input, Pagination, message, notification, Empty, Button } from 'antd';
+import { NavBar, ActionSheet, Modal, TextareaItem  } from 'antd-mobile';
+import { DetailComment, SelectReply, DeleteReply, ChangeCommentReplyLike, DeleteComment, AddReply } from '../../config/dataAddress';
 import 'moment/locale/zh-cn';
+import Fetch from '../../fetch';
 import moment from 'moment';
+import { EventEmitter2 } from 'eventemitter2';
 
 moment.locale('zh-cn');
 
+var emitterReply = new EventEmitter2();
+
+const alert = Modal.alert;
 const { TextArea } = Input;
 
-// const prompt = Modal.prompt;
+// 点赞处理函数
+const handleChangeLike = (props) => {
+    // console.log(props);
+    Fetch.requestPost({
+        url: ChangeCommentReplyLike,
+        info: 'type='+props.type+'&id='+props.id
+                +'&uid='+props.uid+ '&like='+props.like,
+        timeOut: 3000,
+    }).then( 
+        data => {
+            if (data.status == 0) ;
+            else if (data.status < 100) {
+                message.error(data.msg);
+            } else {
+                notification.error({
+                    message: data.error,
+                    description: data.message
+                });
+            }
+        }
+    ).catch( err => {
+        // console.log("err", err);
+        message.error('连接超时! 请检查服务器是否启动.');
+    })
+}
+
+class ReplyComponent extends React.Component{
+    render() {
+        return (
+            <div style={{ marginTop: 5 }}>
+                <TextareaItem
+                    title={
+                        <Button type="primary" size="small" onClick={() => this.handlePublishReply(-1)} 
+                            disabled={this.state.replyBody == '' ? true : false } loading={this.state.submitting}
+                        > 发送 </Button>
+                    }
+                    placeholder={`回复 ${this.state.replyPlaceholder}`}
+                    data-seed="logId"
+                    autoHeight
+                    value={this.state.replyBody}
+                    onChange={this.handleChangeReplyBody}
+                    ref={el => this.replyFocusInst = el}
+                    style={{ fontSize: 14 }}
+                />
+            </div>
+        );
+    }
+}
+
 
 class MobileReplyView extends React.Component{
 
-    state = {
-        avatar: 'http://localhost:9999/avatar/zhangwei.jpg',
-        userName: '张伟要你',
-        commentBody: '我要你在这寡淡的世上，深情地活',
-        createTime: '2020-01-03 02:32:05',
-        type: 0,
-    }
-
     constructor(props) {
         super(props);
+        this.state = {
+            likeTotal: 0,
+            initLikeTotal: 0,
+            isNowUserLikeThisReply: false,
+        }
+    }
+
+    componentWillMount() {
+        this.setState({
+            likeTotal: this.props.item.like,
+            initLikeTotal: this.props.item.like,
+            isNowUserLikeThisReply: this.props.item.isNowUserLikeThisReply,
+        })
+    }
+
+    handleChangeLikeForReply = () => {
+        const num = this.state.isNowUserLikeThisReply ? -1 : 1;
+        this.setState({
+            isNowUserLikeThisReply: !this.state.isNowUserLikeThisReply,
+            likeTotal: this.state.likeTotal + num,
+        })
     }
 
     render() {
-        // console.log(this.props.showActionSheet); () => 1111
+        
+        const { item } = this.props;
+        const { isNowUserLikeThisReply, likeTotal } = this.state; 
+        
         return(
             <div>
                 <div style={{ padding: 10 }}>
                     <div>
-                        <Avatar src={this.state.avatar} style={{ height: 25, width: 25}}/>
-                        <a style={{ fontSize: 14, paddingLeft: 5 }}>{this.state.userName}</a>
-                        <span style={{ color: '#B5B5B5', float: 'right' }}><Icon type="like" theme={this.state.type == 1 ? 'filled' : 'outlined'} /> 5</span>
+                        <Avatar src={item.createUserDetail.avatar} style={{ height: 25, width: 25}}/>
+                        <span>
+                            <a style={{ fontSize: 14, paddingLeft: 5 }}>{item.createUserDetail.userName}</a>
+                            {
+                                item.createUserDetail.userId == item.floorOwnerUserId ?
+                                    <span style={{ fontSize: 5, color: '#CFCFCF'}}>&nbsp;#楼主</span> :
+                                    null
+                            }
+                            {
+                                item.reverseReplyId == -1 ? null :
+                                <span>
+                                    &nbsp;回复 <a>{item.replyUserName}</a>
+                                    {
+                                        item.replyUserDetail.userId == item.floorOwnerUserId ?
+                                            <span style={{ fontSize: 5, color: '#CFCFCF'}}>&nbsp;#楼主</span> :
+                                            null
+                                    }
+                                </span>
+                            } 
+                        </span>
+                        <span style={{ color: '#B5B5B5', float: 'right' }}>
+                            <Icon type="like" theme={isNowUserLikeThisReply ? 'filled' : 'outlined'} 
+                                onClick={this.handleChangeLikeForReply}
+                            /> {likeTotal}
+                        </span>
                     </div>
-                    <div style={{ paddingLeft: 30 }} onClick={this.props.showActionSheet}>
-                        <div><span style={{ color: '#B5B5B5', fontSize: 12 }}>{this.state.createTime}</span></div>
-                        <div>我热爱一切不彻底的事物，琥珀里的时间，微暗的火，一生都在半途而废，一生都怀抱热望</div>
+                    <div style={{ paddingLeft: 30 }} onClick={() => this.props.showActionSheet(item)}>
+                        <div><span style={{ color: '#B5B5B5', fontSize: 12 }}>{item.createTime}</span></div>
+                        <div>{item.replyBody}</div>
                     </div>
                 </div>
                 <Divider style={{ marginTop: 0, marginBottom: 0}}/>
             </div>
         );
+    }
+
+    componentWillUnmount() {
+        // 没有变化就不更新
+        // reply可以这样是因为不像评论那样是连续两个页面强相关的...
+        // 这个只有一个页面..
+        const { initLikeTotal, likeTotal } = this.state;
+        if (initLikeTotal == likeTotal) return ;
+
+        const like = this.state.isNowUserLikeThisReply ? 1 : 0;
+        handleChangeLike({
+            type: 'reply',
+            id: this.props.item.replyId,
+            uid: 2,
+            like: like,
+        });
     }
 
 }
@@ -50,20 +158,177 @@ class MobileReplyView extends React.Component{
 
 class MobileReplyList extends React.Component{
 
+    state = {
+        loading: false,
+        submitting: false,
+    }
+
     constructor(props) {
         super(props);
+        this.state = {
+            nowPage: 1,
+            totalPage: 1,
+            pageSize: 10,
+            allReply: [],
+            replyBody: '',
+        }
+        emitterReply.on("refreshReply", this.refreshReply.bind(this));
+    }
+
+    componentWillMount() {
+        this.getReplyCommentData();
+    }
+
+    refreshReply = (msg) => {
+        // console.log(msg);
+        this.getReplyCommentData();
+    }
+
+    getReplyCommentData() {
+        Fetch.requestPost({
+            url: SelectReply,
+            info: 'replyCommentId='+this.props.commentId+'&pageNum='+this.state.nowPage,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    if(data.resultBean.currentPage > 0) {
+                        this.setState({ nowPage: data.resultBean.currentPage });
+                    } else {
+                        this.setState({ nowPage: 1 });
+                    }
+                    this.setState({
+                        totalPage: data.resultBean.totalItems/data.resultBean.pageSize,
+                        allReply: data.resultBean.items
+                    });
+                } else {
+                    this.setState({
+                        nowPage: 1,
+                        totalPage: 1,
+                        allReply: [],
+                    });
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+                this.setState({
+                    loading: false,
+                })
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+            this.setState({
+                loading: false,
+            })
+        });
+    }
+
+    handleDeleteReply = (replyId) => {
+        Fetch.requestPost({
+            url: DeleteReply,
+            info: 'replyId='+replyId,
+            timeOut: 3000,
+        }).then(
+            data => {
+                if (data.status == 0) {
+                    message.success('回复删除成功');
+                    // emitterReply.emit("refreshReply", "删除回复");
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
+    handleShowActionSheet = (item) => {
+        let BUTTONS = ['回复', '举报', '取消'];   // ordinnary
+        if (item.isSame) {  // 这个的原因所以需要单独实现..
+            BUTTONS = ['回复', '删除', '取消']; // my 因为点击的事件都变了, 所以得重新写一个
+            ActionSheet.showActionSheetWithOptions({
+                options: BUTTONS,
+                cancelButtonIndex: BUTTONS.length - 1,
+                destructiveButtonIndex: BUTTONS.length - 2,
+                maskClosable: true,
+            },
+            (buttonIndex) => {
+                if (buttonIndex == 0) {
+                    this.props.handleChangeTextAearPlaceholder(item.createUserDetail.userName);
+                    this.props.replyFocusInst.focus();
+                }
+                else if (buttonIndex == 1) ;
+                alert('确定要删除此条回复?', '', [
+                    { text: '取消' },
+                    {
+                        text: '确定',
+                        onPress: () => this.handleDeleteReply(item.replyId),
+                    },
+                ]);
+            });
+        } else {
+            ActionSheet.showActionSheetWithOptions({
+                options: BUTTONS,
+                cancelButtonIndex: BUTTONS.length - 1,
+                maskClosable: true,
+            },
+            (buttonIndex) => {
+                if (buttonIndex == 0) {
+                    this.props.handleChangeTextAearPlaceholder(item.createUserDetail.userName);
+                    this.props.replyFocusInst.focus();
+                } else if (buttonIndex == 1) {
+                    this.props.history.push('/mobile/forum/report/'+2);
+                }
+            });
+        }
+    }
+
+    handlePageChange = (page) => {
+        // console.log(page);
+        this.setState({ 
+            nowPage: page,
+        }, () => this.getReplyCommentData());
     }
 
     render() {
+
+        const { allReply } = this.state;
+
         return(
-            <div style={{ marginTop: 5, backgroundColor: '#ffffff' }}>
-                <div style={{ height: 30 }} >
-                    <div style={{ padding: 5 }}>{5}条回帖</div>
+            <div style={{ marginTop: 5 }}>
+                <div style={{ backgroundColor: '#ffffff' }}>
+                    <div style={{ height: 30 }} >
+                        <div style={{ padding: 5 }}>{this.state.totalPage * this.state.pageSize}条回复</div>
+                    </div>
+                    <Divider style={{ marginTop: 0, marginBottom: 0}}/>
+                    <div>
+                    {
+                        allReply.length == 0 ? <Empty description="暂无回复" /> :
+                        allReply.map((item) =>
+                            <MobileReplyView showActionSheet={this.handleShowActionSheet} item={item}
+                                key={item.replyId}
+                            />
+                        )
+                    }
+                    </div>
                 </div>
-                <Divider style={{ marginTop: 0, marginBottom: 0}}/>
-                <div>
-                    <MobileReplyView showActionSheet={this.props.showActionSheet} />
-                    <MobileReplyView showActionSheet={this.props.showActionSheet} />
+                <div className="postPagination" style={{ marginTop: 5}}>
+                    <Pagination total={this.state.totalPage * this.state.pageSize} current={this.state.nowPage} 
+                        onChange={this.handlePageChange} pageSize={this.state.pageSize} />
                 </div>
             </div>
         );
@@ -73,62 +338,208 @@ class MobileReplyList extends React.Component{
 
 export default class MobileDetailComment extends React.Component{
 
-    state = {
-        avatar: 'http://localhost:9999/avatar/dali.jpg',
-        userName: '诸葛大力',
-        commentBody: '热爱可抵岁月漫长',
-        createTime: '2020-01-01 02:32:05',
-        type: 1,
-        visible: false,
-        replyBody: '',
-    }
-
     constructor(props) {
         super(props);
+        this.state = {
+            singleComment: [],
+            createUserDetail: [],
+            isNowUserLikeThisComment: 0,
+            initLikeTotal: 0,
+            likeTotal: 0,
+            isSame: 0,
+            replyBody: '',
+            submitting: false,
+            replyPlaceholder: '',
+        }
+    }
+
+    componentWillMount() {
+        this.getSingleCommentData();
+    }
+
+    getSingleCommentData() {
+        Fetch.requestPost({
+            url: DetailComment,
+            info: 'commentId='+this.props.match.params.id,
+            timeOut: 3000,
+        }).then (
+            data => {
+                if (data.status == 0) {
+                    this.setState({
+                        singleComment: data.resultBean,
+                        isNowUserLikeThisComment: data.resultBean.isNowUserLikeThisComment,
+                        initLikeTotal: data.resultBean.like,
+                        likeTotal: data.resultBean.like,
+                        createUserDetail: data.resultBean.createUserDetail,
+                        isSame: data.resultBean.isSame,
+                        replyPlaceholder: data.resultBean.createUserDetail.userName,
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
+    handleDeleteComment = (commentId) => {
+        Fetch.requestPost({
+            url: DeleteComment,
+            info: 'commentId='+commentId,
+            timeOut: 3000,
+        }).then(
+            data => {
+                if (data.status == 0) {
+                    message.success('评论删除成功');
+                    window.history.back();
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
+    addReplyCommentData(replyId) {
+        Fetch.requestPost({
+            url: AddReply,
+            info: 'replyBody='+this.state.replyBody+'&replyCommentId='+this.props.match.params.id
+                    +'&reverseReplyId='+replyId,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    message.success('回复成功');
+                    emitterReply.emit("refreshReply", "回复成功");
+                    this.setState({
+                        replyBody: '',
+                    })
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+                this.setState({
+                    submitting: false,
+                })
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+            this.setState({
+                submitting: false,
+            })
+        });
     }
 
     handleShowActionSheet = () => {
         let BUTTONS = ['回复', '举报', '取消'];   // ordinnary
-        // BUTTONS = ['回复', '删除', '取消']; // my
-        ActionSheet.showActionSheetWithOptions({
-            options: BUTTONS,
-            cancelButtonIndex: BUTTONS.length - 1,
-            maskClosable: true,
-        },
-        (buttonIndex) => {
-            if (buttonIndex == 0) {
-                // prompt('defaultValue', '', [
-                //     { text: '取消' },
-                //     { text: '回复', onPress: value => console.log(`输入的内容:${value}`) },
-                // ], 'default', '100')
-                this.setState({
-                    visible: true,
-                });
-            } else if (buttonIndex == 1) {
-                this.props.history.push('/mobile/forum/report/'+2);
-            }
+        if (this.state.isSame) {
+            BUTTONS = ['回复', '删除', '取消']; // my 因为点击的事件都变了, 所以得重新写一个
+            ActionSheet.showActionSheetWithOptions({
+                options: BUTTONS,
+                cancelButtonIndex: BUTTONS.length - 1,
+                destructiveButtonIndex: BUTTONS.length - 2,
+                maskClosable: true,
+            },
+            (buttonIndex) => {
+                if (buttonIndex == 0) {
+                    this.handleChangeTextAearPlaceholder(this.state.createUserDetail.userName);
+                    this.replyFocusInst.focus();
+                }
+                else if (buttonIndex == 1) ;
+                alert('确定要删除此条评论?', '', [
+                    { text: '取消' },
+                    {
+                        text: '确定',
+                        onPress: () => this.handleDeleteComment(this.props.match.params.id),
+                    },
+                ]);
+            });
+        } else {
+            ActionSheet.showActionSheetWithOptions({
+                options: BUTTONS,
+                cancelButtonIndex: BUTTONS.length - 1,
+                maskClosable: true,
+            },
+            (buttonIndex) => {
+                if (buttonIndex == 0) {
+                    this.handleChangeTextAearPlaceholder(this.state.createUserDetail.userName);
+                    this.replyFocusInst.focus();
+                } else if (buttonIndex == 1) {
+                    this.props.history.push('/mobile/forum/report/'+2);
+                }
+            });
+        }
+    }
+
+    handleChangeLikeForComment = () => {
+        const num = this.state.isNowUserLikeThisComment ? -1 : 1;
+        this.setState({
+            isNowUserLikeThisComment: !this.state.isNowUserLikeThisComment,
+            likeTotal: this.state.likeTotal + num,
+        }, () => this.updateLikeCommentRealTime());
+    }
+
+    updateLikeCommentRealTime() {
+        // 不实时更新, 导致数据没有及时更新而导致显示bug...
+        // 和detailPost中的comment冲突..
+        const like = this.state.isNowUserLikeThisComment ? 1 : 0;
+        handleChangeLike({
+            type: 'comment',
+            id: this.props.match.params.id,
+            uid: 2,
+            like: like,
         });
     }
 
-    handleOk = () => {
+    handleChangeReplyBody= (value) => {
         this.setState({
-            visible: false,
-        });
-    };
-    
-    handleCancel = () => {
-        this.setState({
-            visible: false,
-        });
-    };
-
-    handleChangeTextArea = (e) => {
-        this.setState({
-            replyBody: e.target.value,
+            replyBody: value,
         })
     }
 
+    handlePublishReply = (replyId) => {
+        this.setState({
+            submitting: true,
+        }, () => this.addReplyCommentData(replyId));
+    }
+
+    handleChangeTextAearPlaceholder(value) {
+        console.log(value);
+        this.setState({
+            replyPlaceholder: value,
+        })
+    }
+
+    // 不能提前终止渲染, 也就是createUserDetail这个必须单独取出来
+    // 不能超过两层..
 	render() {
+        const { singleComment, createUserDetail } = this.state;
+        // console.log(this.state.replyBody);
 		return(
             <div>
                 <NavBar
@@ -138,35 +549,41 @@ export default class MobileDetailComment extends React.Component{
                     rightContent={<Icon key="1" type="ellipsis" style={{ fontSize: 25 }} onClick={this.handleShowActionSheet}/>}
                 >回帖</NavBar>
                 
-                <div style={{ backgroundColor: '#ffffff', padding: 10 }} onClick={this.handleShowActionSheet}>
+                <div style={{ backgroundColor: '#ffffff', padding: 10 }}>
                     <div>
-                        <Avatar src={this.state.avatar} style={{ height: 25, width: 25}}/>
-                        <a style={{ paddingLeft: 5, fontSize: 14 }}>{this.state.userName}</a>
+                        <Avatar src={createUserDetail.avatar} style={{ height: 25, width: 25}}/>
+                        <a style={{ paddingLeft: 5, fontSize: 14 }}>{createUserDetail.userName}</a>
                     </div>
-                    <div style={{ paddingLeft: 30 }}>愿所有的后会无期，都是他日的别来无恙</div>
+                    <div style={{ paddingLeft: 30 }} onClick={this.handleShowActionSheet}>{singleComment.commentBody}</div>
                     <span style={{ paddingLeft: 30 }}>
-                        <span style={{ color: '#B5B5B5', fontSize: 12 }}>{this.state.createTime}</span>
-                        <span style={{ color: '#B5B5B5', float: 'right'}}><Icon type="like" theme={this.state.type == 1 ? 'filled' : 'outlined'} /> 5</span>
+                        <span style={{ color: '#B5B5B5', fontSize: 12 }} onClick={this.handleShowActionSheet}>{singleComment.createTime}</span>
+                        <span style={{ color: '#B5B5B5', float: 'right'}} onClick={this.handleChangeLikeForComment}>
+                            <Icon type="like" theme={this.state.isNowUserLikeThisComment ? 'filled' : 'outlined'} /> {this.state.likeTotal}
+                        </span>
                     </span>
                 </div>
-                <MobileReplyList showActionSheet={this.handleShowActionSheet}/>
-                <div className="postPagination" style={{ marginTop: 5}}>
-                    <Pagination />
-                </div>
-                <Modal
-                    visible={this.state.visible}
-                    onOk={this.handleOk}
-                    onCancel={this.handleCancel}
-                    okText="发送"
-                    cancelText="取消"
-                    okButtonProps={{ disabled: false }}
-                    cancelButtonProps={{ disabled: false }}
-                >
-                    <TextArea autoSize allowClear style={{ width: 290 }} value={this.state.replyBody}
-                        onChange={this.handleChangeTextArea}
+                <div style={{ marginTop: 5 }}>
+                    <TextareaItem
+                        title={
+                            <Button type="primary" size="small" onClick={() => this.handlePublishReply(-1)} 
+                                disabled={this.state.replyBody == '' ? true : false } loading={this.state.submitting}
+                            > 发送 </Button>
+                        }
+                        placeholder={`回复 ${this.state.replyPlaceholder}`}
+                        data-seed="logId"
+                        autoHeight
+                        value={this.state.replyBody}
+                        onChange={this.handleChangeReplyBody}
+                        ref={el => this.replyFocusInst = el}
+                        style={{ fontSize: 14 }}
                     />
-                </Modal>
+                </div>
+                <MobileReplyList commentId={this.props.match.params.id} 
+                    handleChangeTextAearPlaceholder={this.handleChangeTextAearPlaceholder}
+                    handlePublishReply={this.handlePublishReply}
+                    replyFocusInst={this.replyFocusInst}
+                />
             </div>
 		);
-	}
+    }
 }

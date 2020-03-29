@@ -22,7 +22,8 @@
 		a.isGreat,
 		a.isHot,
 		a.isHead,
-		a.isEffective
+		a.isEffective,
+		a.firstImg,
 	</sql>
 
     <!-- 添加post -->
@@ -44,6 +45,7 @@
             <if test="post.isHot != null">isHot,</if>
             <if test="post.isHead != null">isHead,</if>
             <if test="post.isEffective != null">isEffective,</if>
+            <if test="post.firstImg != null">firstImg,</if>
         </trim>
         values
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -62,6 +64,7 @@
             <if test="post.isHot != null">#{post.isHot},</if>
             <if test="post.isHead != null">#{post.isHead},</if>
             <if test="post.isEffective != null">#{post.isEffective},</if>
+            <if test="post.firstImg != null">#{post.firstImg},</if>
         </trim>
     </insert>
 
@@ -84,6 +87,7 @@
             <if test="post.isHot != null">isHot=#{post.isHot},</if>
             <if test="post.isHead != null">isHead=#{post.isHead},</if>
             <if test="post.isEffective != null">isEffective=#{post.isEffective},</if>
+            <if test="post.firstImg != null">firstImg=#{post.firstImg},</if>
         </set>
         WHERE postId = #{post.postId};
     </update>

@@ -28,6 +28,9 @@ public class Post {
     private Integer isHead;
     private Integer isEffective;
 
+    // 3.26 新加的字段
+    private String firstImg;
+
     public Long getPostId() {
         return postId;
     }
@@ -146,5 +149,13 @@ public class Post {
 
     public void setIsEffective(Integer isEffective) {
         this.isEffective = isEffective;
+    }
+
+    public String getFirstImg() {
+        return firstImg;
+    }
+
+    public void setFirstImg(String firstImg) {
+        this.firstImg = firstImg;
     }
 }

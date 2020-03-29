@@ -4,8 +4,12 @@ import com.example.acm.common.ResultBean;
 import com.example.acm.common.ResultCode;
 import com.example.acm.common.SysConst;
 import com.example.acm.config.RedisComponent;
+import com.example.acm.entity.Comment;
+import com.example.acm.entity.Post;
 import com.example.acm.entity.Reply;
 import com.example.acm.entity.User;
+import com.example.acm.service.CommentService;
+import com.example.acm.service.PostService;
 import com.example.acm.service.ReplyService;
 import com.example.acm.service.UserService;
 import com.example.acm.service.deal.ReplyDealService;
@@ -32,6 +36,12 @@ public class ReplyDealServiceImpl implements ReplyDealService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PostService postService;
+
+    @Autowired
+    private CommentService commentService;
 
     // 点赞操作的
     @Autowired
@@ -169,8 +179,15 @@ public class ReplyDealServiceImpl implements ReplyDealService {
 
             if (!list.isEmpty()) {
                 for (Map<String, Object> mapTemp : list) {
+                    // 这个是用于判断当前这回复是不是登录人员写的, 是的话行为操作不一样(比如可以删除, 不能举报, 只针对于移动端)
+                    // 评论和回复都是不能修改, 只能删除和新增...
                     mapTemp.put("isSame", user.getUserId() == (Long)mapTemp.get("createUser"));
-                    // 这个是用于判断当前这回复是不是登录管理员写的, 如果是那么他就可以修改他回复
+
+                    // 这个是用于楼主信息, 用于移动端标明楼主标签, 要一层层下去找楼主..
+                    Comment rComment = commentService.findCommentListByCommentId((Long)mapTemp.get("replyCommentId")).get(0);
+                    Post rPost =  postService.findPostListByPostId(rComment.getReplyPostId()).get(0);
+                    mapTemp.put("floorOwnerUserId", rPost.getCreateUser());
+
 
 //                    // 还是需要保存一下Id值 用于展示个人信息
 //                    mapTemp.put("userId", mapTemp.get("createUser"));

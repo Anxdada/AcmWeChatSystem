@@ -61,8 +61,9 @@ public interface CommentDealService {
      * 这个是为了解决一个bug, 删除表格一个元素后, 实际的记录还在, 当点修改时存来的记录就是已经删除的了
      * 所以修改需要通过id重新读取信息
      *
+     * @param user 操作的用户, 手机端判断楼主需要的信息
      * @param commentId 评论Id
      * @return
      */
-    public ResultBean detailComment(long commentId);
+    public ResultBean detailComment(User user, long commentId);
 }

@@ -18,9 +18,10 @@ public interface PostDealService {
      * @param postTitle 帖子标题
      * @param postTag 帖子的标签(二进制)
      * @param postBody 帖子内容
+     * @param firstImg 列表展示的小图
      * @return 结果
      */
-    public ResultBean addPost(User user, String postTitle, int postTag, String postBody);
+    public ResultBean addPost(User user, String postTitle, int postTag, String postBody, String firstImg);
 
     /**
      * 普通管理员可删除, 用户可删除本身的帖子
@@ -44,10 +45,11 @@ public interface PostDealService {
      * @param isHead 置顶
      * @param isGreat 精
      * @param isHot 热
+     * @param firstImg 小图
      * @return 结果
      */
     public ResultBean updatePost(User user, long postId, String postTitle, int postTag, String postBody,
-                                    int isHead, int isGreat, int isHot);
+                                    int isHead, int isGreat, int isHot, String firstImg);
 
     /**
      *
@@ -71,8 +73,9 @@ public interface PostDealService {
      * 这个是为了解决一个bug, 删除表格一个元素后, 实际的记录还在, 当点修改时存来的记录就是已经删除的了
      * 所以修改需要通过id重新读取信息
      *
+     * @param user 当前的登录用户, 用户判定是否可以修改
      * @param postId 帖子Id
      * @return
      */
-    public ResultBean detailPost(long postId);
+    public ResultBean detailPost(User user, long postId);
 }

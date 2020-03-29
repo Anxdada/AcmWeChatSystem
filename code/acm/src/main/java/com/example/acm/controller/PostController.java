@@ -2,7 +2,9 @@ package com.example.acm.controller;
 
 import com.example.acm.common.ResultBean;
 import com.example.acm.common.ResultCode;
+import com.example.acm.entity.Post;
 import com.example.acm.entity.User;
+import com.example.acm.service.PostService;
 import com.example.acm.service.UserService;
 import com.example.acm.service.deal.OnDutyDealService;
 import com.example.acm.service.deal.PostDealService;
@@ -36,6 +38,9 @@ public class PostController extends BaseController {
     private PostDealService postDealService;
 
     @Autowired
+    private PostService postService;
+
+    @Autowired
     private UserService userService;
 
 
@@ -44,6 +49,7 @@ public class PostController extends BaseController {
     public ResultBean addPost(@RequestParam(value = "postTitle", defaultValue = "", required = false) String postTitle,
                               @RequestParam(value = "postTag", defaultValue = "-1", required = false) int postTag,
                               @RequestParam(value = "postBody", defaultValue = "", required = false) String postBody,
+                              @RequestParam(value = "firstImg", defaultValue = "", required = false) String firstImg,
                               HttpServletRequest request, HttpServletResponse response) {
 //        System.out.println("xiexie");
 //        System.out.println(postTitle);
@@ -57,7 +63,7 @@ public class PostController extends BaseController {
             user.setUserId(longTwo);
         }
 
-        return postDealService.addPost(user, postTitle, postTag,  postBody);
+        return postDealService.addPost(user, postTitle, postTag,  postBody, firstImg);
 
     }
 
@@ -87,6 +93,7 @@ public class PostController extends BaseController {
                                  @RequestParam(value = "isHead", defaultValue = "0", required = false) int isHead,
                                  @RequestParam(value = "isGreat", defaultValue = "0", required = false) int isGreat,
                                  @RequestParam(value = "isHot", defaultValue = "0", required = false) int isHot,
+                                 @RequestParam(value = "firstImg", defaultValue = "", required = false) String firstImg,
                                  HttpServletRequest request, HttpServletResponse response) {
 
 //        System.out.println("xiexie");
@@ -100,7 +107,7 @@ public class PostController extends BaseController {
             user.setUserId(longTwo);
         }
 
-        return postDealService.updatePost(user, postId, postTitle, postTag, postBody, isHead, isGreat, isHot);
+        return postDealService.updatePost(user, postId, postTitle, postTag, postBody, isHead, isGreat, isHot, firstImg);
 
     }
 
@@ -142,12 +149,76 @@ public class PostController extends BaseController {
 
 //        System.out.println(postId);
 
+        User user = getUserIdFromSession(request);
+        if (user == null) {
+            // 如果忘记传头部信息过来, 默认设置为超级管理员的改动
+            user = new User();
+            user.setUserId(longTwo);
+        }
+
         try {
             // log
-            return postDealService.detailPost(postId);
+            return postDealService.detailPost(user, postId);
         } catch (Exception e) {
             // log
             return new ResultBean(ResultCode.SYSTEM_FAILED);
         }
+    }
+
+    // 更新帖子的浏览量 和 点赞数
+    // 前者只能在手机端做, 后者使用redis储存
+    // 因为点赞后台和手机都能做, 所以通过view的值判断是那个传来的.
+    @PostMapping("/updatePostViewAndLike")
+    @ResponseBody
+    public ResultBean updateNewsViewAndLike(@RequestParam(value = "postId", required = true) long postId,
+                                            @RequestParam(value = "views", required = true) int views,
+                                            @RequestParam(value = "like", required = true) int like,
+                                            @RequestParam(value = "uid", defaultValue = "2", required = false) long uid,
+                                            HttpServletRequest request, HttpServletResponse response) {
+
+        try {
+
+            // 这个uid 好像就能于请求来的这个用户, 好像并不用传, 直接在请求中获取就好了
+            // 后面看一下是否真是这样, 先保留这个参数
+            User user = getUserIdFromSession(request);
+            if (user != null) {
+                // 保留参数
+                uid = user.getUserId();
+            }
+
+            List<Post> listPost = postService.findPostListByPostId(postId);
+
+            if (listPost.isEmpty()) {
+                return new ResultBean(ResultCode.SQL_NULL_RECODE, "不存在该帖子");
+            }
+
+            Post post = listPost.get(0);
+            int oldLike = post.getLike();
+
+            // 更新点赞
+            String key = "post" + postId;
+            redisComponent.setTypeUidLike("post", postId, uid, like);
+            int newLike = (int)redisComponent.getSizeSetForKey(key);
+
+//            System.out.println(views);
+//            System.out.println(newLike);
+
+            // 从电脑端的需求, 则不更新数据库, 优化一部分需求
+            // 但是点赞数也需要更新, 所以加一个条件共同限制更新, 注意mysql只维护了点赞数的多少
+            if (views == -1 && oldLike == newLike) return new ResultBean(ResultCode.SUCCESS);
+
+            post.setViews(views);
+            post.setLike(newLike);
+
+            postService.updatePost(post);
+
+            return new ResultBean(ResultCode.SUCCESS);
+
+        } catch (Exception e) {
+            // log
+            e.printStackTrace();
+            return new ResultBean(ResultCode.SYSTEM_FAILED, String.valueOf(e));
+        }
+
     }
 }

@@ -301,7 +301,6 @@ class AddAnnouncementEditView extends React.Component {
         super(props);
         this.state = {
             announcementTitle: '',
-            editor: '',
             editorContent: '',
             editorContentText: '',
         }
@@ -311,7 +310,6 @@ class AddAnnouncementEditView extends React.Component {
         this.state.editor.txt.clear()
         this.setState({
             announcementTitle: '',
-            editor: '',
             editorContent: '',
             editorContentText: '',
         })

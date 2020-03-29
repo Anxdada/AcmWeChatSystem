@@ -12,6 +12,12 @@ const { TextArea } = Input;
 
 var emitter = new EventEmitter2()
 
+
+// 判断第一张是否换图或者删除.. 
+function checkFirstImgIsExist(s, substr) {
+    return s.indexOf(substr);
+}
+
 function getString(s) {
     s = s.replace(/\+/g, "%2B");
     s = s.replace(/&/g, "%26");
@@ -191,7 +197,6 @@ class AddNewsEditView extends React.Component {
         super(props);
         this.state = {
             newsTitle: '',
-            editor: '',
             editorContent: '',
             editorContentText: '',
             firstImg: '',
@@ -202,7 +207,6 @@ class AddNewsEditView extends React.Component {
         this.state.editor.txt.clear()
         this.setState({
             newsTitle: '',
-            editor: '',
             editorContent: '',
             editorContentText: '',
             firstImg: '',
@@ -265,11 +269,15 @@ class AddNewsEditView extends React.Component {
     
         // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
         editor.customConfig.onchange = html => {
+            // 检测第一张图是否被替换(删除后又上传另一张)或者删除.
+            let res = checkFirstImgIsExist(html, tmpFirstImg);
+            if (res == -1) tmpFirstImg = '';
             this.setState({
                 editorContent: html,
                 editorContentText: editor.txt.text(),
                 firstImg: tmpFirstImg,
             })
+            // console.log('xierenyi' + this.state.firstImg);
         }
         editor.create()
     }

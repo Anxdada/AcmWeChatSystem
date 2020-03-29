@@ -16,34 +16,51 @@ const { Title, Paragraph, Text } = Typography;
 function getTextString(htmls) {
     let div = document.createElement("div");
     div.innerHTML = htmls;
-    const text = div.textContent || div.innerText || "";
-    return text.substring(0, 50);
+    const text = div.textContent || div.innerText;
+    let i = 0;
+    for (; i < text.length ; ++ i) {
+        if (text[i] != 0) break; 
+        // 去掉前面的空格
+    }
+    return text.substring(i, 53);
 }  // 这样可以只取html元素中的text
 
-class SingleNewsView extends React.Component {
+class NewsBrief extends React.Component {
 
     constructor(props) {
         super(props);
     }
 
     render() {
-        const {item} = this.props;
-        // console.log(item.firstImg);
+
+        const { item } = this.props;
+        const TextNewsBody = getTextString(item.newsBody);
+        // 如果字数不够的, 为了让图片对齐, 补齐一些空格
+        // let spaceNum = 30 - TextNewsBody.length;
+        // if (spaceNum < 0) spaceNum = 0;
+        // // 空格字符串没法占位, 因为html 中再多空格只显示一个..
+        // // console.log(spaceNum);
+        
+        const FirstImgComponent = <div style={{ padding: 5 }}>
+            <img style={{ height: 70, width: 85 }} src={item.firstImg} alt="小图" />
+        </div>
+
         return (
-            <div onClick={() => this.props.history.push('/mobile/news/detail/'+item.newsId)}>
-                <p style={{ height: 1 }} />
-                <span style={{ fontSize: 16, color: '#000000' }}> {item.newsTitle} </span>
-                <div style={{ marginTop: 10 }}>
-                    <p style={{ fontSize: 13 }}> {getTextString(item.newsBody)}... </p>
+            <div style={{ backgroundColor: '#ffffff' }} >
+                <div style={{ paddingTop: 5 }}>
+                    <span style={{ fontSize: 16, color: '#000000', fontWeight: 'bold' }}>{item.newsTitle}</span>
+                </div>
+                <div style={{ display: '-webkit-box', display: 'flex' }} 
+                    onClick={() => this.props.history.push('/mobile/news/detail/'+item.newsId)}>
+                    <div style={{ marginBottom: 8, width: 500 }}>
+                        <p style={{ fontSize: 9, color: '#828282', marginTop: 7 }}>{TextNewsBody}...</p>
+                        <span style={{ fontSize: 3, color: '#828282'}}>{item.createUser} {moment(item.createTime).fromNow()}</span>
+                    </div>
                     {
-                        item.firstImg == undefined ? null :
-                        <img src={item.firstImg} style={{ width: 70, height: 50}}/>
+                        item.firstImg == undefined ? null : FirstImgComponent
                     }
                 </div>
-                <div style={{ marginTop: 6 }} >
-                    <span style={{ fontSize: 3, color: '#828282'}}>{item.createUser} {moment(item.createTime).fromNow()}</span>
-                </div>
-                <Divider style={{ marginTop: 15, marginBottom: 0 }}/>
+                <Divider style={{ marginTop: 0, marginBottom: 0}}/>
             </div>
         );
     }
@@ -164,6 +181,13 @@ class ShowNewsList extends React.Component {
         }, () => this.getData());
     }
 
+    handlePageChange = (page) => {
+        // console.log(page);
+        this.setState({ 
+            nowPage: page 
+        }, () => this.getData());
+    }
+
     render() {
 
         // const data = this.state.allTag.map((item) => 
@@ -218,7 +242,7 @@ class ShowNewsList extends React.Component {
                     <div style={{ marginLeft: 15, marginRight: 15}}>
                     {
                         this.state.allNews.map((item) => 
-                            <SingleNewsView item={item} key={item.newsId} {...this.props}/>
+                            <NewsBrief item={item} key={item.newsId} {...this.props}/>
                         )
                     }
                     </div>

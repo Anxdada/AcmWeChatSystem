@@ -89,8 +89,8 @@ class PostTable extends React.Component {
             },
             {
                 title: '创建人',
-                dataIndex: 'createUser',
-                key: 'createUser',
+                dataIndex: 'createRealName',
+                key: 'createRealName',
                 align: 'center',
             }, 
             {

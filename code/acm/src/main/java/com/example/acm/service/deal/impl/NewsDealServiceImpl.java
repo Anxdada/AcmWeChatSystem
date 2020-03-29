@@ -74,7 +74,7 @@ public class NewsDealServiceImpl implements NewsDealService {
             news.setUpdateTime(new Date());
             news.setIsPublish(isPublish);
             news.setIsEffective(SysConst.LIVE);
-            if (!StringUtil.isNull(firstImg)) news.setFirstImg(firstImg);
+            news.setFirstImg(firstImg);  // 更新的空就是删除掉了.. 所以逻辑上不用判断了..
             news.setView(0);
 
             newsService.addNews(news);
@@ -128,9 +128,10 @@ public class NewsDealServiceImpl implements NewsDealService {
      * @param newsBody 内容
      * @param newsTagId 类别
      * @param isPublish 是否发布
+     * @param firstImg 列表展示的小图
      * @return
      */
-    public ResultBean updateNews(User user, long newsId, String newsTitle, String newsBody, long newsTagId, int isPublish) {
+    public ResultBean updateNews(User user, long newsId, String newsTitle, String newsBody, long newsTagId, int isPublish, String firstImg) {
         try {
 
             List<News> listNews = newsService.findNewsListByNewsId(newsId);
@@ -150,6 +151,8 @@ public class NewsDealServiceImpl implements NewsDealService {
             news.setUpdateTime(new Date());
             news.setIsPublish(isPublish);
             news.setIsEffective(SysConst.LIVE);
+
+            if (!StringUtil.isNull(firstImg)) news.setFirstImg(firstImg);
 
             newsService.updateNews(news);
 
@@ -223,13 +226,19 @@ public class NewsDealServiceImpl implements NewsDealService {
                     List<User> listUsers = userService.findUserListByUserId((Long)mapTemp.get("updateUser"));
                     User tUs = null;
                     if (listUsers.size() > 0) tUs = listUsers.get(0);
-                    if (tUs != null) mapTemp.put("updateUser", tUs.getRealName());
+                    if (tUs != null) {
+                        mapTemp.put("updateRealName", tUs.getRealName());  // 后端需要真实姓名
+                        mapTemp.put("updateUserName", tUs.getUserName());  // 手机端需要用户名
+                    }
 
 
                     listUsers = userService.findUserListByUserId((Long)mapTemp.get("createUser"));
                     tUs = null;
                     if (listUsers.size() > 0) tUs = listUsers.get(0);
-                    if (tUs != null) mapTemp.put("createUser", tUs.getRealName());
+                    if (tUs != null) {
+                        mapTemp.put("createRealName", tUs.getRealName());  // 后端需要真实姓名
+                        mapTemp.put("createUserName", tUs.getUserName());  // 手机端需要用户名
+                    }
 
                     mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd HH:mm:ss"));
                     mapTemp.put("updateTime", DateUtil.convDateToStr((Date) mapTemp.get("updateTime"), "yyyy-MM-dd HH:mm:ss"));
@@ -273,14 +282,18 @@ public class NewsDealServiceImpl implements NewsDealService {
             List<User> listUsers = userService.findUserListByUserId((Long)mapTemp.get("updateUser"));
             User tUs = null;
             if (listUsers.size() > 0) tUs = listUsers.get(0);
-            if (tUs != null) mapTemp.put("updateUser", tUs.getRealName());
+            if (tUs != null) {
+                mapTemp.put("updateRealName", tUs.getRealName());  // 后端需要真实姓名
+                mapTemp.put("updateUserName", tUs.getUserName());  // 手机端需要用户名
+            }
 
 
             listUsers = userService.findUserListByUserId((Long)mapTemp.get("createUser"));
             tUs = null;
             if (listUsers.size() > 0) tUs = listUsers.get(0);
             if (tUs != null) {
-                mapTemp.put("createUser", tUs.getRealName());
+                mapTemp.put("createRealName", tUs.getRealName());  // 后端需要真实姓名
+                mapTemp.put("createUserName", tUs.getUserName());  // 手机端需要用户名
                 mapTemp.put("avatar", tUs.getAvatar());
             }
 

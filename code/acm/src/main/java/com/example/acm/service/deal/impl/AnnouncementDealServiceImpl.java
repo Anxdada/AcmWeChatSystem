@@ -259,13 +259,19 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
                     List<User> listUsers = userService.findUserListByUserId((Long)mapTemp.get("updateUser"));
                     User tUs = null;
                     if (listUsers.size() > 0) tUs = listUsers.get(0);
-                    if (tUs != null) mapTemp.put("updateUser", tUs.getRealName());
+                    if (tUs != null) {
+                        mapTemp.put("updateRealName", tUs.getRealName());  // 后端需要真实姓名
+                        mapTemp.put("updateUserName", tUs.getUserName());  // 手机端需要用户名
+                    }
 
 
                     listUsers = userService.findUserListByUserId((Long)mapTemp.get("createUser"));
                     tUs = null;
                     if (listUsers.size() > 0) tUs = listUsers.get(0);
-                    if (tUs != null) mapTemp.put("createUser", tUs.getRealName());
+                    if (tUs != null) {
+                        mapTemp.put("createRealName", tUs.getRealName());  // 后端需要真实姓名
+                        mapTemp.put("createUserName", tUs.getUserName());  // 手机端需要用户名
+                    }
 
                     mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd HH:mm:ss"));
                     mapTemp.put("updateTime", DateUtil.convDateToStr((Date) mapTemp.get("updateTime"), "yyyy-MM-dd HH:mm:ss"));
@@ -313,14 +319,18 @@ public class AnnouncementDealServiceImpl implements AnnouncementDealService {
             List<User> listUsers = userService.findUserListByUserId((Long)mapTemp.get("updateUser"));
             User tUs = null;
             if (listUsers.size() > 0) tUs = listUsers.get(0);
-            if (tUs != null) mapTemp.put("updateUser", tUs.getRealName());
+            if (tUs != null) {
+                mapTemp.put("updateRealName", tUs.getRealName());  // 后端需要真实姓名
+                mapTemp.put("updateUserName", tUs.getUserName());  // 手机端需要用户名
+            }
 
 
             listUsers = userService.findUserListByUserId((Long)mapTemp.get("createUser"));
             tUs = null;
             if (listUsers.size() > 0) tUs = listUsers.get(0);
             if (tUs != null) {
-                mapTemp.put("createUser", tUs.getRealName());
+                mapTemp.put("createRealName", tUs.getRealName());  // 后端需要真实姓名
+                mapTemp.put("createUserName", tUs.getUserName());  // 手机端需要用户名
                 mapTemp.put("avatar", tUs.getAvatar());
             }
 

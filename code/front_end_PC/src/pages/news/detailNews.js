@@ -21,9 +21,9 @@ class DetailNews extends React.Component {
             newsBody: '',
             newsTagName: '',
             newsTagColor: '',
-            createUser: '',
+            createRealName: '',
             createTime:'',
-            updateUser: '',
+            updateRealName: '',
             updateTime: '',
             isPublish: '',
             view: 0,
@@ -72,9 +72,9 @@ class DetailNews extends React.Component {
                         newsBody: data.resultBean.newsBody,
                         newsTagName: data.resultBean.newsTagName,
                         newsTagColor: data.resultBean.newsTagColor,
-                        createUser: data.resultBean.createUser,
+                        createRealName: data.resultBean.createRealName,
                         createTime:data.resultBean.createTime,
-                        updateUser: data.resultBean.updateUser,
+                        updateRealName: data.resultBean.updateRealName,
                         updateTime: data.resultBean.updateTime,
                         isPublish: data.resultBean.isPublish,
                         view: data.resultBean.view,
@@ -118,12 +118,12 @@ class DetailNews extends React.Component {
 
         return (
             <Card title={this.state.newsTitle}>
-                <strong>创建人:&nbsp;&nbsp;{this.state.createUser}</strong>
+                <strong>创建人:&nbsp;&nbsp;{this.state.createRealName}</strong>
                 <br />
                 <strong>创建时间:</strong>&nbsp;&nbsp;
                 <DatePicker style={{ width: 200 }} format="YYYY-MM-DD HH:mm:ss" value={moment(this.state.createTime)} disabled />
                 <br /><br />
-                <strong>更新人:&nbsp;&nbsp;{this.state.updateUser}</strong>
+                <strong>更新人:&nbsp;&nbsp;{this.state.updateRealName}</strong>
                 <br />
                 <strong>更新时间:</strong>&nbsp;&nbsp;
                 <DatePicker style={{ width: 200 }} format="YYYY-MM-DD HH:mm:ss" value={moment(this.state.updateTime)} disabled />

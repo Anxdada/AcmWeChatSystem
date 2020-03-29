@@ -77,14 +77,18 @@ export const DetailPostUrl = localhost+"/post/detailPost";
 export const AddComment = localhost+"/comment/addComment";
 export const DeleteComment = localhost+"/comment/deleteComment";
 export const SelectComment = localhost+"/comment/selectComment";
+// 手机端需要
+export const DetailComment = localhost+"/comment/detailComment";
 // 回复
 export const AddReply = localhost+"/reply/addReply";
 export const DeleteReply = localhost+"/reply/deleteReply";
 export const SelectReply = localhost+"/reply/selectReply";
 
 // 评论和回复的点赞 就同一写在reply下面了. 反正是公用的记住
-export const ChangeLike = localhost+"/reply/changeLike";
-// 用于手机端用户操作的
+export const ChangeCommentReplyLike = localhost+"/reply/changeCommentReplyLike";
+// 用于手机端用户主操作的(电脑端也可以用)
+export const UpdatePostViewAndLike = localhost+"/post/updatePostViewAndLike";
+
 
 
 // 友链相关

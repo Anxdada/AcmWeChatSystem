@@ -44,7 +44,7 @@ public interface NewsDealService {
      * @param isPublish 是否发布
      * @return
      */
-    public ResultBean updateNews(User user, long newsId, String newsTitle, String newsBody, long newsTagId, int isPublish);
+    public ResultBean updateNews(User user, long newsId, String newsTitle, String newsBody, long newsTagId, int isPublish, String firstImg);
 
 
     /**

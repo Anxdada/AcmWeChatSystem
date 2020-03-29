@@ -11,6 +11,12 @@ import Fetch from './../../fetch';
 
 const { Option } = Select;
 
+
+// 判断第一张是否换图或者删除.. 
+function checkFirstImgIsExist(s, substr) {
+    return s.indexOf(substr);
+}
+
 function getString(s) {
     s=s.replace(/\+/g, "%2B");
     s=s.replace(/&/g, "%26");
@@ -127,7 +133,7 @@ class ModifyNewsPublishView extends React.Component {
             url: UpdateNews,
             info: 'newsId='+this.state.newsId+'&newsTitle='+this.props.newsTitle
                     +'&newsBody='+encodeURI(getString(this.props.editorContent))
-                    +'&newsTagId='+this.state.newsTagId+'&isPublish='+type,
+                    +'&newsTagId='+this.state.newsTagId+'&isPublish='+type+'&firstImg='+this.props.firstImg,
             timeOut: 3000,
         }).then(
             data => {
@@ -206,6 +212,7 @@ class ModifyNewsEditView extends React.Component {
             editor: '',
             editorContent: '',
             editorContentText: '',
+            firstImg: '',
         }
     }
 
@@ -224,6 +231,7 @@ class ModifyNewsEditView extends React.Component {
                     this.setState({
                         newsTitle: data.resultBean.newsTitle,
                         editorContent: this.state.editor.txt.html(data.resultBean.newsBody),
+                        firstImg: data.resultBean.firstImg,
                     });
                 }
                 else {
@@ -252,6 +260,9 @@ class ModifyNewsEditView extends React.Component {
 
 
     render() {
+
+        const {editorContent, editorContentText, firstImg } = this.state;
+
         return (
           <div style={{ flex: 1, padding: "10px" }}>
             <Row>
@@ -265,8 +276,8 @@ class ModifyNewsEditView extends React.Component {
                     </Card>
                 </Col>
                 <Col span={6} >
-                    <ModifyNewsPublishView id={this.props.id} editorContent={this.state.editorContent} 
-                        editorContentText={this.state.editorContentText} newsTitle={this.state.newsTitle}
+                    <ModifyNewsPublishView id={this.props.id} newsTitle={this.state.newsTitle} 
+                        editorContent={editorContent} editorContentText={editorContentText} firstImg={firstImg}
                     />
                 </Col>
             </Row>
@@ -274,27 +285,39 @@ class ModifyNewsEditView extends React.Component {
           </div>
         );
       }
+
       componentDidMount() {
         const elem = this.refs.editorElem
         const editor = new E(elem)
-        this.setState({ 
+        this.setState({
             editor: editor,
         })
+
+        // 只要第一张图
+        let tmpFirstImg = this.state.firstImg;
+
         editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
         editor.customConfig.uploadFileName = 'myFileName';
         editor.customConfig.uploadImgServer = UploadImg;
         editor.customConfig.uploadImgHooks = { 
             customInsert: function (insertImg, result, editor) { 
-                var url =result.data; insertImg(url); 
-            } 
+                var url = result.data;
+                insertImg(url);
+                if (tmpFirstImg == '') tmpFirstImg = url;
+            }
         };
     
         // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
         editor.customConfig.onchange = html => {
+            // 检测第一张图是否被替换(删除后又上传另一张)或者删除.
+            let res = checkFirstImgIsExist(html, tmpFirstImg);
+            if (res == -1) tmpFirstImg = '';
             this.setState({
                 editorContent: html,
                 editorContentText: editor.txt.text(),
+                firstImg: tmpFirstImg,
             })
+            // console.log('xierenyi' + this.state.firstImg);
         }
         editor.create()
     }

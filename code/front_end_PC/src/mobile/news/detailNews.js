@@ -26,7 +26,7 @@ export default class MobileDetailNews extends React.Component {
             newsBody: '',
             newsTagName: '',
             newsTagColor: '',
-            createUser: '',
+            createUserName: '',
             createTime: '',
             view: 0,
             fromWhere: '',
@@ -55,7 +55,7 @@ export default class MobileDetailNews extends React.Component {
                         newsBody: data.resultBean.newsBody,
                         newsTagName: data.resultBean.newsTagName,
                         newsTagColor: data.resultBean.newsTagColor,
-                        createUser: data.resultBean.createUser,
+                        createUserName: data.resultBean.createUserName,
                         createTime: data.resultBean.createTime,
                         isRegister: data.resultBean.isRegister,
                         view: data.resultBean.view+1,
@@ -115,7 +115,7 @@ export default class MobileDetailNews extends React.Component {
                     </Paragraph>
                     <span style={{fontSize: 5, color: '#B5B5B5' }}>
                         类别: <Tag color={this.state.newsTagColor}>{this.state.newsTagName}</Tag>
-                        <span className="announcer">发布者:{this.state.createUser}</span>
+                        <span className="announcer">发布者:{this.state.createUserName}</span>
                     </span>
                     <WhiteSpace size="sm" />
                     <Icon type="eye" /> {this.state.view} &nbsp;&nbsp;

@@ -19,7 +19,7 @@ export default class Fetch {
                 }
             }, options.timeOut);
 
-            console.log(cookie.load('token'));
+            // console.log(cookie.load('token'));
 
             fetch(options.url, {
                 method: 'POST',
@@ -53,7 +53,7 @@ export default class Fetch {
                 }
             }, options.timeOut);
 
-            console.log(cookie.load('token'));
+            // console.log(cookie.load('token'));
 
             fetch(options.url, {
                 method: 'GET',
