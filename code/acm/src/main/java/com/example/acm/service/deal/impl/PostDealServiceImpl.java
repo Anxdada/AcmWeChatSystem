@@ -7,6 +7,7 @@ import com.example.acm.config.RedisComponent;
 import com.example.acm.entity.Post;
 import com.example.acm.entity.User;
 import com.example.acm.service.CommentService;
+import com.example.acm.service.LabelService;
 import com.example.acm.service.PostService;
 import com.example.acm.service.UserService;
 import com.example.acm.service.deal.PostDealService;
@@ -16,10 +17,7 @@ import com.example.acm.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author xierenyi
@@ -40,6 +38,9 @@ public class PostDealServiceImpl implements PostDealService {
 
     @Autowired
     private RedisComponent redisComponent;
+
+    @Autowired
+    private LabelService labelService;
 
     /**
      * 添加帖子
@@ -131,12 +132,18 @@ public class PostDealServiceImpl implements PostDealService {
             if (!StringUtil.isNull(postTitle)) post.setPostTitle(postTitle);
             if (postTag != -1) post.setPostTag(postTag);
             if (!StringUtil.isNull(postBody)) post.setPostBody(postBody);
-            post.setIsHead(isHead);
-            post.setIsGreat(isGreat);
-            post.setIsHot(isHot);
+            if (isHead != -1) post.setIsHead(isHead);
+            if (isGreat != -1) post.setIsGreat(isGreat);
+            if (isHot != -1) post.setIsHot(isHot);
             post.setUpdateUser(user.getUserId());
             post.setUpdateTime(new Date());
-            post.setFirstImg(firstImg);  // 更新的空就是删除掉了.. 所以逻辑上不用判断了..
+//            System.out.println("xierenyi" + firstImg);
+//            System.out.println(StringUtil.isNull(firstImg));
+            if (firstImg.equals("undefined") || StringUtil.isNull(firstImg)) {
+                post.setFirstImg(null);
+            } else {
+                post.setFirstImg(firstImg);
+            }
 
             postService.updatePost(post);
 
@@ -195,7 +202,7 @@ public class PostDealServiceImpl implements PostDealService {
                     // 查评论数(不包括后面回复评论的, 只在手机端展示列表时需要这个数据)
                     Map<String, Object> mapComment = new HashMap<>();
                     mapComment.put("replyPostId", mapTemp.get("postId"));
-                    mapTemp.put("totComment", commentService.findCommentMapListByQuery(map).size());
+                    mapTemp.put("totComment", commentService.findCommentMapListByQuery(mapComment).size());
 
                     mapTemp.put("isSame", user.getUserId() == (Long)mapTemp.get("createUser"));
                     // 这个是用于判断当前这个帖子是不是登录管理员写的, 如果是那么他就可以修改他的帖子
@@ -248,6 +255,27 @@ public class PostDealServiceImpl implements PostDealService {
             }
 
             Map<String, Object> mapTemp = list.get(0);
+
+            // 移动端获取label数组. 只能在后端做, 手机端因为异步以及布局问题没法实施
+            int postTag = (int)mapTemp.get("postTag");
+            Map<String, Object> mapTag = new HashMap<>();
+            mapTag.put("start", 0);
+            mapTag.put("limit", 100);
+            mapTag.put("isEffective", SysConst.LIVE);
+            List<Map<String, Object>> listAllLabels = labelService.findLabelMapListByQuery(mapTag);
+
+            List<Long> postLabels = new ArrayList<>();
+            for (int i = 0 ; i < listAllLabels.size() ; ++ i) {
+                long flag = (Long)listAllLabels.get(i).get("flag");
+                int tmp = postTag & (1 << flag);
+                if (tmp != 0) {
+                    postLabels.add(flag);
+                }
+            }
+
+            mapTemp.put("postLabel", postLabels);
+
+//            mapTemp.put("postLabel", )
 
             // 判定修改删除(移动端上需要)
             // 可能上线后需要改变一下取登录用户的id的方式.. 先标记

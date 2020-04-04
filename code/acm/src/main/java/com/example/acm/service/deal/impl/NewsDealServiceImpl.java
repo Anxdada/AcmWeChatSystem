@@ -152,7 +152,11 @@ public class NewsDealServiceImpl implements NewsDealService {
             news.setIsPublish(isPublish);
             news.setIsEffective(SysConst.LIVE);
 
-            if (!StringUtil.isNull(firstImg)) news.setFirstImg(firstImg);
+            if (firstImg.equals("undefined") || StringUtil.isNull(firstImg)) {
+                news.setFirstImg(null);
+            } else {
+                news.setFirstImg(firstImg);
+            }
 
             newsService.updateNews(news);
 

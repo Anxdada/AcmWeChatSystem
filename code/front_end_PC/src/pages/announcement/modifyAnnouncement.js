@@ -152,9 +152,8 @@ class ModifyAnnouncementPublishView extends React.Component {
             return ;
         }
 
-        // wangediter 有个bug就是必须聚焦到内容框才能检测出由内容, 不然里面的内容就是无
         if (this.props.editorContentText.length == 0) {
-            message.error('公告内容不能为空或者未点击主编辑框!');
+            message.error('公告内容不能为空!');
             return ;
         }
 
@@ -401,9 +400,11 @@ class ModifyAnnouncementEditView extends React.Component {
             data => {
                 // console.log(data);
                 if (data.status == 0) {
+                    this.state.editor.txt.html(data.resultBean.announcementBody);
                     this.setState({
                         announcementTitle: data.resultBean.announcementTitle,
-                        editorContent: this.state.editor.txt.html(data.resultBean.announcementBody),
+                        editorContent: data.resultBean.announcementBody,
+                        editorContentText: this.state.editor.txt.text(),
                     });
                 }
                 else {

@@ -52,9 +52,9 @@
             <if test="news.updateTime != null">updateTime=#{news.updateTime},</if>
             <if test="news.isPublish != null">isPublish=#{news.isPublish},</if>
             <if test="news.isEffective != null">isEffective=#{news.isEffective},</if>
-            <if test="news.firstImg != null">firstImg=#{news.firstImg},</if>
             <if test="news.view != null">view=#{news.view},</if>
             <if test="news.fromWhere != null">fromWhere=#{news.fromWhere},</if>
+            firstImg=#{news.firstImg},
         </set>
         WHERE newsId = #{news.newsId};
     </update>

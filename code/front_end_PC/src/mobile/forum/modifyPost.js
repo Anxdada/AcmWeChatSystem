@@ -2,7 +2,7 @@ import React from 'react';
 import { Icon, message, notification } from 'antd';
 import { NavBar, TextareaItem, Toast } from 'antd-mobile';
 import E from 'wangeditor';
-import { AddPostUrl, UploadImg } from './../../config/dataAddress';
+import { UpdatePost, UploadImg, DetailPostUrl } from './../../config/dataAddress';
 import Fetch from './../../fetch';
 
 function checkFirstImgIsExist(s, substr) {
@@ -15,7 +15,7 @@ function replaceString(s) {
     return s;
 }
 
-export default class MobileAddPostPage extends React.Component{
+export default class MobileModifyPostPage extends React.Component{
 
     constructor(props) {
         super(props);
@@ -27,7 +27,45 @@ export default class MobileAddPostPage extends React.Component{
         }
     }
 
-    addPostData() {
+    componentWillMount() {
+        this.getPostData();
+    }
+
+    getPostData() {
+        Fetch.requestPost({
+            url: DetailPostUrl,
+            info: 'postId='+this.props.match.params.id,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    this.state.editor.txt.html(data.resultBean.postBody);
+                    this.setState({
+                        postTitle: data.resultBean.postTitle,
+                        editorContent: data.resultBean.postBody,
+                        editorContentText: this.state.editor.txt.text(),
+                        firstImg: data.resultBean.firstImg,
+                    });
+                }
+                else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
+    updatePostData() {
+        // console.log(this.state.firstImg);
         if (this.state.postTitle == 0) {
             message.error('帖子标题不能为空!');
             return ;
@@ -37,22 +75,22 @@ export default class MobileAddPostPage extends React.Component{
             return ;
         }
 
-        // wangediter 有个bug就是必须聚焦到内容框才能检测出由内容, 不然里面的内容就是无
-        // 添加的时候必会点进去, 所以这里可以用
         if (this.state.editorContentText.length == 0) {
             message.error('帖子内容不能为空!');
             return ;
         }
 
+
         Fetch.requestPost({
-            url: AddPostUrl,
-            info: 'postTitle='+this.state.postTitle+'&firstImg='+this.state.firstImg
-                    +'&postBody='+encodeURI(replaceString(this.state.editorContent)),
+            url: UpdatePost,
+            info: 'postId='+this.props.match.params.id+'&postTitle='+this.state.postTitle
+                    +'&postBody='+encodeURI(replaceString(this.state.editorContent))
+                    +'&firstImg='+this.state.firstImg,
             timeOut: 3000,
         }).then(
             data => {
                 if (data.status == 0) {
-                    this.props.history.push('/mobile/forum/publishResult')
+                    this.props.history.push('/mobile/forum/modifyResult/'+this.props.match.params.id);
                 }
                 else {
                     if (data.status < 100) {
@@ -96,6 +134,7 @@ export default class MobileAddPostPage extends React.Component{
         
         // 只要第一张图
         let tmpFirstImg = this.state.firstImg;
+        // console.log(tmpFirstImg);
         editor.customConfig.uploadImgHooks = { 
             customInsert: function (insertImg, result, editor) { 
                 var url =result.data; 
@@ -106,6 +145,7 @@ export default class MobileAddPostPage extends React.Component{
     
         // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
         editor.customConfig.onchange = html => {
+            if (tmpFirstImg == '') tmpFirstImg = this.state.firstImg; 
             // 检测第一张图是否被替换(删除后又上传另一张)或者删除.
             let res = checkFirstImgIsExist(html, tmpFirstImg);
             if (res == -1) tmpFirstImg = '';
@@ -131,7 +171,7 @@ export default class MobileAddPostPage extends React.Component{
                     mode="dark"
                     icon={<Icon type="left" />}
                     onLeftClick={() =>  window.history.back(-1)}
-                    rightContent={<span style={{ fontSize: 13 }} onClick={() => this.addPostData()}>下一步</span>}
+                    rightContent={<span style={{ fontSize: 13 }} onClick={() => this.updatePostData()}>下一步</span>}
                 >发表帖子</NavBar>
                 
                 <TextareaItem

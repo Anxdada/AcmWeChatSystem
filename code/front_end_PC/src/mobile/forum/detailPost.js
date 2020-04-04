@@ -163,7 +163,11 @@ class CommentView extends React.Component {
                 <div style={{ padding: 15}}>
                     <div>
                         <Avatar src={item.createUserDetail.avatar} style={{ height: 25, width: 25}}/>
-                        <a style={{ paddingLeft: 5, fontSize: 14 }}>{item.createUser}</a>
+                        <a style={{ paddingLeft: 5, fontSize: 14 }}>{item.createUserDetail.userName}</a>
+                        {
+                            item.isFloorOwner ? <span style={{ fontSize: 5, color: '#CFCFCF'}}>&nbsp;#楼主</span> :
+                            null
+                        }
                         <span style={{ color: '#B5B5B5', float: 'right'}} onClick={this.handleChangeLikeForComment}><Icon type="like" theme={this.state.isNowUserLikeThisComment ? 'filled' : 'outlined'} /> {this.state.likeTotal}</span>
                         <div style={{ paddingLeft: 30, marginTop: 0 }} onClick={() => this.props.history.push('/mobile/forum/comment/'+item.commentId)} >
                             <span style={{ color: '#B5B5B5', fontSize: 12 }}>{item.floor}楼 {item.createTime}</span><br />
@@ -304,7 +308,7 @@ class CommentList extends React.Component {
                 <div style={{ backgroundColor: '#ffffff' }}>
                     <div style={{ height: 30 }} >
                         <div style={{ padding: 5 }}>
-                        {this.state.allComment.length}条回帖
+                        {this.state.totalPage * this.state.pageSize}条回帖
                         <span style={{ float: 'right'}} onClick={this.handleShowCommentSortActionSheet}>{sortRule}</span>
                         </div>
                     </div>
@@ -404,7 +408,7 @@ export default class MobileDetailPost extends React.Component {
                         isHead: data.resultBean.isHead,
                         isGreat: data.resultBean.isGreat,
                         isHot: data.resultBean.isHot,
-                        views: data.resultBean.views+1,
+                        views: data.resultBean.views,
                         likeTotal: data.resultBean.like,
                         isNowUserLikeThisPost: data.resultBean.isNowUserLikeThisPost,
                         isSame: data.resultBean.isSame,
@@ -465,7 +469,7 @@ export default class MobileDetailPost extends React.Component {
     handleShowDetailPostActionSheet = () => {
         let BUTTONS = ['回复', '举报', '取消'];   // ordinnary
         if (this.state.isSame) {
-            BUTTONS = ['修改帖子', '设置评论', '回复', '删除', '取消']; // my 因为点击的事件都变了, 所以得重新写一个
+            BUTTONS = ['修改帖子', '修改标签', '回复', '删除', '取消']; // my 因为点击的事件都变了, 所以得重新写一个
             ActionSheet.showActionSheetWithOptions({
                 options: BUTTONS,
                 cancelButtonIndex: BUTTONS.length - 1,
@@ -473,18 +477,18 @@ export default class MobileDetailPost extends React.Component {
                 maskClosable: true,
             },
             (buttonIndex) => {
-                console.log(buttonIndex);
-                if (buttonIndex == 0) this.props.history.push('/mobile/forum/report/'+2);
-                else if (buttonIndex == 1) console.log('设置评论, 允许任何人评论, 关闭评论');
+                if (buttonIndex == 0) this.props.history.push('/mobile/forum/modifyPost/'+this.props.match.params.id);
+                else if (buttonIndex == 1) this.props.history.push('/mobile/forum/postLabel/'+this.props.match.params.id)
                 else if (buttonIndex == 2) this.customFocusInst.focus();
-                else if (buttonIndex == 3) 
-                alert('删除这篇帖子后将无法恢复,是否确定删除?', '', [
-                    { text: '取消' },
-                    {
-                        text: '确定',
-                        onPress: () => this.deletePostData(),
-                    },
-                ]);
+                else if (buttonIndex == 3) {
+                    alert('删除这篇帖子后将无法恢复,是否确定删除?', '', [
+                        { text: '取消' },
+                        {
+                            text: '确定',
+                            onPress: () => this.deletePostData(),
+                        },
+                    ]);
+                }
             });
         } else {
             ActionSheet.showActionSheetWithOptions({
@@ -584,6 +588,7 @@ export default class MobileDetailPost extends React.Component {
                     <div style={{ marginRight: 10, paddingTop: 10, fontSize: 12}}>
                         <Avatar src={this.state.avatar} style={{ height: 25, width: 25}}/>
                         <a style={{ paddingLeft: 5, fontSize: 14 }}>{this.state.createUserName}</a>
+                        <span style={{ color: '#CFCFCF', float: 'right' }}>&nbsp;#楼主</span>
                     </div>
                     <span style={{ color: '#B5B5B5', paddingTop: 5, paddingRight: 10, fontSize: 12 }}>{this.state.createTime}</span>
                     <div style={{ paddingTop: 5}}>
@@ -596,8 +601,9 @@ export default class MobileDetailPost extends React.Component {
                     <div style={{ fontSize: 7, marginTop: 8 }}>
                     标签:&nbsp;&nbsp;
                     {
+                        postLabels.length == 0 ? <span>无</span> :
                         postLabels.map((item) => 
-                                <Tag color={item.labelColor} key={item.labelId}>{item.labelName}</Tag>
+                            <Tag color={item.labelColor} key={item.labelId}>{item.labelName}</Tag>
                         )
                     }
                     </div>
@@ -626,11 +632,12 @@ export default class MobileDetailPost extends React.Component {
     // 更新此帖子的浏览量(和可能的点赞)
     componentWillUnmount() {
 
-        let like = this.state.isNowUserLikeThisPost ? 1 : 0; 
+        let like = this.state.isNowUserLikeThisPost ? 1 : 0;
+        let views = this.state.views + 1;
 
         Fetch.requestPost({
             url: UpdatePostViewAndLike,
-            info: 'postId='+this.props.match.params.id+'&views='+this.state.views
+            info: 'postId='+this.props.match.params.id+'&views='+views
                     +'&like='+like,
             timeOut: 3000,
         }).then(

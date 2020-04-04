@@ -56,4 +56,11 @@ public interface PostMapper {
      * @return 以map信息返回
      */
     public List<Map<String,Object>> findPostMapListByQuery(@Param("map") Map<String, Object> map);
+
+
+    /**
+     * 手机端需求-获取最新发布的帖子id, 方便跳转到详情页面
+     * @return 最新postId
+     */
+    public Integer getLastPublishPostId();
 }

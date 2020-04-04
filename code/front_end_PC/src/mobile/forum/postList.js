@@ -121,8 +121,8 @@ class ShowLatest extends React.Component {
             pageSize: 10,
             totComment: 0,
             allPost: [],
-            order: 'createTime',
         }
+        // 随意注册, 到处调用(emit)
         emitter.on("refresh", this.refresh.bind(this));
     }
 
@@ -138,18 +138,15 @@ class ShowLatest extends React.Component {
     }
 
     refresh = () => {
-        // this.setState({
-        //     searchPostTitle: '',
-        //     searchLabel: [],
-        //     searchStartTime: null,
-        //     searchEndTime: null,
-        // }, () => this.getPostData());
+        this.getPostData();
     }
 
     getPostData() {
+        // console.log(this.props.xierenyi);
+        // const order = this.props.order == undefined ? 'createTime' : this.props.order;
         Fetch.requestPost({
             url: SelectPost,
-            info: '&order='+this.state.order+'&pageNum='+this.state.nowPage
+            info: '&order='+this.props.order+'&pageNum='+this.state.nowPage
                     +'&pageSize='+this.state.pageSize,
             timeOut: 3000,
         }).then ( 
@@ -223,8 +220,8 @@ class ShowPostList extends React.Component {
                     onChange={(tab, index) => { console.log('onChange', index, tab); }}
                     onTabClick={(tab, index) => { console.log('onTabClick', index, tab); }}
                 >
-                <ShowAttention {...this.props}/>
-                <ShowLatest {...this.props}/>
+                <ShowAttention {...this.props} order={this.props.order} />
+                <ShowLatest {...this.props} order={this.props.order} />
                 </Tabs>
             </div>
         );
@@ -235,10 +232,13 @@ export default class MobilePostList extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            order: 'createTime',
+        }
     }
 
     handleShowActionSheet = () => {
-        const BUTTONS = ['较赞在前', '发布帖子', '取消'];
+        const BUTTONS = ['默认排序', '较赞在前', '发布帖子', '取消'];
         ActionSheet.showActionSheetWithOptions({
             options: BUTTONS,
             cancelButtonIndex: BUTTONS.length - 1,
@@ -247,7 +247,14 @@ export default class MobilePostList extends React.Component {
         (buttonIndex) => {
             // console.log(buttonIndex)
             if (buttonIndex == 0) {
-                
+                this.setState({
+                    order: 'createTime',
+                }, () => emitter.emit("refresh", "默认排序"));
+            }
+            else if (buttonIndex == 1) {
+                this.setState({
+                    order: 'like',
+                }, () => emitter.emit("refresh", "较赞在前"));
             } else if (buttonIndex == 1) {
                 this.props.history.push('/mobile/forum/addPost');
             }
@@ -265,7 +272,7 @@ export default class MobilePostList extends React.Component {
                         <Icon key="1" type="ellipsis" style={{ fontSize: 23 }} onClick={this.handleShowActionSheet}/>,
                     ]}
                 >讨论区</NavBar>
-                <ShowPostList {...this.props}/>
+                <ShowPostList {...this.props} order={this.state.order} />
             </div>
         );
     }

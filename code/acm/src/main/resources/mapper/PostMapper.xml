@@ -87,7 +87,7 @@
             <if test="post.isHot != null">isHot=#{post.isHot},</if>
             <if test="post.isHead != null">isHead=#{post.isHead},</if>
             <if test="post.isEffective != null">isEffective=#{post.isEffective},</if>
-            <if test="post.firstImg != null">firstImg=#{post.firstImg},</if>
+            firstImg=#{post.firstImg},
         </set>
         WHERE postId = #{post.postId};
     </update>
@@ -115,7 +115,7 @@
                 AND a.postId = #{map.postId}
             </if>
             <if test="map.postUserName != null ">
-                AND a.postUserName like CONCAT ('%', #{map.postUserName}, '%')
+                AND a.postTitle like CONCAT ('%', #{map.postTitle}, '%')
             </if>
             <if test="map.postTag != null ">
                 AND ~a.postTag &amp; #{map.postTag} = 0
@@ -159,5 +159,14 @@
         <if test="map.start != null ">
             limit #{map.start},#{map.limit}
         </if>
+    </select>
+
+    <!-- 手机端需求 -->
+    <select id="getLastPublishPostId" resultType="java.lang.Integer">
+        SELECT
+        max(a.postId)
+        FROM
+        post a
+        where a.isEffective = 1
     </select>
 </mapper>

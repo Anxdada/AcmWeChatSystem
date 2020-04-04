@@ -66,8 +66,10 @@ import MobileReportPost from './mobile/forum/reportPost';
 import MobileSearchPostPage from './mobile/forum/searchPost';
 import MobileDetailComment from './mobile/forum/detailComment';
 import MobileAddPostPage from './mobile/forum/addPost';
+import MobileModifyPostPage from './mobile/forum/modifyPost';
 import MobileAddLabelForPostPage from './mobile/forum/postLabelSelect';
-import MobilePublishPostResult from './mobile/forum/postResult';
+import MobilePublishPostResult from './mobile/forum/publishPostResult';
+import MobileModifyPostResult from './mobile/forum/modifyPostResult';
 
 
 // 用户相关
@@ -154,8 +156,10 @@ export default class IRouter extends React.Component {
                         <Route path='/mobile/forum/report/:id' component={(props) => <MobileReportPost {...props} /> } />
                         <Route path='/mobile/forum/search' component={MobileSearchPostPage} />
                         <Route path='/mobile/forum/addPost' component={MobileAddPostPage} />
-                        <Route path='/mobile/forum/postLabel' component={MobileAddLabelForPostPage} />
-                        <Route path='/mobile/forum/result' component={MobilePublishPostResult} />
+                        <Route path='/mobile/forum/modifyPost/:id' component={MobileModifyPostPage} />
+                        <Route path='/mobile/forum/postLabel/:id' component={MobileAddLabelForPostPage} />
+                        <Route path='/mobile/forum/publishResult' component={MobilePublishPostResult} />
+                        <Route path='/mobile/forum/modifyResult/:id' component={MobileModifyPostResult} />
                         <Route path='/mobile/forum/comment/:id' component={(props) => <MobileDetailComment {...props} /> } />
 
 

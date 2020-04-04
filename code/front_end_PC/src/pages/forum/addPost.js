@@ -16,7 +16,7 @@ function checkFirstImgIsExist(s, substr) {
     return s.indexOf(substr);
 }
 
-function getString(s) {
+function replaceString(s) {
     s = s.replace(/\+/g, "%2B");
     s = s.replace(/&/g, "%26");
     return s;
@@ -28,10 +28,6 @@ for (let i = 10; i < 36; i++) {
 }
 
 class AddPostPublishView extends React.Component {
-
-    state = {
-        loading: false,
-    }
 
     constructor(props) {
         super(props);
@@ -80,7 +76,7 @@ class AddPostPublishView extends React.Component {
             message.error('帖子标题不能为空!');
             return ;
         }
-        if (this.props.postTitle.length > 20) {
+        if (this.props.postTitle.length > 50) {
             message.error('帖子标题过长!');
             return ;
         }
@@ -92,24 +88,15 @@ class AddPostPublishView extends React.Component {
             return ;
         }
 
-        if (this.state.postLabel.length == 0) {
-            message.error('请选择帖子的标签!');
-            return ;
-        }
-
         let labels = 0;
         for (let i = 0 ; i < this.state.postLabel.length ; ++ i) {
             labels |= 1 << this.state.postLabel[i];
         }
 
-        this.setState({
-            loading: true,
-        });
-
         Fetch.requestPost({
             url: AddPostUrl,
             info: 'postTitle='+this.props.postTitle+'&postTag='+labels
-                    +'&postBody='+encodeURI(getString(this.props.editorContent))
+                    +'&postBody='+encodeURI(replaceString(this.props.editorContent))
                     +'&firstImg='+this.props.firstImg,
             timeOut: 3000,
         }).then(
@@ -133,10 +120,6 @@ class AddPostPublishView extends React.Component {
         ).catch( err => {
             // console.log("err", err);
             message.error('连接超时! 请检查服务器是否启动.');
-        });
-
-        this.setState({
-            loading: false,
         });
     }
 

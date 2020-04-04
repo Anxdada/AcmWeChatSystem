@@ -8,6 +8,7 @@ import com.example.acm.entity.Label;
 import com.example.acm.entity.OnDuty;
 import com.example.acm.entity.User;
 import com.example.acm.service.LabelService;
+import com.example.acm.service.PostService;
 import com.example.acm.service.UserService;
 import com.example.acm.utils.StringUtil;
 import org.junit.jupiter.api.Test;
@@ -148,6 +149,17 @@ class AcmApplicationTests {
         calendar.setTime(new Date());
         calendar.set(Calendar.YEAR, 2014);
         System.out.println(calendar.getTime());
+    }
+
+
+    @Autowired
+    private PostService postService;
+
+    @Test
+    void testMybatis() {
+//        System.out.println(postService.getLastPublishPostId());
+        String tmp = "";
+        System.out.println(StringUtil.isNull(tmp));
     }
 
 }

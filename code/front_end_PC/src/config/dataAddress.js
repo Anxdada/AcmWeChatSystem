@@ -79,6 +79,7 @@ export const DeleteComment = localhost+"/comment/deleteComment";
 export const SelectComment = localhost+"/comment/selectComment";
 // 手机端需要
 export const DetailComment = localhost+"/comment/detailComment";
+export const GetLastPublishPostId = localhost+"/post/getLastPublishPostId";
 // 回复
 export const AddReply = localhost+"/reply/addReply";
 export const DeleteReply = localhost+"/reply/deleteReply";

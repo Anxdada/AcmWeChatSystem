@@ -442,7 +442,7 @@ class ReplyList extends React.Component {
     refreshReply = (msg) => {
         // console.log(msg);
         this.getReplyCommentData();
-    } 
+    }
 
     getReplyCommentData() {
         Fetch.requestPost({
@@ -1131,8 +1131,9 @@ class DetailPost extends React.Component {
                     <br /><br />
                     <strong>标签:</strong>&nbsp;&nbsp;
                     {
+                        postLabels.length == 0 ? <strong>无</strong> :
                         postLabels.map((item) => 
-                                <Tag color={item.labelColor} key={item.labelId}>{item.labelName}</Tag>
+                            <Tag color={item.labelColor} key={item.labelId}>{item.labelName}</Tag>
                         )
                     }
                     <br />
@@ -1141,7 +1142,6 @@ class DetailPost extends React.Component {
                     <div dangerouslySetInnerHTML={{__html: this.state.postBody}} />
                 </Card>
                 </div>
-                
                 <CommentList id={this.props.match.params.id} />
                 <BackTop />
             </div>

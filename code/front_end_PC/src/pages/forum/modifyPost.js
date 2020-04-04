@@ -19,7 +19,7 @@ function checkFirstImgIsExist(s, substr) {
     return s.indexOf(substr);
 }
 
-function getString(s) {
+function replaceString(s) {
     s = s.replace(/\+/g, "%2B");
     s = s.replace(/&/g, "%26");
     return s;
@@ -91,14 +91,8 @@ class ModifyPostPublishView extends React.Component {
             return ;
         }
 
-        // wangediter 有个bug就是必须聚焦到内容框才能检测出由内容, 不然里面的内容就是无
         if (this.props.editorContentText.length == 0) {
-            message.error('公告内容不能为空或者未点击主编辑框!');
-            return ;
-        }
-
-        if (this.state.updateLabel.length == 0) {
-            message.error('请至少选择一个类别!');
+            message.error('公告内容不能为空!');
             return ;
         }
 
@@ -110,7 +104,7 @@ class ModifyPostPublishView extends React.Component {
         Fetch.requestPost({
             url: UpdatePost,
             info: 'postId='+this.props.id+'&postTitle='+this.props.postTitle+'&postTag='+labels
-                    +'&postBody='+encodeURI(getString(this.props.editorContent))+'&firstImg='+this.props.firstImg,
+                    +'&postBody='+encodeURI(replaceString(this.props.editorContent))+'&firstImg='+this.props.firstImg,
             timeOut: 3000,
         }).then ( 
             data => {
@@ -168,7 +162,7 @@ class ModifyPostPublishView extends React.Component {
                         )
                     }
                     </Select>
-                    <Button type="primary" onClick={this.handlePublish}>修改并发布</Button>
+                    <Button style={{ marginTop: 5 }} type="primary" onClick={this.handlePublish}>修改并发布</Button>
                 </Card>
             </div>
         );
@@ -206,9 +200,11 @@ class ModifyPostEditView extends React.Component {
             data => {
                 // console.log(data);
                 if (data.status == 0) {
+                    this.state.editor.txt.html(data.resultBean.postBody);
                     this.setState({
                         postTitle: data.resultBean.postTitle,
-                        editorContent: this.state.editor.txt.html(data.resultBean.postBody),
+                        editorContent: data.resultBean.postBody,
+                        editorContentText: this.state.editor.txt.text(),
                         postTag: data.resultBean.postTag,
                         firstImg: data.resultBean.firstImg,
                     });
@@ -272,7 +268,7 @@ class ModifyPostEditView extends React.Component {
         });
 
         // 只要第一张图
-        let tmpFirstImg = this.state.firstImg;
+        let tmpFirstImg = this.state.firstImg; // 异步请求的原因, 初始一定为空, 后面的判断逻辑就会出问题.
 
         editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
         editor.customConfig.uploadFileName = 'myFileName';
@@ -287,6 +283,7 @@ class ModifyPostEditView extends React.Component {
     
         // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
         editor.customConfig.onchange = html => {
+            if (tmpFirstImg == '') tmpFirstImg = this.state.firstImg; // 这个就是用来初始化时赋值的, 上面那种方法赋值有问题
             // 检测第一张图是否被替换(删除后又上传另一张)或者删除.
             let res = checkFirstImgIsExist(html, tmpFirstImg);
             if (res == -1) tmpFirstImg = '';

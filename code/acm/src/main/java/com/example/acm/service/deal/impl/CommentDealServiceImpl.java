@@ -180,11 +180,12 @@ public class CommentDealServiceImpl implements CommentDealService {
 
 //                    // 还是需要保存一下Id值 用于展示个人信息
 //                    mapTemp.put("userId", mapTemp.get("createUser"));
+                    mapTemp.put("isFloorOwner", mapTemp.get("createUser") ==
+                            postService.findPostListByPostId((Long)mapTemp.get("replyPostId")).get(0).getCreateUser());
 
                     List<User> listUsers = userService.findUserListByUserId((Long)mapTemp.get("createUser"));
                     User tUs = null;
                     if (!listUsers.isEmpty()) tUs = listUsers.get(0);
-                    if (tUs != null) mapTemp.put("createUser", tUs.getRealName());
                     if (tUs != null) mapTemp.put("createUserDetail", tUs);
                     // 直接把这个用户的信息都传过来了, 因为电脑端需要再当前页面展示, 所以需要传...
                     mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd HH:mm:ss"));

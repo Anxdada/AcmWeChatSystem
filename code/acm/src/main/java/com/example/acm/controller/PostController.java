@@ -46,9 +46,9 @@ public class PostController extends BaseController {
 
     @PostMapping("/addPost")
     @ResponseBody
-    public ResultBean addPost(@RequestParam(value = "postTitle", defaultValue = "", required = false) String postTitle,
-                              @RequestParam(value = "postTag", defaultValue = "-1", required = false) int postTag,
-                              @RequestParam(value = "postBody", defaultValue = "", required = false) String postBody,
+    public ResultBean addPost(@RequestParam(value = "postTitle", required = true) String postTitle,
+                              @RequestParam(value = "postTag", defaultValue = "0", required = false) int postTag,
+                              @RequestParam(value = "postBody", required = true) String postBody,
                               @RequestParam(value = "firstImg", defaultValue = "", required = false) String firstImg,
                               HttpServletRequest request, HttpServletResponse response) {
 //        System.out.println("xiexie");
@@ -90,16 +90,16 @@ public class PostController extends BaseController {
                                  @RequestParam(value = "postTitle", defaultValue = "", required = false) String postTitle,
                                  @RequestParam(value = "postTag", defaultValue = "-1", required = false) int postTag,
                                  @RequestParam(value = "postBody", defaultValue = "", required = false) String postBody,
-                                 @RequestParam(value = "isHead", defaultValue = "0", required = false) int isHead,
-                                 @RequestParam(value = "isGreat", defaultValue = "0", required = false) int isGreat,
-                                 @RequestParam(value = "isHot", defaultValue = "0", required = false) int isHot,
+                                 @RequestParam(value = "isHead", defaultValue = "-1", required = false) int isHead,
+                                 @RequestParam(value = "isGreat", defaultValue = "-1", required = false) int isGreat,
+                                 @RequestParam(value = "isHot", defaultValue = "-1", required = false) int isHot,
                                  @RequestParam(value = "firstImg", defaultValue = "", required = false) String firstImg,
                                  HttpServletRequest request, HttpServletResponse response) {
 
 //        System.out.println("xiexie");
 //        System.out.println(postId);
 //        System.out.println( " " + postTitle);
-//        System.out.println(" " + postTag);
+//        System.out.println(" " + firstImg);
 
         User user = getUserIdFromSession(request);
         if (user == null) {
@@ -220,5 +220,19 @@ public class PostController extends BaseController {
             return new ResultBean(ResultCode.SYSTEM_FAILED, String.valueOf(e));
         }
 
+    }
+
+
+    // 手机端需求, 增加post后需要知道新增post的id, 方便跳转到详情页面
+    @GetMapping("/getLastPublishPostId")
+    @ResponseBody
+    public ResultBean getLastPublishPostId(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            // log
+            return new ResultBean(ResultCode.SUCCESS, postService.getLastPublishPostId());
+        } catch (Exception e) {
+            // log
+            return new ResultBean(ResultCode.SYSTEM_FAILED);
+        }
     }
 }

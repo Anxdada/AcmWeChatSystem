@@ -71,4 +71,11 @@ public class PostServiceImpl implements PostService {
         return postMapper.findPostMapListByQuery(map);
     }
 
+    /**
+     * 手机端需求-获取最新发布的帖子id, 方便跳转到详情页面
+     * @return 最新postId
+     */
+    public Integer getLastPublishPostId() {
+        return postMapper.getLastPublishPostId();
+    }
 }

@@ -119,9 +119,8 @@ class ModifyNewsPublishView extends React.Component {
             return ;
         }
 
-        // wangediter 有个bug就是必须聚焦到内容框才能检测出由内容, 不然里面的内容就是无
         if (this.props.editorContentText.length == 0) {
-            message.error('公告内容不能为空或者未点击主编辑框!');
+            message.error('公告内容不能为空!');
             return ;
         }
 
@@ -228,9 +227,11 @@ class ModifyNewsEditView extends React.Component {
         }).then ( 
             data => {
                 if (data.status == 0) {
+                    this.state.editor.txt.html(data.resultBean.newsBody)
                     this.setState({
                         newsTitle: data.resultBean.newsTitle,
-                        editorContent: this.state.editor.txt.html(data.resultBean.newsBody),
+                        editorContent: data.resultBean.newsBody,
+                        editorContentText: this.state.editor.txt.text(),
                         firstImg: data.resultBean.firstImg,
                     });
                 }
@@ -309,6 +310,7 @@ class ModifyNewsEditView extends React.Component {
     
         // 使用 onchange 函数监听内容的变化，并实时更新到 state 中
         editor.customConfig.onchange = html => {
+            if (tmpFirstImg == '') tmpFirstImg = this.state.firstImg;
             // 检测第一张图是否被替换(删除后又上传另一张)或者删除.
             let res = checkFirstImgIsExist(html, tmpFirstImg);
             if (res == -1) tmpFirstImg = '';

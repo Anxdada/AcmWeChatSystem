@@ -54,7 +54,7 @@ class NewsBrief extends React.Component {
                     onClick={() => this.props.history.push('/mobile/news/detail/'+item.newsId)}>
                     <div style={{ marginBottom: 8, width: 500 }}>
                         <p style={{ fontSize: 9, color: '#828282', marginTop: 7 }}>{TextNewsBody}...</p>
-                        <span style={{ fontSize: 3, color: '#828282'}}>{item.createUser} {moment(item.createTime).fromNow()}</span>
+                        <span style={{ fontSize: 3, color: '#828282'}}>{item.createUserName} {moment(item.createTime).fromNow()}</span>
                     </div>
                     {
                         item.firstImg == undefined ? null : FirstImgComponent
@@ -166,7 +166,7 @@ class ShowNewsList extends React.Component {
 
         const { allTag } = this.state;
         let tmpSearchTag = '';
-        console.log(color[0])
+        // console.log(color[0])
         for (let i = 0 ; i < allTag.length ; ++ i) {
             // console.log(allTag[i].newsTagColor);
             if(allTag[i].newsTagColor == color[0]) {
