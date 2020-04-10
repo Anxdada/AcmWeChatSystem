@@ -5,7 +5,7 @@ import Util from './../../utils/utils';
 import {HashRouter as Router, Link, Redirect, Route} from 'react-router-dom';
 import cookie from 'react-cookies';
 import { connect } from 'react-redux';
-import { GetLoginUser } from './../../config/dataAddress';
+import { GetLoginUserPC } from './../../config/dataAddress';
 import Fetch from './../../fetch';
 
 const menu = (
@@ -26,7 +26,7 @@ class Header extends React.Component {
 
     componentWillMount() {
         Fetch.requestGet({
-            url: GetLoginUser,
+            url: GetLoginUserPC,
             timeOut: 3000,
         }).then (
             data => {

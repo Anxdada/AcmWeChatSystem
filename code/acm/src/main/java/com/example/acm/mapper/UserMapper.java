@@ -32,30 +32,6 @@ public interface UserMapper {
      */
     public void updateUserPC(@Param("user") User user);
 
-    /** 
-     * 添加user列表
-     *
-     */
-    public void addUserList(List<User> list);
-    
-    /** 
-     * 删除user
-     *
-     */
-    public void deleteUserByUserId(@Param("userId") Integer userId);
-    
-    /**
-     * 修改user
-     *
-     */
-    public void updateUserByUserId(@Param("userId") Integer userId, @Param("user") User user);
-    
-    /** 
-     * 根据获取user
-     *
-     */
-    public User getUserByUserId(@Param("userId") Integer userId);
-    
     /**
      * 查询user通过Id
      *
@@ -63,25 +39,7 @@ public interface UserMapper {
      * @return 给定userId 查询到的用户, List比较安全
      */
     public List<User> findUserListByUserId(@Param("userId") Long userId);
-    
-    /**
-     * 查询user
-     *
-     */
-    public List<Map<String,Object>> findUser2MapListByUserId(@Param("userId") Integer userId);
 
-    /**
-     * 获取user列表
-     *
-     */
-    public List<User> findUserList();
-    
-    /**
-     * 获取user列表
-     *
-     */
-    public List<Map<String,Object>> findUser2MapList();
-    
     /**
      * 根据查询条件获取user个数
      *
@@ -108,20 +66,6 @@ public interface UserMapper {
      */
     public List<Map<String,Object>> findUserMapListByQueryMap(@Param("map") Map<String, Object> map);
 
-    public List<User> findUserListByQueryMy(@Param("map") Map<String, Object> map);
-
-    public List<Map<String,Object>> findUserByCompetitionId(@Param("map") Map<String, Object> map);
-
-    public Integer countUserByCompetitionId(@Param("map") Map<String, Object> map);
-
-    public List<Map<String,Object>> findUserByLectureId(@Param("map") Map<String, Object> map);
-
-    public Integer countUserByLectureId(@Param("map") Map<String, Object> map);
-
-    public  List<Map<String,Object>> findUserBuImpressionSort(@Param("map") Map<String, Object> map);
-
-
-    // xiexie
 
     /**
      * 找到符合身份的人

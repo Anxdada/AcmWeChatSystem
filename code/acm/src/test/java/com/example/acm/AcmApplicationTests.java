@@ -10,6 +10,7 @@ import com.example.acm.entity.User;
 import com.example.acm.service.LabelService;
 import com.example.acm.service.PostService;
 import com.example.acm.service.UserService;
+import com.example.acm.utils.DateUtil;
 import com.example.acm.utils.StringUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,7 +141,7 @@ class AcmApplicationTests {
     @Test
     void testRedisSet() {
 //        System.out.println(redisComponent.hasMemberForKey("reply9", "2"));
-        System.out.println(redisComponent.getSizeSetForKey("reply9"));
+        System.out.println(redisComponent.getSizeSetForKey("userFollow2"));
     }
 
     @Test
@@ -160,6 +161,13 @@ class AcmApplicationTests {
 //        System.out.println(postService.getLastPublishPostId());
         String tmp = "";
         System.out.println(StringUtil.isNull(tmp));
+    }
+
+    @Test
+    void testCompareTime() {
+        Date date = new Date();
+        Date date2 = new Date(2020, 03, 01);
+        System.out.println(DateUtil.compare_date(date2, date));
     }
 
 }

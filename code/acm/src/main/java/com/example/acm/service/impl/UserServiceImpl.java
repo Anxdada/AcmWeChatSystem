@@ -40,39 +40,7 @@ public class UserServiceImpl implements UserService {
     public void updateUserPC(User user) {
         userMapper.updateUserPC(user);
     }
-    
-    /** 
-     * 添加user列表
-     *
-     */
-    public void addUserList(List<User> list){
-        userMapper.addUserList(list);
-    }
-    
-    /** 
-     * 删除user
-     *
-     */
-    public void deleteUserByUserId(Integer userId){
-        userMapper.deleteUserByUserId(userId);
-    }
-    
-    /**
-     * 修改user
-     *
-     */
-    public void updateUserByUserId(Integer userId, User user){
-        userMapper.updateUserByUserId(userId,user);
-    }
-    
-    /** 
-     * 根据获取user
-     *
-     */
-    public User getUserByUserId(Integer userId){
-        return userMapper.getUserByUserId(userId);        
-    }
-    
+
     /**
      * 查询user
      *
@@ -81,30 +49,6 @@ public class UserServiceImpl implements UserService {
      */
     public List<User> findUserListByUserId(Long userId){
         return userMapper.findUserListByUserId(userId);
-    }
-    
-    /**
-     * 查询user
-     *
-     */
-    public List<Map<String,Object>> findUser2MapListByUserId(Integer userId){
-        return userMapper.findUser2MapListByUserId(userId);
-    }
-
-    /**
-     * 获取user列表
-     *
-     */
-    public List<User> findUserList(){
-        return userMapper.findUserList();
-    }
-    
-    /**
-     * 获取user列表
-     *
-     */
-    public List<Map<String,Object>> findUser2MapList(){
-        return userMapper.findUser2MapList();
     }
     
     /**
@@ -145,25 +89,6 @@ public class UserServiceImpl implements UserService {
      */
     public List<Map<String,Object>> findUserMapListByQueryMap(Map<String, Object> map){
     	return userMapper.findUserMapListByQueryMap(map);
-    }
-
-    public List<User> findUserListByQueryMy(Map<String, Object> map){
-        return userMapper.findUserListByQueryMy(map);
-    }
-    public List<Map<String,Object>> findUserByCompetitionId(Map<String, Object> map){
-        return userMapper.findUserByCompetitionId(map);
-    }
-
-    public Integer countUserByCompetitionId(Map<String, Object> map){
-        return userMapper.countUserByCompetitionId(map);
-    }
-
-    public List<Map<String,Object>> findUserByLectureId(Map<String, Object> map){
-        return userMapper.findUserByLectureId(map);
-    }
-
-    public Integer countUserByLectureId(Map<String, Object> map){
-        return userMapper.countUserByLectureId(map);
     }
 
     /**

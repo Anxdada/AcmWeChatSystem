@@ -4,7 +4,7 @@ import moment from 'moment';
 import 'moment/locale/zh-cn';
 import { connect } from 'react-redux';
 import { switchMenu,addMenu } from './../../redux/actions';
-import { GetLoginUser, DetailUser, SelectLabel, AddComment, DetailPostUrl, SelectComment, SelectReply, DeleteComment, ChangeCommentReplyLike, AddReply, DeleteReply } from '../../config/dataAddress';
+import { GetLoginUserPC, DetailUser, SelectLabel, AddComment, DetailPostUrl, SelectComment, SelectReply, DeleteComment, ChangeCommentReplyLike, AddReply, DeleteReply } from '../../config/dataAddress';
 import Fetch from './../../fetch';
 import FloatNav from './FloatNav';
 import { authArray } from '../../config/userAuthAbout';
@@ -750,7 +750,7 @@ class CommentList extends React.Component {
     // 获取当前登录人的信息
     getNowUserData() {
         Fetch.requestGet({
-            url: GetLoginUser,
+            url: GetLoginUserPC,
             timeOut: 3000,
         }).then (
             data => {

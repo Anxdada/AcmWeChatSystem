@@ -4,6 +4,7 @@ import com.example.acm.authorization.model.TokenModel;
 import com.example.acm.common.ResultBean;
 import com.example.acm.common.ResultCode;
 import com.example.acm.common.SysConst;
+import com.example.acm.config.RedisComponent;
 import com.example.acm.entity.User;
 import com.example.acm.service.UserService;
 import com.example.acm.service.deal.UserDealService;
@@ -27,6 +28,9 @@ public class UserDealServiceImpl implements UserDealService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RedisComponent redisComponent;
 
     /**
      * 更新操作
@@ -123,14 +127,24 @@ public class UserDealServiceImpl implements UserDealService {
      */
     public ResultBean detailUser(long userId) {
         try {
+            Map<String, Object> map = new HashMap<>();
+            map.put("userId", userId);
+            map.put("isEffective", SysConst.LIVE);
 
-            List<User> list = userService.findUserListByUserId(userId);
+            List<Map<String, Object>> list = userService.findUserMapListByQueryMap(map);
 
             if (list.isEmpty()) {
                 return new ResultBean(ResultCode.SQL_NULL_RECODE, "数据库无该条记录!");
             }
 
-            return new ResultBean(ResultCode.SUCCESS, list.get(0));
+            // 因为要增加返回的字段, 所以要用map... 增加手机端用户的粉丝和关注数量
+            Map<String, Object> mapTemp = list.get(0);
+            String key = "userFollow" + userId;
+            mapTemp.put("followNumber", redisComponent.getSizeSetForKey(key));
+            key = "userFan" + userId;
+            mapTemp.put("fanNumber", redisComponent.getSizeSetForKey(key));
+
+            return new ResultBean(ResultCode.SUCCESS, mapTemp);
 
         } catch (Exception e) {
             // log

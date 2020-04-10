@@ -567,7 +567,8 @@ export default class MobileDetailPost extends React.Component {
                 <NavBar
                     mode="dark"
                     icon={<Icon type="left" />}
-                    onLeftClick={() =>  window.location.href="/#/mobile/home/2"}
+                    // onLeftClick={() =>  window.location.href="/#/mobile/home/2"}
+                    onLeftClick={() =>  window.history.back()}
                     rightContent={<Icon key="1" type="ellipsis" style={{ fontSize: 25 }} onClick={this.handleShowDetailPostActionSheet}/>}
                 >帖子详情</NavBar>
                 <div style={{ backgroundColor: '#ffffff', padding: 15}}>

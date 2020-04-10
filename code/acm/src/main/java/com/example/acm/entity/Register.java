@@ -12,6 +12,7 @@ public class Register {
     private Long registerId;
     private Long announcementId;
     private Date registerTime;
+    private Long registerUserId;
     private String studentId;
     private String realName;
     private Long updateUser;
@@ -40,6 +41,14 @@ public class Register {
 
     public void setRegisterTime(Date registerTime) {
         this.registerTime = registerTime;
+    }
+
+    public Long getRegisterUserId() {
+        return registerUserId;
+    }
+
+    public void setRegisterUserId(Long registerUserId) {
+        this.registerUserId = registerUserId;
     }
 
     public String getStudentId() {

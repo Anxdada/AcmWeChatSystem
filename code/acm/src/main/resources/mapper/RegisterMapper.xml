@@ -126,6 +126,9 @@
             <if test="map.announcementId != null ">
                 AND a.announcementId=#{map.announcementId}
             </if>
+            <if test="map.registerUserId != null ">
+                AND a.registerUserId=#{map.registerUserId}
+            </if>
             <if test="map.studentId != null ">
                 AND a.studentId like CONCAT ('%', #{map.studentId}, '%')
             </if>
@@ -139,6 +142,28 @@
         </if>
         <if test="map.start != null ">
             limit #{map.start}, #{map.limit}
+        </if>
+    </select>
+
+    <!-- 联合Announcement -->
+    <select id="findRegisterListMapByQueryMapUnionAnnouncement" resultType="java.util.Map">
+        SELECT
+            b.*
+        FROM
+            register a inner join announcement b
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            AND a.announcementId = b.announcementId
+            <if test="map.registerUserId != null ">
+                AND a.registerUserId=#{map.registerUserId}
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+                AND b.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            b.${map.order} ${map.aOrS}
         </if>
     </select>
 </mapper>

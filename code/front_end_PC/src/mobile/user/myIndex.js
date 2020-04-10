@@ -1,7 +1,7 @@
 import React from 'react';
 import { List, WingBlank } from 'antd-mobile';
 import { Icon, Divider, Tag, message, notification } from 'antd';
-import { GetLoginUser } from './../../config/dataAddress';
+import { GetLoginUserMobile, DetailUser } from './../../config/dataAddress';
 import Fetch from './../../fetch/index.js';
 import { authArray, authColorArray } from './../../config/userAuthAbout';
 
@@ -13,28 +13,28 @@ const myMenuArray = [
         key: 1,
     },
     {
-        title: '我的帖子',
-        icon: 'profile',
-        herf: '#',
+        title: '我的值日',
+        icon: 'carry-out',
+        herf: '/mobile/user/onDuty',
         key: 2,
     },
     {
-        title: '我的回复',
-        icon: 'message',
-        herf: '#',
+        title: '我的阅历',
+        icon: 'schedule',
+        herf: '/mobile/user/gameExperience',
+        key: 3,
+    },
+    {
+        title: '我发布的帖子',
+        icon: 'profile',
+        herf: '/mobile/user/myPost/',
         key: 4,
     },
     {
-        title: '我的值日',
-        icon: 'carry-out',
-        herf: '#',
+        title: '我的评论与回复',
+        icon: 'message',
+        herf: '/mobile/user/myCommentAndReply/',
         key: 5,
-    },
-    {
-        title: '我的比赛经历',
-        icon: 'schedule',
-        herf: '#',
-        key: 6,
     },
 ];
 
@@ -43,13 +43,13 @@ const aboutMenuArray = [
     {
         title: '关于',
         icon: 'info-circle',
-        herf: '#',
+        herf: '/#/mobile/user/about',
         key: 1,
     },
     {
         title: '反馈与建议',
         icon: 'bug',
-        herf: '#',
+        herf: '/#/mobile/user/feedback',
         key: 2,
     },
 ];
@@ -64,20 +64,38 @@ class ListMyMenu extends React.Component{
 
 	render() {
         // console.log(this.props);
+        const { nowUser } = this.props; 
 		return(
 			<div>
             <List renderHeader={() => '我的'}>
                 {
-                    myMenuArray.map((item) =>
-                        <Item
-                            thumb={<Icon type={item.icon} theme="twoTone" />}
-                            arrow="horizontal"
-                            onClick={() => this.props.history.push(item.herf)}
-                            key={item.key}
-                        >
-                            {item.title}
-                        </Item>
-                    )
+                    myMenuArray.map((item) => {
+                        if (item.key >= 4) {
+                            return (
+                                <Item
+                                    thumb={<Icon type={item.icon} theme="twoTone" />}
+                                    arrow="horizontal"
+                                    extra=""
+                                    onClick={() => this.props.history.push(item.herf+nowUser.userId)}
+                                    key={item.key}
+                                >
+                                    {item.title}
+                                </Item>
+                            )
+                        } else {
+                            return (
+                                <Item
+                                    thumb={<Icon type={item.icon} theme="twoTone" />}
+                                    arrow="horizontal"
+                                    extra=""
+                                    onClick={() => this.props.history.push(item.herf)}
+                                    key={item.key}
+                                >
+                                    {item.title}
+                                </Item>
+                            )
+                        }
+                    })
                 }
             </List>
 			</div>
@@ -86,7 +104,7 @@ class ListMyMenu extends React.Component{
 }
 
 const ListAboutMenu = <div>
-    <List renderHeader={() => '关于'}>
+    <List renderHeader={() => '其它'}>
         {
             aboutMenuArray.map((item) =>
                 <Item
@@ -128,6 +146,50 @@ class UserInfo extends React.Component {
   
     constructor(props) {
         super(props);
+    }
+
+    render() {
+        const { nowUser } = this.props;
+        const SexComponent = nowUser.sex == 1 ?
+            <Icon type="woman" style={{ color: '#FF34B3' }}/> :
+            <Icon type="man" style={{ color: '#00BFFF' }}/>;
+
+        return (
+    	<div>
+    		<div style={{ marginLeft: '20px', marginTop: '20px', marginBottom: '10px',  }}>
+    			<h3>用户信息</h3>
+    		</div>
+            <WingBlank size="sm">
+    		<div style={{ backgroundColor:'#ffffff' }}>
+                <div style={{ display: '-webkit-box', display: 'flex', padding: '15px 0' }} >
+                    <div style={{ padding:'5px' }}>
+                        <img style={{ height: '80px', marginLeft: '10px' }} src={nowUser.avatar} alt="头像" />
+                    </div>
+                    <Divider type="vertical" style={{ height: '90px' }} />
+                    <div style={{ lineHeight: 1 }} >
+                        <div style={{ marginBottom: '8px', fontWeight: 'bold' }}></div>
+                        <div>用户名：<span style={{ fontSize: '20px', color: '#FF6E27' }}>{nowUser.userName}</span></div>
+                        <AuthTag auth={nowUser.auth} />
+                        <div style={{ paddingTop: 10 }}>
+                            {SexComponent}
+                            <span style={{ paddingLeft: 5 }} 
+                                onClick={() => this.props.history.push('/mobile/user/follow/'+nowUser.userId)}>关注 <strong>{nowUser.followNumber}</strong></span>
+                            <Divider type="vertical" style={{ height: 15 }} />
+                            <span onClick={() => this.props.history.push('/mobile/user/fan/'+nowUser.userId)}>被关注 <strong>{nowUser.fanNumber}</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </WingBlank>
+    	</div>
+        );
+    }
+}
+
+export default class MobileUserInfo extends React.Component{
+
+    constructor(props) {
+        super(props);
         this.state = {
             nowUser: [],
         }
@@ -139,7 +201,7 @@ class UserInfo extends React.Component {
 
     getNowUserInfo() {
         Fetch.requestGet({
-            url: GetLoginUser,
+            url: GetLoginUserMobile,
             timeOut: 3000,
         }).then ( 
             data => {
@@ -164,51 +226,11 @@ class UserInfo extends React.Component {
         });
     }
 
-    render() {
-        const { nowUser } = this.state;
-        return (
-    	<div>
-    		<div style={{ marginLeft: '20px', marginTop: '20px', marginBottom: '10px',  }}>
-    			<h3>用户信息</h3>
-    		</div>
-            <WingBlank size="sm">
-    		<div style={{ backgroundColor:'#ffffff' }}>
-                <div style={{ display: '-webkit-box', display: 'flex', padding: '15px 0' }} >
-                    <div style={{ padding:'5px' }}>
-                        <img style={{ height: '80px', marginLeft: '10px' }} src={nowUser.avatar} alt="头像" />
-                    </div>
-                    <Divider type="vertical" style={{ height: '90px' }} />
-                    <div style={{ lineHeight: 1 }} >
-                        <div style={{ marginBottom: '8px', fontWeight: 'bold' }}></div>
-                        <div>用户名：<span style={{ fontSize: '20px', color: '#FF6E27' }}>{nowUser.userName}</span></div>
-                        <AuthTag auth={nowUser.auth} />
-                        <div style={{ paddingTop: 10 }}>
-                            <Icon type="man" style={{ color: '#00BFFF' }}/>
-                            <span style={{ paddingLeft: 5 }} 
-                                onClick={() => this.props.history.push('/mobile/user/follow/'+nowUser.userId)}>关注 <strong>5</strong></span>
-                            <Divider type="vertical" style={{ height: 15 }} />
-                            <span onClick={() => this.props.history.push('/mobile/user/fan/'+nowUser.userId)}>被关注 <strong>10</strong></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            </WingBlank>
-    	</div>
-        );
-    }
-}
-
-export default class MobileUserInfo extends React.Component{
-
-    constructor(props) {
-        super(props);
-    }
-
 	render() {
 		return(
             <div className="mobileUserInfo">
-                <UserInfo {...this.props}/>
-                <ListMyMenu {...this.props}/>
+                <UserInfo {...this.props} nowUser={this.state.nowUser} />
+                <ListMyMenu {...this.props} nowUser={this.state.nowUser} />
                 {ListAboutMenu}
             </div>
 		);

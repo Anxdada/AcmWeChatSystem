@@ -1,5 +1,5 @@
 import React from 'react';
-import { GetLoginUser } from './../../config/dataAddress';
+import { GetLoginUserMobile } from './../../config/dataAddress';
 import Fetch from './../../fetch';
 import { message, notification, Icon, Avatar } from 'antd';
 import { Picker, List, NavBar, Modal } from 'antd-mobile'; 
@@ -52,7 +52,7 @@ export default class MobileUserPersonalInfo extends React.Component{
 
     componentWillMount() {
         Fetch.requestGet({
-            url: GetLoginUser,
+            url: GetLoginUserMobile,
             timeOut: 3000,
         }).then (
             data => {

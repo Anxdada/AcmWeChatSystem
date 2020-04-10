@@ -12,10 +12,20 @@ export const AddUserPC = localhost+"/user/addUserPC";
 export const UpdateUserPC = localhost+"/user/updateUserPC";
 export const SelectUserPC = localhost+"/user/selectUserPC";
 export const SelectUserStatistic = localhost+"/user/statistic";
+export const GetLoginUserPC = localhost+"/user/getLoginUserPC";
 // 用户 (前台操作, 手机端)的接口
-
+export const GetLoginUserMobile = localhost+"/user/getLoginUserMobile";
+export const GetFollowUserList = localhost+"/user/getFollowUserList";
+export const GetFanUserList = localhost+"/user/getFanUserList";
+export const CheckRelationshipWithLoginUserMobile = localhost+"/user/checkRelationshipWithLoginUserMobile";
+export const FollowOrUnFollowUser = localhost+"/user/followOrUnFollowUser";
+export const GetMyOnDuty = localhost+"/user/getMyOnDuty";
+export const GetGameExperience = localhost+"/user/getGameExperience";
+export const GetMyPost = localhost+"/user/getMyPost";
+export const GetMyComment = localhost+"/user/getMyComment";
+export const GetMyForumTotalReply = localhost+"/user/getMyForumTotalReply";
+// export const 
 // PC/mobile 公用的接口
-export const GetLoginUser = localhost+"/user/getLoginUser";
 export const DetailUser = localhost+"/user/detailUser";
 
 

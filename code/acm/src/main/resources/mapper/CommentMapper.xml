@@ -76,7 +76,7 @@
         </where>
     </select>
 
-    <!-- 通过很多限制条件查询满足的comment的总数 -->
+    <!-- 通过很多限制条件查询满足的comment的总数, 对应于下面分页的函数, 求总数用于分页 -->
     <select id="countCommentList" resultType="java.lang.Integer">
         SELECT
         count(*)
@@ -88,6 +88,9 @@
             </if>
             <if test="map.replyPostId != null ">
                 AND a.replyPostId = #{map.replyPostId}
+            </if>
+            <if test="map.createUser != null ">
+                AND a.createUser = #{map.createUser}
             </if>
             <if test="map.isEffective != null ">
                 AND a.isEffective = #{map.isEffective}
@@ -107,6 +110,9 @@
             </if>
             <if test="map.replyPostId != null ">
                 AND a.replyPostId = #{map.replyPostId}
+            </if>
+            <if test="map.createUser != null ">
+                AND a.createUser = #{map.createUser}
             </if>
             <if test="map.isEffective != null ">
                 AND a.isEffective = #{map.isEffective}

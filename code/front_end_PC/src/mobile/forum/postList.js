@@ -110,7 +110,6 @@ class ShowAttention extends React.Component {
     }
 }
 
-
 class ShowLatest extends React.Component {
 
     constructor(props) {
@@ -119,7 +118,6 @@ class ShowLatest extends React.Component {
             nowPage: 1,
             totalPage: 1,
             pageSize: 10,
-            totComment: 0,
             allPost: [],
         }
         // 随意注册, 到处调用(emit)
@@ -146,7 +144,7 @@ class ShowLatest extends React.Component {
         // const order = this.props.order == undefined ? 'createTime' : this.props.order;
         Fetch.requestPost({
             url: SelectPost,
-            info: '&order='+this.props.order+'&pageNum='+this.state.nowPage
+            info: 'order='+this.props.order+'&pageNum='+this.state.nowPage
                     +'&pageSize='+this.state.pageSize,
             timeOut: 3000,
         }).then ( 
@@ -161,7 +159,6 @@ class ShowLatest extends React.Component {
                     this.setState({
                         totalPage: data.resultBean.totalItems/data.resultBean.pageSize,
                         allPost: data.resultBean.items,
-                        totComment: data.resultBean.totComment,
                     });
                 } else {
                     this.setState({
@@ -209,20 +206,22 @@ class ShowLatest extends React.Component {
 }
 
 
+//<Tabs tabs={tabs}
+//    initialPage={1}
+    // onChange={(tab, index) => { console.log('onChange', index, tab); }}
+    // onTabClick={(tab, index) => { console.log('onTabClick', index, tab); }}
+//>
+//</Tabs><ShowAttention {...this.props} order={this.props.order} />
+// </Tabs>
+
 // tabs 用div块来分割的..
 class ShowPostList extends React.Component {
 
+    // 只展示一个最新了, 关注的没有很好的方法去展示
     render() {
         return (
             <div>
-                <Tabs tabs={tabs}
-                    initialPage={1}
-                    onChange={(tab, index) => { console.log('onChange', index, tab); }}
-                    onTabClick={(tab, index) => { console.log('onTabClick', index, tab); }}
-                >
-                <ShowAttention {...this.props} order={this.props.order} />
                 <ShowLatest {...this.props} order={this.props.order} />
-                </Tabs>
             </div>
         );
     }

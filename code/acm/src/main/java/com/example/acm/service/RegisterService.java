@@ -50,4 +50,12 @@ public interface RegisterService {
      */
     public List<Map<String, Object>> findRegisterListMapByQueryMap(Map<String, Object> map);
 
+    /**
+     * 根据查询条件获取Register列表
+     * 主要是给获取用户比赛经历接口用的, 所以需要和announcement表联合, 这个是主要的区别
+     *
+     * @param map 查询条件
+     */
+    public List<Map<String, Object>> findRegisterListMapByQueryMapUnionAnnouncement(@Param("map") Map<String, Object> map);
+
 }

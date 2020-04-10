@@ -50,3 +50,5 @@ UPDATE post tt SET tt.firstImg = "http://localhost:9999/photo/77b3e4a2-8f76-4d91
 UPDATE post tt SET tt.firstImg = "http://localhost:9999/photo/b3c9ba27-5cfd-436c-80d7-c1b0967d23f3.jpg" where tt.postId = 35;
 UPDATE post tt SET tt.firstImg = "http://localhost:9999/photo/1dd02911-10e4-4abc-83ff-a7b06334c261.jpg" where tt.postId = 37;
 UPDATE post tt SET tt.firstImg = "http://localhost:9999/photo/04d8d1fa-8850-43c0-a98f-41fba42773b1.jpg" where tt.postId = 38;
+
+alter table register change column userId registerUserId bigint(20);

@@ -15,6 +15,7 @@ CREATE TABLE `user` (
   `realName` varchar(50) DEFAULT NULL,
   `openId` varchar(100) DEFAULT NULL,
   `isEffective` int(11) DEFAULT '1',
+  `sex` int(11) DEFAULT '0',
   PRIMARY KEY (`userId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
 
@@ -29,3 +30,8 @@ INSERT INTO `user` VALUES ('6', 'qiqi', '123456', '5', 'http://img2.imgtn.bdimg.
 INSERT INTO `user` VALUES ('7', 'xixi', '123456', '0', 'http://img0.imgtn.bdimg.com/it/u=2841648446,236398816&fm=26&gp=0.jpg', '2019011198', '2019', '2020-05-31 08:08', '18299830012', '路人', 'olD4e0_cnxwigLLZSJiK2r7scYdc', '1');
 
 INSERT INTO `user` VALUES ('1', 'admin', '123456', '1', 'https://b-ssl.duitang.com/uploads/item/201608/21/20160821194924_UCvFZ.jpeg', '6666666666', '1000', '1978-01-01 00:00', '66666666666', '超级管理员', '', '1');
+
+INSERT INTO `user` VALUES ('16', '左一凡', '123456', '8', 'http://localhost:9999/avatar/zuoyifan.jpg', '2017091113', '2017', '2020-04-08 11:09', '18200126951', '左一凡', '', '1', '0');
+INSERT INTO `user` VALUES ('17', '彭峰云', '123456', '8', 'http://localhost:9999/avatar/pengfengyun.jpg', '2017091114', '2017', '2020-04-08 12:09', '13203526950', '彭峰云', '', '1', '0');
+INSERT INTO `user` VALUES ('18', '杨浩', '123456', '8', 'http://localhost:9999/avatar/yanghao.jpg', '2017091115', '2017', '2020-04-08 13:09', '15689102651', '杨浩', '', '1', '0');
+INSERT INTO `user` VALUES ('19', '陶博', '123456', '8', 'http://localhost:9999/avatar/taobo.jpg', '2017091116', '2017', '2020-04-08 14:09', '134803128901', '陶博', '', '1', '0');

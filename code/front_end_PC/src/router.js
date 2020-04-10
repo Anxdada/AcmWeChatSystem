@@ -78,7 +78,13 @@ import MobileFollowUserList from './mobile/user/followUserList';
 import MobileFanUserList from './mobile/user/fanUserList';
 import MobileOtherUserDetailPage from './mobile/user/otherIndex';
 import MobileUserPersonalInfo from './mobile/user/personalInfo';
-
+import MobileUserMyOnDuty from './mobile/user/myOnDuty';
+import MobileUserMyPost from './mobile/user/myPost';
+import MobileUserMyCommentAndReply from './mobile/user/myCommentAndReply';
+import MobileMyDetailComment from './mobile/user/myDetailComment';
+import MobileUserMyGameExperience from './mobile/user/myGameExperience';
+import MobileAboutUsAndApp from './mobile/user/about';
+import MobileFeedbackAndAdvice from './mobile/user/feedback';
 
 // 手机端无法匹配网址
 import MobileNoMatch from './pages/nomatch/mobile';
@@ -169,6 +175,13 @@ export default class IRouter extends React.Component {
                         <Route path='/mobile/user/fan/:id' component={(props) => <MobileFanUserList {...props} /> } />
                         <Route path='/mobile/user/otherUser/:id' component={(props) => <MobileOtherUserDetailPage {...props} /> } />
                         <Route path='/mobile/user/personalInfo' component={MobileUserPersonalInfo} />
+                        <Route path='/mobile/user/onDuty' component={MobileUserMyOnDuty} />
+                        <Route path='/mobile/user/myPost/:id' component={MobileUserMyPost} />
+                        <Route path='/mobile/user/myCommentAndReply/:id' component={MobileUserMyCommentAndReply} />
+                        <Route path='/mobile/user/myDetailComment/:id' component={MobileMyDetailComment} />
+                        <Route path='/mobile/user/gameExperience' component={MobileUserMyGameExperience} />
+                        <Route path='/mobile/user/about' component={MobileAboutUsAndApp} />
+                        <Route path='/mobile/user/feedback' component={MobileFeedbackAndAdvice} />
                         
 
                         <Route path='/mobile/report/resultPage' component={MobileReportResultPage} />

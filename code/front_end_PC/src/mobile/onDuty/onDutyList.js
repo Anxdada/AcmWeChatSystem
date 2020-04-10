@@ -19,7 +19,7 @@ class ShowList extends React.Component{
             <div style={{ marginTop: 5}} className="tableBackground">
             {
                 this.props.allOnDuty.map((item) => 
-                    <Card>
+                    <Card key={item.onDutyId}>
                         <Card.Meta
                             avatar={
                                 <Avatar src={item.avatar} />

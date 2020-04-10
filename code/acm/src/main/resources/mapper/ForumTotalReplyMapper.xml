@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace用于绑定Dao接口 -->
+<mapper namespace="com.example.acm.mapper.ForumTotalReplyMapper">
+    <!-- 查询初始所有forumTotalReply -->
+    <select id="selectAll" resultType="com.example.acm.entity.ForumTotalReply">
+        SELECT * FROM forumTotalReply;
+    </select>
+
+    <sql id="forumTotalReply_table">
+		a.forumTotalReplyId,
+		a.replyUserId,
+		a.type,
+        a.typeCorrespondId,
+        a.forumTotalReplyBody,
+		a.createUser,
+		a.createTime,
+		a.updateUser,
+		a.updateTime,
+		a.isEffective
+	</sql>
+
+    <!-- 添加forumTotalReply -->
+    <insert id="addForumTotalReply" useGeneratedKeys="true">
+        INSERT INTO forumTotalReply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="forumTotalReply.forumTotalReplyId != null">forumTotalReplyId,</if>
+            <if test="forumTotalReply.replyUserId != null">replyUserId,</if>
+            <if test="forumTotalReply.type != null">type,</if>
+            <if test="forumTotalReply.typeCorrespondId != null">typeCorrespondId,</if>
+            <if test="forumTotalReply.forumTotalReplyBody != null">forumTotalReplyBody,</if>
+            <if test="forumTotalReply.createUser != null">createUser,</if>
+            <if test="forumTotalReply.createTime != null">createTime,</if>
+            <if test="forumTotalReply.updateUser != null">updateUser,</if>
+            <if test="forumTotalReply.updateTime != null">updateTime,</if>
+            <if test="forumTotalReply.isEffective != null">isEffective,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="forumTotalReply.forumTotalReplyId != null">#{forumTotalReply.forumTotalReplyId},</if>
+            <if test="forumTotalReply.replyUserId != null">#{forumTotalReply.replyUserId},</if>
+            <if test="forumTotalReply.type != null">#{forumTotalReply.type},</if>
+            <if test="forumTotalReply.typeCorrespondId != null">#{forumTotalReply.typeCorrespondId},</if>
+            <if test="forumTotalReply.forumTotalReplyBody != null">#{forumTotalReply.forumTotalReplyBody},</if>
+            <if test="forumTotalReply.createUser != null">#{forumTotalReply.createUser},</if>
+            <if test="forumTotalReply.createTime != null">#{forumTotalReply.createTime},</if>
+            <if test="forumTotalReply.updateUser != null">#{forumTotalReply.updateUser},</if>
+            <if test="forumTotalReply.updateTime != null">#{forumTotalReply.updateTime},</if>
+            <if test="forumTotalReply.isEffective != null">#{forumTotalReply.isEffective},</if>
+        </trim>
+    </insert>
+
+    <!-- 更新forumTotalReply -->
+    <update id="updateForumTotalReply">
+        UPDATE forumTotalReply a
+        <set>
+            <if test="forumTotalReply.forumTotalReplyId != null">forumTotalReplyId=#{forumTotalReply.forumTotalReplyId},</if>
+            <if test="forumTotalReply.replyUserId != null">replyUserId=#{forumTotalReply.replyUserId},</if>
+            <if test="forumTotalReply.type != null">type=#{forumTotalReply.type},</if>
+            <if test="forumTotalReply.typeCorrespondId != null">a.typeCorrespondId=#{forumTotalReply.typeCorrespondId},</if>
+            <if test="forumTotalReply.forumTotalReplyBody != null">a.forumTotalReplyBody=#{forumTotalReply.forumTotalReplyBody},</if>
+            <if test="forumTotalReply.createUser != null">createUser=#{forumTotalReply.createUser},</if>
+            <if test="forumTotalReply.createTime != null">createTime=#{forumTotalReply.createTime},</if>
+            <if test="forumTotalReply.updateUser != null">updateUser=#{forumTotalReply.updateUser},</if>
+            <if test="forumTotalReply.updateTime != null">updateTime=#{forumTotalReply.updateTime},</if>
+            <if test="forumTotalReply.isEffective != null">isEffective=#{forumTotalReply.isEffective},</if>
+        </set>
+        WHERE forumTotalReplyId = #{forumTotalReply.forumTotalReplyId};
+    </update>
+
+    <!-- 查询单条forumTotalReply -->
+    <select id="findForumTotalReplyListByForumTotalReplyId" resultType="com.example.acm.entity.ForumTotalReply">
+        SELECT
+        *
+        FROM forumTotalReply a
+        <where>
+            <if test="forumTotalReplyId != null">
+                a.forumTotalReplyId = #{forumTotalReplyId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的forumTotalReply的总数, 对应于下面分页的函数, 求总数用于分页 -->
+    <select id="countForumTotalReplyList" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        forumTotalReply a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.forumTotalReplyId != null ">
+                AND a.forumTotalReplyId = #{map.forumTotalReplyId}
+            </if>
+            <if test="map.replyUserId != null ">
+                AND a.replyUserId = #{map.replyUserId}
+            </if>
+            <if test="map.type != null ">
+                AND a.type = #{map.type}
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective = #{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的forumTotalReply -->
+    <select id="findForumTotalReplyMapListByQuery" resultType="java.util.Map">
+        SELECT
+        a.*
+        FROM
+        forumTotalReply a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.forumTotalReplyId != null ">
+                AND a.forumTotalReplyId = #{map.forumTotalReplyId}
+            </if>
+            <if test="map.replyUserId != null ">
+                AND a.replyUserId = #{map.replyUserId}
+            </if>
+            <if test="map.type != null ">
+                AND a.type = #{map.type}
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective = #{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            a.${map.order} ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start},#{map.limit}
+        </if>
+    </select>
+</mapper>

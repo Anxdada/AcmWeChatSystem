@@ -56,9 +56,11 @@ public class RedisComponent {
     }
 
     // 操作Set数据, 用于评论以及回复点赞功能, 格式为comment+commentId(reply+replyId) -> set(点赞的uid)
+    // 前面加上对应的type关键字
     // 3.16 新增新闻点赞功能.. newsId -> set(点赞uid)
     // 3.28 帖子点赞功能.. postId -> set(点赞的uid)
-    // 3.28 新增手机端用户关注功能 每个用户分别维护两个set, 一个是粉丝列表, 一个关注列表, 规则 userFanId -> set(粉丝的用户id), userFollowId -> set(关注的用户id)(x)
+    // 4.6 新增手机端用户关注功能 每个用户分别维护两个set, 一个是粉丝列表, 一个关注列表, 规则 userFanId -> set(粉丝的用户id), userFollowId -> set(关注的用户id)
+    // 对于用户关注的例子来说, like就是关注和取关的意思
     // redis 的是无法直接删除一个set, 当一个set中的元素都无了后, 那么这个实际上也就是被删除了.
     // 因为在展示人一个set的时候, 不存在的set那么就是 empty
     public void setTypeUidLike(String type, long id, long uid, int like) {

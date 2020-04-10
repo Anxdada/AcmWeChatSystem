@@ -104,7 +104,7 @@
         </where>
     </select>
 
-    <!-- 通过很多限制条件查询满足的post的总数 -->
+    <!-- 通过很多限制条件查询满足的post的总数, 和下面个函数对应, 相当于求下面满足条件的总数, 用于分页 -->
     <select id="countPostList" resultType="java.lang.Integer">
         SELECT
         count(*)
@@ -122,6 +122,9 @@
             </if>
             <if test="map.postStartTime != null ">
                 AND a.createTime between #{map.postStartTime} and #{map.postEndTime}
+            </if>
+            <if test="map.createUser != null ">
+                AND a.createUser = #{map.createUser}
             </if>
             <if test="map.isEffective != null ">
                 AND a.isEffective = #{map.isEffective}
@@ -147,6 +150,9 @@
             </if>
             <if test="map.postStartTime != null ">
                 AND a.createTime between #{map.postStartTime} and #{map.postEndTime}
+            </if>
+            <if test="map.createUser != null ">
+                AND a.createUser = #{map.createUser}
             </if>
             <if test="map.isEffective != null ">
                 AND a.isEffective = #{map.isEffective}

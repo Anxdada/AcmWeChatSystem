@@ -3,7 +3,7 @@ import './index.less';
 import { Card, Timeline, Result, Button, Icon, Upload, Modal, message, notification } from 'antd';
 import cookie from 'react-cookies';
 import { EventEmitter2 } from 'eventemitter2';
-import { AddPhoto, GetLoginUserName, DetailAnnouncementTag } from './../../config/dataAddress';
+import { AddPhoto, DetailAnnouncementTag } from './../../config/dataAddress';
 import Fetch from './../../fetch';
 import UploadMy from './../upload';
 import { TestEditTable } from './../ui/editTable';

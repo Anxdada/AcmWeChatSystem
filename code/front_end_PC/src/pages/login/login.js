@@ -34,10 +34,10 @@ class FormLogin extends React.Component {
                     message.success("登录成功!");
                     this.props.history.push(`${this.props.match.url.replace(/\/[^/]+$/, '')}/admin/home`);
                 } else {
+                    console.log(data.status);
                     if (data.status < 100) {
                         message.error(data.msg);
                     } else {
-                        console.log(data.status);
                         notification.error({
                             message: data.error,
                             description: data.message
@@ -58,7 +58,7 @@ class FormLogin extends React.Component {
     }
 
     handleSubmit = (e) => {
-        e.preventDefault();
+        // e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 // console.log('Received values of form: ', values);

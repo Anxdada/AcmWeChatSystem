@@ -3,7 +3,7 @@ import './index.less';
 import { Comment, Avatar, Form, Button, List, Input, Alert, Tooltip, Icon, message, notification, Skeleton, Empty, Spin, Modal, Popconfirm, Divider} from 'antd';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
-import { GetLoginUser, AddFeedback, DeleteFeedback, UpdateFeedback, SelectFeedback, AddFeedbackCount, DeleteFeedbackCount, UpdateFeedbackCount } from './../../config/dataAddress';
+import { GetLoginUserPC, AddFeedback, DeleteFeedback, UpdateFeedback, SelectFeedback, AddFeedbackCount, DeleteFeedbackCount, UpdateFeedbackCount } from './../../config/dataAddress';
 import cookie from 'react-cookies';
 import { EventEmitter2 } from 'eventemitter2';
 import Fetch from './../../fetch';
@@ -36,7 +36,7 @@ class FeedbackView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            comments: [],
+            feedbacks: [],
             submitting: false,
             feedbackLoading: true,
             feedbackId: '',
@@ -59,7 +59,7 @@ class FeedbackView extends React.Component {
 
     getNowUserData() {
         Fetch.requestGet({
-            url: GetLoginUser,
+            url: GetLoginUserPC,
             timeOut: 3000,
         }).then (
             data => {
@@ -98,7 +98,7 @@ class FeedbackView extends React.Component {
             data => {
                 if (data.status == 0) {
                     this.setState({
-                        comments: data.resultBean
+                        feedbacks: data.resultBean
                     });
                 } else {
                     if (data.status < 100) {
@@ -208,7 +208,7 @@ class FeedbackView extends React.Component {
     }
     
     render() {
-        const { nowUser, comments, submitting, feedbackLoading, feedbackBody } = this.state;
+        const { nowUser, feedbacks, submitting, feedbackLoading, feedbackBody } = this.state;
         return (
             <div>
             <div>
@@ -237,8 +237,8 @@ class FeedbackView extends React.Component {
                     }
                 />
                 {   
-                    comments.length > 0 ? 
-                    <CommentList nowUser={nowUser} comments={comments} feedbackLoading={feedbackLoading} handleDeleteFeedback={this.handleDeleteFeedback}/> 
+                    feedbacks.length > 0 ? 
+                    <FeedbackList nowUser={nowUser} feedbacks={feedbacks} feedbackLoading={feedbackLoading} handleDeleteFeedback={this.handleDeleteFeedback}/> 
                     : <Empty /> 
                 }
                 </div>
@@ -263,7 +263,7 @@ const Editor = ({ onChange, onSubmit, submitting, value }) => (
     </div>
 );
 
-class CommentList extends React.Component {
+class FeedbackList extends React.Component {
 
     constructor(props) {
         super(props);
@@ -394,7 +394,7 @@ class CommentList extends React.Component {
 
 
     render() {
-        const listData = this.props.comments;
+        const listData = this.props.feedbacks;
         return (
             <div className="demo-loadmore-list">
                 <List
