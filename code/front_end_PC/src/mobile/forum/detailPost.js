@@ -504,7 +504,7 @@ export default class MobileDetailPost extends React.Component {
     }
 
     addCommentData() {
-        console.log('xierenyi');
+        // console.log('xierenyi');
         Fetch.requestPost({
             url: AddComment,
             info: 'commentBody='+this.state.commentBody+'&replyPostId='+this.props.match.params.id,

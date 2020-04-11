@@ -4,13 +4,9 @@ import com.example.acm.common.ResultBean;
 import com.example.acm.common.ResultCode;
 import com.example.acm.common.SysConst;
 import com.example.acm.config.RedisComponent;
+import com.example.acm.entity.*;
 import com.example.acm.entity.Comment;
-import com.example.acm.entity.Comment;
-import com.example.acm.entity.User;
-import com.example.acm.service.CommentService;
-import com.example.acm.service.PostService;
-import com.example.acm.service.ReplyService;
-import com.example.acm.service.UserService;
+import com.example.acm.service.*;
 import com.example.acm.service.deal.CommentDealService;
 import com.example.acm.utils.DateUtil;
 import com.example.acm.utils.ListPage;
@@ -46,6 +42,9 @@ public class CommentDealServiceImpl implements CommentDealService {
     @Autowired
     private RedisComponent redisComponent;
 
+    @Autowired
+    private ForumTotalReplyService forumTotalReplyService;
+
     /**
      * 添加评论
      * 可能是后台管理员添加的
@@ -68,6 +67,23 @@ public class CommentDealServiceImpl implements CommentDealService {
             comment.setUpdateTime(new Date());
 
             commentService.addComment(comment);
+
+            // 发送给对应的作者消息
+            List<Post> tmpList = postService.findPostListByPostId(replyPostId);
+            ForumTotalReply forumTotalReply = new ForumTotalReply();
+            if (!tmpList.isEmpty()) {
+                Post post = tmpList.get(0);
+                forumTotalReply.setReplyUserId(post.getCreateUser());
+                forumTotalReply.setType(0);
+                forumTotalReply.setTypeCorrespondId(replyPostId);
+                forumTotalReply.setForumTotalReplyBody(commentBody);
+            }
+            forumTotalReply.setCreateUser(user.getUserId());
+            forumTotalReply.setCreateTime(new Date());
+            forumTotalReply.setUpdateUser(user.getUserId());
+            forumTotalReply.setUpdateTime(new Date());
+            forumTotalReply.setIsEffective(SysConst.LIVE);
+            forumTotalReplyService.addForumTotalReply(forumTotalReply);
 
             return new ResultBean(ResultCode.SUCCESS);
         } catch (Exception e) {

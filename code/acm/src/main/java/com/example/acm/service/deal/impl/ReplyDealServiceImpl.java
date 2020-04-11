@@ -4,14 +4,8 @@ import com.example.acm.common.ResultBean;
 import com.example.acm.common.ResultCode;
 import com.example.acm.common.SysConst;
 import com.example.acm.config.RedisComponent;
-import com.example.acm.entity.Comment;
-import com.example.acm.entity.Post;
-import com.example.acm.entity.Reply;
-import com.example.acm.entity.User;
-import com.example.acm.service.CommentService;
-import com.example.acm.service.PostService;
-import com.example.acm.service.ReplyService;
-import com.example.acm.service.UserService;
+import com.example.acm.entity.*;
+import com.example.acm.service.*;
 import com.example.acm.service.deal.ReplyDealService;
 import com.example.acm.utils.DateUtil;
 import com.example.acm.utils.ListPage;
@@ -47,6 +41,9 @@ public class ReplyDealServiceImpl implements ReplyDealService {
     @Autowired
     private RedisComponent redisComponent;
 
+    @Autowired
+    private ForumTotalReplyService forumTotalReplyService;
+
     /**
      * 添回复
      * 可能是后台管理员添加的
@@ -71,6 +68,35 @@ public class ReplyDealServiceImpl implements ReplyDealService {
             reply.setUpdateTime(new Date());
 
             replyService.addReply(reply);
+
+            // 发送给对应的作者消息
+            int type = reverseReplyId == -1 ? 1 : 2;
+            ForumTotalReply forumTotalReply = new ForumTotalReply();
+            if (type == 1) {
+                List<Comment> tmpList = commentService.findCommentListByCommentId(replyCommentId);
+                if (!tmpList.isEmpty()) {
+                    Comment comment = tmpList.get(0);
+                    forumTotalReply.setReplyUserId(comment.getCreateUser());
+                    forumTotalReply.setType(type);
+                    forumTotalReply.setTypeCorrespondId(replyCommentId);
+                    forumTotalReply.setForumTotalReplyBody(replyBody);
+                }
+            } else {
+                List<Reply> tmpList = replyService.findReplyListByReplyId(reverseReplyId);
+                if (!tmpList.isEmpty()) {
+                    Reply tmpReply = tmpList.get(0);
+                    forumTotalReply.setReplyUserId(tmpReply.getCreateUser());
+                    forumTotalReply.setType(type);
+                    forumTotalReply.setTypeCorrespondId(reverseReplyId);
+                    forumTotalReply.setForumTotalReplyBody(replyBody);
+                }
+            }
+            forumTotalReply.setCreateUser(user.getUserId());
+            forumTotalReply.setCreateTime(new Date());
+            forumTotalReply.setUpdateUser(user.getUserId());
+            forumTotalReply.setUpdateTime(new Date());
+            forumTotalReply.setIsEffective(SysConst.LIVE);
+            forumTotalReplyService.addForumTotalReply(forumTotalReply);
 
             return new ResultBean(ResultCode.SUCCESS);
         } catch (Exception e) {

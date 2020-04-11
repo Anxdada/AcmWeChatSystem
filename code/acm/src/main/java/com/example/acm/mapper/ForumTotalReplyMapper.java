@@ -22,14 +22,14 @@ public interface ForumTotalReplyMapper {
      * @param forumTotalReply 讨论区全部的回复信息
      * 哪怕只有一个参数也得用@Param, 不然#{} 无法访问
      */
-    public void addForumTotalReply(ForumTotalReply forumTotalReply);
+    public void addForumTotalReply(@Param("forumTotalReply") ForumTotalReply forumTotalReply);
 
     /**
      * 修改讨论区全部的回复
      *
      * @param forumTotalReply 新的讨论区全部的回复信息
      */
-    public void updateForumTotalReply(ForumTotalReply forumTotalReply);
+    public void updateForumTotalReply(@Param("forumTotalReply") ForumTotalReply forumTotalReply);
 
     /**
      * 查询友链
@@ -37,7 +37,7 @@ public interface ForumTotalReplyMapper {
      * @param forumTotalReplyId 讨论区全部的回复Id
      * @return 讨论区全部的回复列表 以实体类返回
      */
-    public List<ForumTotalReply> findForumTotalReplyListByForumTotalReplyId(Long forumTotalReplyId);
+    public List<ForumTotalReply> findForumTotalReplyListByForumTotalReplyId(@Param("forumTotalReplyId") Long forumTotalReplyId);
 
     /**
      * 根据查询条件获取讨论区全部的回复个数(Map)
