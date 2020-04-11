@@ -1,7 +1,7 @@
 import React from 'react';
 import './index.less';
 import Fetch from '../../fetch';
-import { DetailPostUrl, SelectLabel, UpdatePostViewAndLike, SelectComment, ChangeCommentReplyLike, SelectReply, DeletePost, AddComment } from '../../config/dataAddress';
+import { GetLoginUserMobile, DetailPostUrl, SelectLabel, UpdatePostViewAndLike, SelectComment, ChangeCommentReplyLike, SelectReply, DeletePost, AddComment } from '../../config/dataAddress';
 import { Divider, message, notification, Icon, Avatar, Pagination, Empty, Tag, Input, Button } from 'antd';
 import { TabBar, NavBar, TextareaItem, ActionSheet, Modal } from 'antd-mobile';
 import 'moment/locale/zh-cn';
@@ -156,14 +156,15 @@ class CommentView extends React.Component {
 
     render() {
 
-        const { item } = this.props;
+        const { item, nowUser } = this.props;
+        const herfPerson = nowUser.userId == item.createUserDetail.userId ? '/mobile/user/myIndex' : '/mobile/user/otherUser/'+item.createUserDetail.userId;
 
         return (
             <div>
                 <div style={{ padding: 15}}>
                     <div>
-                        <Avatar src={item.createUserDetail.avatar} style={{ height: 25, width: 25}}/>
-                        <a style={{ paddingLeft: 5, fontSize: 14 }}>{item.createUserDetail.userName}</a>
+                        <Avatar src={item.createUserDetail.avatar} style={{ height: 25, width: 25}} onClick={() => this.props.history.push(herfPerson)} />
+                        <a style={{ paddingLeft: 5, fontSize: 14 }} onClick={() => this.props.history.push(herfPerson)} >{item.createUserDetail.userName}</a>
                         {
                             item.isFloorOwner ? <span style={{ fontSize: 5, color: '#CFCFCF'}}>&nbsp;#楼主</span> :
                             null
@@ -318,7 +319,7 @@ class CommentList extends React.Component {
                         <div>
                         {
                             this.state.allComment.map((item) => 
-                                <CommentView item={item} {...this.props} key={item.commentId} />
+                                <CommentView item={item} {...this.props} key={item.commentId} nowUser={this.props.nowUser} />
                             )
                         }
                         </div>
@@ -340,6 +341,7 @@ export default class MobileDetailPost extends React.Component {
         this.state = {
             avatar: '',
             createUserName: '',
+            createUser: 2,
             createTime: '',
             postTitle: '',
             postTag: '',
@@ -353,12 +355,41 @@ export default class MobileDetailPost extends React.Component {
             labels: [],
             commentBody: '',
             submitting: false,
+            nowUser: {},
         }
     }
 
     componentWillMount() {
         this.getLabelData();
         this.getPostData();
+        this.getNowUserInfo();
+    }
+
+    getNowUserInfo() {
+        Fetch.requestGet({
+            url: GetLoginUserMobile,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    this.setState({
+                        nowUser: data.resultBean,
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     getLabelData() {
@@ -401,6 +432,7 @@ export default class MobileDetailPost extends React.Component {
                     this.setState({
                         avatar: data.resultBean.avatar,
                         createUserName: data.resultBean.createUserName,
+                        createUser: data.resultBean.createUser,
                         createTime: data.resultBean.createTime,
                         postTitle: data.resultBean.postTitle,
                         postTag: data.resultBean.postTag,
@@ -555,12 +587,15 @@ export default class MobileDetailPost extends React.Component {
 
     // 不定死.. 就不会回到原来的网址, 果然还是App好写啊.. 这个back实现好sb..
     render() {
-        const { labels } = this.state;
+        const { labels, nowUser } = this.state;
         let postLabels = [];
         for (let i = 0 ; i < labels.length ; ++ i) {
             if (!(this.state.postTag & (1<<labels[i].flag))) continue;
             postLabels.push(labels[i]);
         }
+
+        const herfPerson = nowUser.userId == this.state.createUser ? '/mobile/user/myIndex' : '/mobile/user/otherUser/'+this.state.createUser;
+
         // console.log(this.state.commentBody);
         return (
             <div >
@@ -587,8 +622,8 @@ export default class MobileDetailPost extends React.Component {
                         </span>
                     </div>
                     <div style={{ marginRight: 10, paddingTop: 10, fontSize: 12}}>
-                        <Avatar src={this.state.avatar} style={{ height: 25, width: 25}}/>
-                        <a style={{ paddingLeft: 5, fontSize: 14 }}>{this.state.createUserName}</a>
+                        <Avatar src={this.state.avatar} style={{ height: 25, width: 25}} onClick={() => this.props.history.push(herfPerson)}/>
+                        <a style={{ paddingLeft: 5, fontSize: 14 }} onClick={() => this.props.history.push(herfPerson)}>{this.state.createUserName}</a>
                         <span style={{ color: '#CFCFCF', float: 'right' }}>&nbsp;#楼主</span>
                     </div>
                     <span style={{ color: '#B5B5B5', paddingTop: 5, paddingRight: 10, fontSize: 12 }}>{this.state.createTime}</span>
@@ -625,7 +660,7 @@ export default class MobileDetailPost extends React.Component {
                         style={{ fontSize: 14 }}
                     />
                 </div>
-                <CommentList id={this.props.match.params.id} {...this.props} />
+                <CommentList id={this.props.match.params.id} {...this.props} nowUser={nowUser} />
             </div>
         );
     }

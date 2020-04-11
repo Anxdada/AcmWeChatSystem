@@ -1,7 +1,7 @@
 import React from 'react';
 import { Avatar, Icon, Divider, Input, Pagination, message, notification, Empty, Button } from 'antd';
 import { NavBar, ActionSheet, Modal, TextareaItem  } from 'antd-mobile';
-import { DetailComment, SelectReply, DeleteReply, ChangeCommentReplyLike, DeleteComment, AddReply } from '../../config/dataAddress';
+import { DetailComment, SelectReply, DeleteReply, ChangeCommentReplyLike, DeleteComment, AddReply, GetLoginUserMobile } from '../../config/dataAddress';
 import 'moment/locale/zh-cn';
 import Fetch from '../../fetch';
 import moment from 'moment';
@@ -93,16 +93,17 @@ class MobileReplyView extends React.Component{
 
     render() {
         
-        const { item } = this.props;
+        const { item, nowUser } = this.props;
         const { isNowUserLikeThisReply, likeTotal } = this.state; 
+        const herfPerson = nowUser.userId == item.createUserDetail.userId ? '/mobile/user/myIndex' : '/mobile/user/otherUser/'+item.createUserDetail.userId;
         
         return(
             <div>
                 <div style={{ padding: 10 }}>
                     <div>
-                        <Avatar src={item.createUserDetail.avatar} style={{ height: 25, width: 25}}/>
+                        <Avatar src={item.createUserDetail.avatar} style={{ height: 25, width: 25}} onClick={() => this.props.history.push(herfPerson)} />
                         <span>
-                            <a style={{ fontSize: 14, paddingLeft: 5 }}>{item.createUserDetail.userName}</a>
+                            <a style={{ fontSize: 14, paddingLeft: 5 }} onClick={() => this.props.history.push(herfPerson)}>{item.createUserDetail.userName}</a>
                             {
                                 item.createUserDetail.userId == item.floorOwnerUserId ?
                                     <span style={{ fontSize: 5, color: '#CFCFCF'}}>&nbsp;#楼主</span> :
@@ -111,7 +112,9 @@ class MobileReplyView extends React.Component{
                             {
                                 item.reverseReplyId == -1 ? null :
                                 <span>
-                                    &nbsp;回复 <a>{item.replyUserName}</a>
+                                    &nbsp;回复 <a 
+                                        onClick={() => this.props.history.push(nowUser.userId == item.replyUserDetail.userId ? '/mobile/user/myIndex' : '/mobile/user/otherUser/'+item.replyUserDetail.userId)} 
+                                    >{item.replyUserName}</a>
                                     {
                                         item.replyUserDetail.userId == item.floorOwnerUserId ?
                                             <span style={{ fontSize: 5, color: '#CFCFCF'}}>&nbsp;#楼主</span> :
@@ -371,6 +374,7 @@ class MobileReplyList extends React.Component{
     render() {
 
         const { allReply } = this.state;
+        const { nowUser } = this.props;
 
         const ReplyComponent = <div>
             <TextareaItem
@@ -401,7 +405,7 @@ class MobileReplyList extends React.Component{
                         allReply.length == 0 ? <Empty description="暂无回复" /> :
                         allReply.map((item) =>
                             <MobileReplyView showActionSheet={this.handleShowActionSheet} item={item}
-                                key={item.replyId}
+                                key={item.replyId} {...this.props} nowUser={nowUser}
                             />
                         )
                     }
@@ -434,11 +438,40 @@ export default class MobileDetailComment extends React.Component{
             replyBody: '',
             submitting: false,
             replyPlaceholder: '',
+            nowUser: {},
         }
     }
 
     componentWillMount() {
         this.getSingleCommentData();
+        this.getNowUserInfo();
+    }
+
+    getNowUserInfo() {
+        Fetch.requestGet({
+            url: GetLoginUserMobile,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    this.setState({
+                        nowUser: data.resultBean,
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     getSingleCommentData() {
@@ -624,8 +657,10 @@ export default class MobileDetailComment extends React.Component{
     // 不能提前终止渲染, 也就是createUserDetail这个必须单独取出来
     // 不能超过两层..
 	render() {
-        const { singleComment, createUserDetail } = this.state;
+        const { singleComment, createUserDetail, nowUser } = this.state;
         // console.log(this.state.replyBody);
+        const herfPerson = nowUser.userId == createUserDetail.userId ? '/mobile/user/myIndex' : '/mobile/user/otherUser/'+createUserDetail.userId;
+
 		return(
             <div>
                 <NavBar
@@ -637,8 +672,8 @@ export default class MobileDetailComment extends React.Component{
                 
                 <div style={{ backgroundColor: '#ffffff', padding: 10 }}>
                     <div>
-                        <Avatar src={createUserDetail.avatar} style={{ height: 25, width: 25}}/>
-                        <a style={{ paddingLeft: 5, fontSize: 14 }}>{createUserDetail.userName}</a>
+                        <Avatar src={createUserDetail.avatar} style={{ height: 25, width: 25}} onClick={() => this.props.history.push(herfPerson)} />
+                        <a style={{ paddingLeft: 5, fontSize: 14 }} onClick={() => this.props.history.push(herfPerson)} >{createUserDetail.userName}</a>
                     </div>
                     <div style={{ paddingLeft: 30 }} onClick={this.handleShowActionSheet}>{singleComment.commentBody}</div>
                     <span style={{ paddingLeft: 30 }}>
@@ -664,8 +699,8 @@ export default class MobileDetailComment extends React.Component{
                         style={{ fontSize: 14 }}
                     />
                 </div>
-                <MobileReplyList commentId={this.props.match.params.id} 
-                    addReplyCommentData={this.addReplyCommentData}
+                <MobileReplyList commentId={this.props.match.params.id} {...this.props}
+                    addReplyCommentData={this.addReplyCommentData} nowUser={nowUser}
                 />
             </div>
 		);

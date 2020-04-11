@@ -76,6 +76,7 @@ import MobileModifyPostResult from './mobile/forum/modifyPostResult';
 import MobileReportUser from './mobile/user/reportUser';
 import MobileFollowUserList from './mobile/user/followUserList';
 import MobileFanUserList from './mobile/user/fanUserList';
+import MobileUserInfo from './mobile/user/myIndex';
 import MobileOtherUserDetailPage from './mobile/user/otherIndex';
 import MobileUserPersonalInfo from './mobile/user/personalInfo';
 import MobileUserMyOnDuty from './mobile/user/myOnDuty';
@@ -173,6 +174,7 @@ export default class IRouter extends React.Component {
                         <Route path='/mobile/user/report/:id' component={(props) => <MobileReportUser {...props} /> } />
                         <Route path='/mobile/user/follow/:id' component={(props) => <MobileFollowUserList {...props} /> } />
                         <Route path='/mobile/user/fan/:id' component={(props) => <MobileFanUserList {...props} /> } />
+                        <Route path='/mobile/user/myIndex' component={MobileUserInfo} />
                         <Route path='/mobile/user/otherUser/:id' component={(props) => <MobileOtherUserDetailPage {...props} /> } />
                         <Route path='/mobile/user/personalInfo' component={MobileUserPersonalInfo} />
                         <Route path='/mobile/user/onDuty' component={MobileUserMyOnDuty} />

@@ -143,7 +143,7 @@ export default class MobileUserMyPost extends React.Component{
                     mode="dark"
                     icon={<Icon type="left" />}
                     onLeftClick={() =>  window.location.href="/#/mobile/home/3"}
-                >{person}发布的帖子</NavBar>
+                >{person}发布的帖子({this.state.totalPage * this.state.pageSize})</NavBar>
                 
                 <div>
                 {

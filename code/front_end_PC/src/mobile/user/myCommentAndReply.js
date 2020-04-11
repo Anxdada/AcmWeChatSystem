@@ -121,16 +121,17 @@ class ShowCommentList extends React.Component {
 class MyForumTotalReplyBrief extends React.Component{
     
     render() {
-        const { item } = this.props;
+        const { item, nowUser } = this.props;
         const textType = item.type == 0 ? "帖子" : "评论";
         const herfType = item.type == 0 ? '/mobile/forum/detail/' : '/mobile/user/myDetailComment/';
+        const herfPerson = nowUser.userId == item.createUserDetail.userId ? '/mobile/user/myIndex' : '/mobile/user/otherUser/'+item.createUserDetail.userId;
 
         return (
         <div style={{ backgroundColor: '#ffffff' }}>
             <WingBlank size="sm" >
             <div style={{ padding: 10 }}>
-                <Avatar src={item.createUserDetail.avatar} style={{ height: 25, width: 25}} />
-                <a style={{ paddingLeft: 5, paddingTop: 1, fontSize: 14, width: 260 }}>{item.createUserDetail.userName}</a>
+                <Avatar src={item.createUserDetail.avatar} style={{ height: 25, width: 25}} onClick={() => this.props.history.push(herfPerson)}/>
+                <a style={{ paddingLeft: 5, paddingTop: 1, fontSize: 14, width: 260 }} onClick={() => this.props.history.push(herfPerson)}>{item.createUserDetail.userName}</a>
                 <span onClick={() => this.props.history.push(herfType+item.typeCorrespondId)}> 回复了你的{textType}</span>
             </div>
             <div style={{ marginBottom: 5, marginLeft: 5 }} onClick={() => this.props.history.push(herfType+item.typeCorrespondId)}>
@@ -220,7 +221,9 @@ class ShowForumTotalReplyList extends React.Component {
                 <div>
                     {
                         allMyForumTotalReply.map((item) => 
-                            <MyForumTotalReplyBrief item={item} key={item.forumTotalReplyId} {...this.props} />
+                            <MyForumTotalReplyBrief item={item} key={item.forumTotalReplyId}
+                                {...this.props} nowUser={this.props.nowUser}
+                            />
                         )
                     }
                     <div className="postPagination" style={{ marginTop: 5, marginBottom: 5 }}>
@@ -247,7 +250,7 @@ class ShowCommentAndReplyList extends React.Component {
                 <Tabs tabs={tabs}
                     initialPage={0}
                 >
-                    <ShowForumTotalReplyList {...this.props} order={this.props.order} />
+                    <ShowForumTotalReplyList {...this.props} order={this.props.order} nowUser={this.props.nowUser}/>
                     <ShowCommentList {...this.props} order={this.props.order} />
                 </Tabs>
             </div>
@@ -309,10 +312,11 @@ export default class MobileUserMyCommentAndReply extends React.Component{
                 <NavBar
                     mode="dark"
                     icon={<Icon type="left" />}
-                    onLeftClick={() =>  window.location.href="/#/mobile/home/3"}
+                    // onLeftClick={() =>  window.location.href="/#/mobile/home/3"}
+                    onLeftClick={() =>  window.history.back()}
                 >{nowUser.userId == this.props.match.params.id ? "我" : "TA"}的回复及评论</NavBar>
                 
-                <ShowCommentAndReplyList {...this.props} />
+                <ShowCommentAndReplyList {...this.props} nowUser={nowUser}/>
             </div>
 		);
 	}

@@ -3,7 +3,7 @@ import './index.less';
 import { Divider, message, notification, Icon, Avatar, Pagination, Empty} from 'antd';
 import { Tabs, NavBar, Badge, ActionSheet } from 'antd-mobile';
 import Fetch from '../../fetch';
-import { SelectPost } from '../../config/dataAddress';
+import { SelectPost, GetLoginUserMobile } from '../../config/dataAddress';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import './index.less';
@@ -47,7 +47,8 @@ class PostBrief extends React.Component {
 
     render() {
 
-        const { item } = this.props;
+        const { item, nowUser } = this.props;
+        const herfPerson = nowUser.userId == item.createUser ? '/mobile/user/myIndex' : '/mobile/user/otherUser/'+item.createUser;
         // console.log(this.props.history);
         // console.log(item.firstImg);
 
@@ -58,8 +59,8 @@ class PostBrief extends React.Component {
         return (
             <div style={{ backgroundColor: '#ffffff' }} >
                 <div style={{ display: 'flex', marginLeft: 15, marginRight: 10, paddingTop: 10, fontSize: 12}}>
-                    <Avatar src={item.avatar} style={{ height: 25, width: 25}}/>
-                    <a style={{ paddingLeft: 5, paddingTop: 1, fontSize: 14, width: 260 }}>{item.createUserName}</a>
+                    <Avatar src={item.avatar} style={{ height: 25, width: 25}} onClick={() => this.props.history.push(herfPerson)}/>
+                    <a style={{ paddingLeft: 5, paddingTop: 1, fontSize: 14, width: 260 }} onClick={() => this.props.history.push(herfPerson)}>{item.createUserName}</a>
                     <div style={{ color: '#B5B5B5', paddingTop: 5, paddingRight: 10 }} className="postBriefTime">{moment(item.createTime).fromNow()}</div>
                 </div>
                 <div style={{ display: '-webkit-box', display: 'flex', padding: '0px 15px' }} onClick={() => this.props.history.push('/mobile/forum/detail/'+item.postId)}>
@@ -119,6 +120,7 @@ class ShowLatest extends React.Component {
             totalPage: 1,
             pageSize: 10,
             allPost: [],
+            nowUser: {},
         }
         // 随意注册, 到处调用(emit)
         emitter.on("refresh", this.refresh.bind(this));
@@ -126,6 +128,34 @@ class ShowLatest extends React.Component {
 
     componentWillMount() {
         this.getPostData();
+        this.getNowUserInfo();
+    }
+
+    getNowUserInfo() {
+        Fetch.requestGet({
+            url: GetLoginUserMobile,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    this.setState({
+                        nowUser: data.resultBean,
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     handlePageChange = (page) => {
@@ -184,6 +214,7 @@ class ShowLatest extends React.Component {
 
     render() {
         // console.log('xierenyi' + this.state.totalPage);
+        // console.log(this.state.nowUser);
         return (
             <div>
                 {
@@ -191,7 +222,7 @@ class ShowLatest extends React.Component {
                     <div>
                         {
                             this.state.allPost.map((item) =>
-                                <PostBrief item={item} key={item.postId} {...this.props} />
+                                <PostBrief item={item} key={item.postId} {...this.props} nowUser={this.state.nowUser} />
                             )
                         }
                         <div className="postPagination" style={{ marginTop: 5, marginBottom: 5 }}>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, WingBlank } from 'antd-mobile';
+import { List, WingBlank, NavBar, WhiteSpace } from 'antd-mobile';
 import { Icon, Divider, Tag, message, notification } from 'antd';
 import { GetLoginUserMobile, DetailUser } from './../../config/dataAddress';
 import Fetch from './../../fetch/index.js';
@@ -156,9 +156,7 @@ class UserInfo extends React.Component {
 
         return (
     	<div>
-    		<div style={{ marginLeft: '20px', marginTop: '20px', marginBottom: '10px',  }}>
-    			<h3>用户信息</h3>
-    		</div>
+            <WhiteSpace size="md" />
             <WingBlank size="sm">
     		<div style={{ backgroundColor:'#ffffff' }}>
                 <div style={{ display: '-webkit-box', display: 'flex', padding: '15px 0' }} >
@@ -226,12 +224,24 @@ export default class MobileUserInfo extends React.Component{
         });
     }
 
+    // 因为这个可以由路由决定...
 	render() {
+        // console.log(this.props.history.location.pathname);
+        // 左上角的图标是否显示
+        const tmpIcon = this.props.history.location.pathname == "/mobile/user/myIndex" ? <Icon type="left" /> : null;
 		return(
-            <div className="mobileUserInfo">
-                <UserInfo {...this.props} nowUser={this.state.nowUser} />
-                <ListMyMenu {...this.props} nowUser={this.state.nowUser} />
-                {ListAboutMenu}
+            <div>
+                <NavBar
+                    mode="dark"
+                    icon={tmpIcon}
+                    onLeftClick={() =>  window.history.back(-1)}
+                >我的主页</NavBar>
+
+                <div className="mobileUserInfo">
+                    <UserInfo {...this.props} nowUser={this.state.nowUser} />
+                    <ListMyMenu {...this.props} nowUser={this.state.nowUser} />
+                    {ListAboutMenu}
+                </div>
             </div>
 		);
 	}
