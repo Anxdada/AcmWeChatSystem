@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace用于绑定Dao接口 -->
+<mapper namespace="com.example.acm.mapper.ReportMapper">
+    <!-- 查询初始所有举报 -->
+    <select id="selectAll" resultType="com.example.acm.entity.Report">
+        SELECT * FROM report;
+    </select>
+
+    <!-- 添加举报 -->
+    <insert id="addReport" useGeneratedKeys="true">
+        INSERT INTO report
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="report.reportId != null">reportId,</if>
+            <if test="report.type != null">type,</if>
+            <if test="report.typeId != null">typeId,</if>
+            <if test="report.reportBody != null">reportBody,</if>
+            <if test="report.reason != null">reason,</if>
+            <if test="report.createUser != null">createUser,</if>
+            <if test="report.createTime != null">createTime,</if>
+            <if test="report.handleUser != null">handleUser,</if>
+            <if test="report.handleTime != null">handleTime,</if>
+            <if test="report.result != null">result,</if>
+            <if test="report.isHandle != null">isHandle,</if>
+            <if test="report.isEffective != null">isEffective,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="report.reportId != null">#{report.reportId},</if>
+            <if test="report.type != null">#{report.type},</if>
+            <if test="report.typeId != null">#{report.typeId},</if>
+            <if test="report.reportBody != null">#{report.reportBody},</if>
+            <if test="report.reason != null">#{report.reason},</if>
+            <if test="report.createUser != null">#{report.createUser},</if>
+            <if test="report.createTime != null">#{report.createTime},</if>
+            <if test="report.handleUser != null">#{report.handleUser},</if>
+            <if test="report.handleTime != null">#{report.handleTime},</if>
+            <if test="report.result != null">#{report.result},</if>
+            <if test="report.isHandle != null">#{report.isHandle},</if>
+            <if test="report.isEffective != null">#{report.isEffective},</if>
+        </trim>
+    </insert>
+
+    <!-- 更新举报 -->
+    <update id="updateReport">
+        UPDATE report
+        <set>
+            <if test="report.reportId != null">reportId=#{report.reportId},</if>
+            <if test="report.type != null">type=#{report.type},</if>
+            <if test="report.typeId != null">typeId=#{report.typeId},</if>
+            <if test="report.reportBody != null">reportBody=#{report.reportBody},</if>
+            <if test="report.reason != null">reason=#{report.reason},</if>
+            <if test="report.createUser != null">createUser=#{report.createUser},</if>
+            <if test="report.createTime != null">createTime=#{report.createTime},</if>
+            <if test="report.handleUser != null">handleUser=#{report.handleUser},</if>
+            <if test="report.handleTime != null">handleTime=#{report.handleTime},</if>
+            <if test="report.result != null">result=#{report.result},</if>
+            <if test="report.isHandle != null">isHandle=#{report.isHandle},</if>
+            <if test="report.isEffective != null">isEffective=#{report.isEffective},</if>
+        </set>
+        WHERE reportId = #{report.reportId};
+    </update>
+
+    <!-- 根据条件查找举报数量 -->
+    <select id="countReportListByQuery" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        report a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 查询单条举报 -->
+    <select id="findReportListByReportId" resultType="com.example.acm.entity.Report">
+        SELECT
+        *
+        FROM report a
+        <where>
+            <if test="reportId != null">
+                a.reportId = #{reportId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 通过很多限制条件查询满足的举报的总数 -->
+    <select id="countReportMapListByQuery" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        report a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.createUser != null ">
+                AND a.createUser = #{map.createUser}
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+    </select>
+
+    <sql id="report_table">
+        a.reportId,
+        a.type,
+        a.typeId,
+        a.reportBody,
+        a.reason,
+        a.createUser,
+        a.createTime,
+        a.handleUser,
+        a.handleTime,
+        a.result,
+        a.isHandle,
+        a.isEffective
+    </sql>
+
+    <!-- 通过很多限制条件查询满足的举报 -->
+    <select id="findReportMapListByQuery" resultType="java.util.Map">
+        SELECT
+        <include refid="report_table"/>
+        FROM
+        report a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.createUser != null ">
+                AND a.createUser = #{map.createUser}
+            </if>
+            <if test="map.isEffective != null ">
+                AND a.isEffective=#{map.isEffective}
+            </if>
+        </trim>
+        <if test="map.order != null ">
+            ORDER BY
+            a.${map.order} ${map.aOrS}
+        </if>
+        <if test="map.start != null ">
+            limit #{map.start},#{map.limit}
+        </if>
+    </select>
+</mapper>

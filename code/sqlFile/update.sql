@@ -25,6 +25,8 @@ UPDATE announcement tt SET tt.view = 67 where tt.announcementId = 29;
 UPDATE announcement tt SET tt.view = 15 where tt.announcementId = 30;
 UPDATE announcement tt SET tt.view = 31 where tt.announcementId = 31;
 
+UPDATE report tt SET tt.type = "帖子(回复)" where tt.reportId = 2;
+
 UPDATE news tt SET tt.createTime = "2020-03-16 08:46:26" where tt.newsId = 41;
 
 UPDATE news tt SET tt.fromWhere = "测试";

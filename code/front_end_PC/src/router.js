@@ -43,6 +43,7 @@ import FriendUrl from './pages/friendUrl';
 import OnDuty from './pages/onDuty';
 import About from './pages/about';
 import Feedback from './pages/feedback';
+import Report from './pages/report';
 
 import Ttest from './pages/Ttest';
 
@@ -86,6 +87,7 @@ import MobileMyDetailComment from './mobile/user/myDetailComment';
 import MobileUserMyGameExperience from './mobile/user/myGameExperience';
 import MobileAboutUsAndApp from './mobile/user/about';
 import MobileFeedbackAndAdvice from './mobile/user/feedback';
+import MobileUserMyReport from './mobile/user/myReport';
 
 // 手机端无法匹配网址
 import MobileNoMatch from './pages/nomatch/mobile';
@@ -136,6 +138,7 @@ export default class IRouter extends React.Component {
                             <Route path='/admin/onduty' component={OnDuty} />
                             <Route path='/admin/feedback' component={Feedback} />
                             <Route path='/admin/about' component={About} />
+                            <Route path='/admin/report' component={Report} />
 
                             <Route path='/admin/test' component={Ttest} />
                             <Route component={NoMatch} />
@@ -182,6 +185,7 @@ export default class IRouter extends React.Component {
                         <Route path='/mobile/user/myCommentAndReply/:id' component={MobileUserMyCommentAndReply} />
                         <Route path='/mobile/user/myDetailComment/:id' component={MobileMyDetailComment} />
                         <Route path='/mobile/user/gameExperience' component={MobileUserMyGameExperience} />
+                        <Route path='/mobile/user/myReport' component={MobileUserMyReport} />
                         <Route path='/mobile/user/about' component={MobileAboutUsAndApp} />
                         <Route path='/mobile/user/feedback' component={MobileFeedbackAndAdvice} />
                         

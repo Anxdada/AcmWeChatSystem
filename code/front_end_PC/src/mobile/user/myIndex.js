@@ -25,16 +25,22 @@ const myMenuArray = [
         key: 3,
     },
     {
+        title: '我的举报',
+        icon: 'warning',
+        herf: '/mobile/user/myReport',
+        key: 4,
+    },
+    {
         title: '我发布的帖子',
         icon: 'profile',
         herf: '/mobile/user/myPost/',
-        key: 4,
+        key: 5,
     },
     {
         title: '我的评论与回复',
         icon: 'message',
         herf: '/mobile/user/myCommentAndReply/',
-        key: 5,
+        key: 6,
     },
 ];
 
@@ -70,7 +76,7 @@ class ListMyMenu extends React.Component{
             <List renderHeader={() => '我的'}>
                 {
                     myMenuArray.map((item) => {
-                        if (item.key >= 4) {
+                        if (item.key >= 5) {  // 因为其它用户有这两个功能点
                             return (
                                 <Item
                                     thumb={<Icon type={item.icon} theme="twoTone" />}

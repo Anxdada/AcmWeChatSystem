@@ -112,7 +112,7 @@ export default class MobileUserMyOnDuty extends React.Component{
                     complete.length == 0 ? <Empty description="无数据"/> :
                     complete.map((item) => 
                         <div key={item.onDutyId}>
-                        <div style={{ height: 30 }}>
+                        <div style={{ height: 45 }}>
                         <span style={{ fontSize: 16, marginLeft: 20 }} >{item.onDutyStartTime} ~ {item.onDutyEndTime}</span>
                         </div>
                         <Divider style={{ marginTop: 0, marginBottom: 0}}/>

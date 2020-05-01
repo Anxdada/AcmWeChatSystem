@@ -149,7 +149,7 @@ export default class MobileOtherUserDetailPage extends React.Component{
             maskClosable: true,
         },
         (buttonIndex) => {
-            if (buttonIndex == 0) this.props.history.push('/mobile/forum/report/'+2);
+            if (buttonIndex == 0) this.props.history.push('/mobile/user/report/'+this.props.match.params.id);
         });
     }
 

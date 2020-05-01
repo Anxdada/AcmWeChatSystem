@@ -22,6 +22,7 @@ export const FollowOrUnFollowUser = localhost+"/user/followOrUnFollowUser";
 export const GetMyOnDuty = localhost+"/user/getMyOnDuty";
 export const GetGameExperience = localhost+"/user/getGameExperience";
 export const GetMyPost = localhost+"/user/getMyPost";
+export const GetMyReport = localhost+"/user/getMyReport";
 export const GetMyComment = localhost+"/user/getMyComment";
 export const GetMyForumTotalReply = localhost+"/user/getMyForumTotalReply";
 // export const 
@@ -134,6 +135,12 @@ export const SelectFeedback = localhost+"/feedback/selectFeedback";
 export const AddFeedbackCount = localhost+"/feedbackCount/addFeedbackCount";
 export const DeleteFeedbackCount = localhost+"/feedbackCount/deleteFeedbackCount";
 export const UpdateFeedbackCount = localhost+"/feedbackCount/updateFeedbackCount";
+
+
+// 举报相关
+export const AddReport = localhost+"/report/addReport";
+export const UpdateReport = localhost+"/report/updateReport";
+export const SelectReport = localhost+"/report/selectReport";
 
 
 // 图片

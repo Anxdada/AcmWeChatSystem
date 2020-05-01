@@ -115,7 +115,7 @@ class MobileHomeCard extends React.Component {
             <WhiteSpace size="md" />
             <div className="cardbody">
                 Welcome, {this.state.username} 
-                <p>你已经连续登录 {this.state.days} 天了! </p>
+                {/* <p>你已经连续登录 {this.state.days} 天了! </p> */}
             </div>
             <WhiteSpace size="md" />
             <Card>

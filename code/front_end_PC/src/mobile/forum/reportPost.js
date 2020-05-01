@@ -1,15 +1,20 @@
 import React from 'react';
 import './index.less';
 import { resonPost } from './../../config/reportResonAbout';
-import { Input, Icon } from 'antd';
+import { Input, Icon, message, notification } from 'antd';
 import { List, Radio, Button, Modal, ActionSheet, NavBar, WingBlank} from 'antd-mobile';
 import Fetch from '../../fetch';
+import { AddReport } from './../../config/dataAddress';
 
 const RadioItem = Radio.RadioItem;
 const alert = Modal.alert;
 const { TextArea } = Input;
 
 export default class MobileReportPost extends React.Component {
+
+    state = {
+        submitting: false,
+    }
 
     constructor(props) {
         super(props);
@@ -51,8 +56,36 @@ export default class MobileReportPost extends React.Component {
     }
 
     submitReportData() {
-        // Fetch.re
-        this.props.history.push('/mobile/report/resultPage');
+        Fetch.requestPost({
+            url: AddReport,
+            info: 'type=帖子(回复)'+'&typeId='+this.props.match.params.id
+                    +'&reportBody='+this.state.reportBody+'&reason='+this.state.reason,
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    this.props.history.push('/mobile/report/resultPage');
+                    this.setState({
+                        submitting: false,
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+                this.setState({
+                    submitting: false,
+                })
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     
@@ -84,7 +117,9 @@ export default class MobileReportPost extends React.Component {
                     <TextArea rows={4} value={reportBody} onChange={this.handleChangeReportDescription} allowClear placeholder="请输入内容" />
                 </List>
                 <WingBlank size="md">
-                <Button type="primary" style={{ marginTop: 15 }} onClick={this.handleSubmitReport}>提交</Button>
+                <Button type="primary" style={{ marginTop: 15 }} onClick={this.handleSubmitReport}
+                    loading={this.state.submitting}
+                >提交</Button>
                 </WingBlank>
             </div>
         );

@@ -8,6 +8,7 @@ import com.example.acm.common.SysConst;
 import com.example.acm.config.RedisComponent;
 import com.example.acm.controller.BaseController;
 import com.example.acm.entity.Post;
+import com.example.acm.entity.Report;
 import com.example.acm.entity.User;
 import com.example.acm.service.*;
 import com.example.acm.service.deal.ForumTotalReplyDealService;
@@ -62,6 +63,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private RedisComponent redisComponent;
+
+    @Autowired
+    private ReportService reportService;
 
     @Autowired
     private ForumTotalReplyDealService forumTotalReplyDealService;
@@ -464,6 +468,35 @@ public class UserController extends BaseController {
             List<Map<String, Object>> list = registerService.findRegisterListMapByQueryMapUnionAnnouncement(map);
             for (Map<String, Object> mapTemp : list) {
                 mapTemp.put("startTime", DateUtil.convDateToStr((Date) mapTemp.get("startTime"), "yyyy-MM-dd HH:mm:ss"));
+            }
+            return new ResultBean(ResultCode.SUCCESS, list);
+
+        } catch(Exception e) {
+            LOG.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResultBean(ResultCode.SYSTEM_FAILED);
+        }
+    }
+
+    // 获取举报
+    @GetMapping("/getMyReport")
+    @ResponseBody
+    public ResultBean getMyReport(
+            HttpServletRequest request, HttpServletResponse response) {
+
+        try {
+            User user = getUserIdFromSession(request);
+            if (user == null) {
+                return new ResultBean(ResultCode.SESSION_OUT, "token(Mobile)失效, 请重新登录!");
+            }
+            Map<String, Object> map = new HashMap<>();
+            map.put("createUser", user.getUserId());
+            map.put("aOrS", "DESC");
+            map.put("order", "createTime");
+            map.put("isEffective", SysConst.LIVE);
+            List<Map<String, Object>> list = reportService.findReportMapListByQuery(map);
+            for (Map<String, Object> mapTemp : list) {
+                mapTemp.put("createTime", DateUtil.convDateToStr((Date) mapTemp.get("createTime"), "yyyy-MM-dd HH:mm:ss"));
             }
             return new ResultBean(ResultCode.SUCCESS, list);
 

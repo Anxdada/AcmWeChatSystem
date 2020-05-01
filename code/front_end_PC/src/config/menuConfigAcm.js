@@ -88,6 +88,10 @@ const menuListAcm = [
         key:'/admin/feedback',
     },
     {
+        title:'举报管理',
+        key:'/admin/report',
+    },
+    {
         title:'测试组件',
         key:'/admin/test',
     },

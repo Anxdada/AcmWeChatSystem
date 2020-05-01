@@ -530,7 +530,7 @@ export default class MobileDetailPost extends React.Component {
             },
             (buttonIndex) => {
                 if (buttonIndex == 0) this.customFocusInst.focus();
-                else if (buttonIndex == 1) this.props.history.push('/mobile/forum/report/'+2);
+                else if (buttonIndex == 1) this.props.history.push('/mobile/forum/report/'+this.props.match.params.id);
             });
         }
     }
