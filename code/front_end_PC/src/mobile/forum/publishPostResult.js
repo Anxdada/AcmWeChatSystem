@@ -57,8 +57,8 @@ export default class MobilePublishPostResult extends React.Component{
                     title="发帖成功"
                     message={
                         <span>
-                            点击<a onClick={() => this.props.history.push('/mobile/forum/postLabel/'+this.state.lastPostId)}>此处</a>为你的帖子贴上一些标签吧<br />    
-                            或者<a onClick={() => this.props.history.push('/mobile/forum/detail/'+this.state.lastPostId) } >查看</a>你发布的帖子
+                            点击<a onClick={() => this.props.history.push('/mobile/home/2')}>此处</a>返回讨论区首页<br />    
+                            {/* 或者<a onClick={() => this.props.history.push('/mobile/forum/detail/'+this.state.lastPostId) } >查看</a>你发布的帖子 */}
                         </span>
                     }
                 />

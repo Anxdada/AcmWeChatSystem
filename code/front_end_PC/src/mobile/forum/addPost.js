@@ -1,9 +1,11 @@
 import React from 'react';
-import { Icon, message, notification } from 'antd';
+import { Icon, message, notification, Modal, Select, Tag } from 'antd';
 import { NavBar, TextareaItem, Toast } from 'antd-mobile';
 import E from 'wangeditor';
-import { AddPostUrl, UploadImg } from './../../config/dataAddress';
+import { AddPostUrl, UploadImg, SelectLabel } from './../../config/dataAddress';
 import Fetch from './../../fetch';
+
+const { Option } = Select;
 
 function checkFirstImgIsExist(s, substr) {
     return s.indexOf(substr);
@@ -17,6 +19,11 @@ function replaceString(s) {
 
 export default class MobileAddPostPage extends React.Component{
 
+    state = {
+        visible: false,
+        submitting: false,
+    }
+
     constructor(props) {
         super(props);
         this.state = {
@@ -24,7 +31,42 @@ export default class MobileAddPostPage extends React.Component{
             editorContent: '',
             editorContentText: '',
             firstImg: '',
+            allLabel: [],
+            postLabel: [],
         }
+    }
+
+    componentWillMount() {
+        this.getLabelData();
+    }
+
+    getLabelData() {
+        // 用于取出目前所有的标签
+        Fetch.requestPost({
+            url: SelectLabel,
+            info: 'pageSize=100',
+            timeOut: 3000,
+        }).then ( 
+            data => {
+                if (data.status == 0) {
+                    this.setState({
+                        allLabel: data.resultBean.items,
+                    });
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
     }
 
     addPostData() {
@@ -44,15 +86,32 @@ export default class MobileAddPostPage extends React.Component{
             return ;
         }
 
+        if (this.state.postLabel.length == 0) {
+            message.error('请至少选择一个标签!');
+            return ;
+        }
+
+        this.setState({
+            submitting: true,
+        })
+
+        let labels = 0;
+        for (let i = 0 ; i < this.state.postLabel.length ; ++ i) {
+            labels |= 1 << this.state.postLabel[i];
+        }
+
         Fetch.requestPost({
             url: AddPostUrl,
             info: 'postTitle='+this.state.postTitle+'&firstImg='+this.state.firstImg
-                    +'&postBody='+encodeURI(replaceString(this.state.editorContent)),
+                    +'&postBody='+encodeURI(replaceString(this.state.editorContent))+'&postTag='+labels,
             timeOut: 3000,
         }).then(
             data => {
                 if (data.status == 0) {
-                    this.props.history.push('/mobile/forum/publishResult')
+                    this.props.history.push('/mobile/forum/publishResult');
+                    this.setState({
+                        submitting: false,
+                    });
                 }
                 else {
                     if (data.status < 100) {
@@ -77,6 +136,8 @@ export default class MobileAddPostPage extends React.Component{
         this.setState({ 
             editor 
         });
+
+        editor.customConfig.zIndex = 0;  // 防止wangeditor遮挡antd组件
         editor.customConfig.uploadImgShowBase64 = false   // 使用 base64 保存图片
         editor.customConfig.uploadFileName = 'myFileName';
         editor.customConfig.uploadImgServer = UploadImg;
@@ -124,14 +185,32 @@ export default class MobileAddPostPage extends React.Component{
         })
     }
 
+    handleSelectLabel = (value) => {
+        this.setState({
+            postLabel: value,
+        });
+    }
+
+    handleModalOk = () => {
+        this.addPostData();
+    }
+
+    handleModalCancel = () => {
+        this.setState({
+            visible: false,
+        })
+    }
+
 	render() {
 		return(
             <div>
                 <NavBar
                     mode="dark"
-                    icon={<Icon type="left" />}
+                    // icon={<Icon type="left" />}
+                    icon={<span>取消</span>}
                     onLeftClick={() =>  window.history.back(-1)}
-                    rightContent={<span style={{ fontSize: 13 }} onClick={() => this.addPostData()}>下一步</span>}
+                    // rightContent={<span style={{ fontSize: 13 }} onClick={() => this.addPostData()}>下一步</span>}
+                    rightContent={<span style={{ fontSize: 13 }} onClick={() => this.setState({ visible: true })}>下一步</span>}
                 >发表帖子</NavBar>
                 
                 <TextareaItem
@@ -146,6 +225,38 @@ export default class MobileAddPostPage extends React.Component{
                 <div style={{ backgroundColor: '#ffffff' }}>
                     <div ref="editorElem" className="toolbar" />
                 </div>
+
+                <Modal
+                    title="选择标签"
+                    visible={this.state.visible}
+                    onOk={this.handleModalOk}
+                    onCancel={this.handleModalCancel}
+                    okText="发布"
+                    cancelText="取消"
+                    okButtonProps={{
+                        loading: this.state.submitting,
+                    }}
+                    cancelButtonProps={{
+                        disabled: this.state.submitting,
+                    }}
+                >
+                <Select
+                    mode="multiple"
+                    value={this.state.postLabel}
+                    style={{ width: '100%' }}
+                    placeholder="帖子的标签"
+                    onChange={this.handleSelectLabel}
+                    allowClear
+                >
+                {
+                    this.state.allLabel.map((item) => 
+                        <Option key={item.labelId} value={item.flag}>
+                            <Tag color={item.labelColor} key={item.labelId} > {item.labelName} </Tag>
+                        </Option>
+                    )
+                }
+                </Select>
+                </Modal>
             </div>
 		);
 	}

@@ -197,7 +197,7 @@
 			<if test="map.userId != null">
 				AND a.userId = #{map.userId}
 			</if>
-			<if test="map.userName != null">findUserListByQueryMap
+			<if test="map.userName != null">
 				AND a.userName like CONCAT ('%', #{map.userName}, '%')
 			</if>
 			<if test="map.studentId != null">

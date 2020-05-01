@@ -285,7 +285,7 @@ export default class MobilePostList extends React.Component {
                 this.setState({
                     order: 'like',
                 }, () => emitter.emit("refresh", "较赞在前"));
-            } else if (buttonIndex == 1) {
+            } else if (buttonIndex == 2) {
                 this.props.history.push('/mobile/forum/addPost');
             }
         });

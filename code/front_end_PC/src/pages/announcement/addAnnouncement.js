@@ -347,6 +347,7 @@ class AddAnnouncementEditView extends React.Component {
         this.setState({
             editor: editor,
         })
+        editor.customConfig.zIndex = 0;  // 防止wangeditor遮挡antd组件
         editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
         editor.customConfig.uploadFileName = 'myFileName';
         editor.customConfig.uploadImgServer = UploadImg;

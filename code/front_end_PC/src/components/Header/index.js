@@ -52,12 +52,12 @@ class Header extends React.Component {
             message.error('连接超时! 请检查服务器是否启动.');
         });
         
-        // setInterval(() => {
-        //     let sysTime = Util.formateDate();
-        //     this.setState({
-        //         sysTime
-        //     })
-        // }, 1000);
+        setInterval(() => {
+            let sysTime = Util.formateDate();
+            this.setState({
+                sysTime
+            })
+        }, 1000);
         // 由于每秒的刷新, 控制台太多信息, 不方便调试. 开发阶段可以不用开着
     }
 

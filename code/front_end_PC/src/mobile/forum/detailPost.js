@@ -501,7 +501,7 @@ export default class MobileDetailPost extends React.Component {
     handleShowDetailPostActionSheet = () => {
         let BUTTONS = ['回复', '举报', '取消'];   // ordinnary
         if (this.state.isSame) {
-            BUTTONS = ['修改帖子', '修改标签', '回复', '删除', '取消']; // my 因为点击的事件都变了, 所以得重新写一个
+            BUTTONS = ['修改帖子', '回复', '删除', '取消']; // my 因为点击的事件都变了, 所以得重新写一个
             ActionSheet.showActionSheetWithOptions({
                 options: BUTTONS,
                 cancelButtonIndex: BUTTONS.length - 1,
@@ -510,9 +510,9 @@ export default class MobileDetailPost extends React.Component {
             },
             (buttonIndex) => {
                 if (buttonIndex == 0) this.props.history.push('/mobile/forum/modifyPost/'+this.props.match.params.id);
-                else if (buttonIndex == 1) this.props.history.push('/mobile/forum/postLabel/'+this.props.match.params.id)
-                else if (buttonIndex == 2) this.customFocusInst.focus();
-                else if (buttonIndex == 3) {
+                // else if (buttonIndex == 1) this.props.history.push('/mobile/forum/postLabel/'+this.props.match.params.id)
+                else if (buttonIndex == 1) this.customFocusInst.focus();
+                else if (buttonIndex == 2) {
                     alert('删除这篇帖子后将无法恢复,是否确定删除?', '', [
                         { text: '取消' },
                         {

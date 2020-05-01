@@ -226,6 +226,7 @@ class AddPostEditView extends React.Component {
         // 只要第一张图
         let tmpFirstImg = this.state.firstImg;
 
+        editor.customConfig.zIndex = 0;  // 防止wangeditor遮挡antd组件
         editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
         editor.customConfig.uploadFileName = 'myFileName';
         editor.customConfig.uploadImgServer = UploadImg;
