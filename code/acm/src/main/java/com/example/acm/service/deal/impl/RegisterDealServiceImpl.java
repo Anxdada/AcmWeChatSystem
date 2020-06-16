@@ -35,8 +35,26 @@ public class RegisterDealServiceImpl implements RegisterDealService {
      * @param user 操作人
      * @return
      */
-    public ResultBean addRegister(User user) {
+    public ResultBean addRegister(User user, long announcementId) {
         try {
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("announcementId", announcementId);
+            map.put("registerUserId", user.getUserId());
+            List<Register> list = registerService.findRepeatRegisterUser(map);
+            if (!list.isEmpty()) return new ResultBean(ResultCode.REGISTER_FAIL);
+
+            Register register = new Register();
+//            System.out.println("xierenyi " + announcementId);
+            register.setAnnouncementId(announcementId);
+            register.setRegisterTime(new Date());
+            register.setRegisterUserId(user.getUserId());
+            register.setStudentId(user.getStudentId());
+            register.setRealName(user.getRealName());
+            register.setUpdateUser(user.getUserId());
+            register.setUpdateTime(new Date());
+
+            registerService.addRegister(register);
 
             return new ResultBean(ResultCode.SUCCESS);
 

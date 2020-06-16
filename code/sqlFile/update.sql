@@ -54,3 +54,7 @@ UPDATE post tt SET tt.firstImg = "http://localhost:9999/photo/1dd02911-10e4-4abc
 UPDATE post tt SET tt.firstImg = "http://localhost:9999/photo/04d8d1fa-8850-43c0-a98f-41fba42773b1.jpg" where tt.postId = 38;
 
 alter table register change column userId registerUserId bigint(20);
+
+
+
+UPDATE announcement tt SET tt.createTime = 2020-06-01 where announcementId = 2;

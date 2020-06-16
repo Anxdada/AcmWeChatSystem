@@ -16,7 +16,7 @@ public interface RegisterDealService {
      * @param user 操作人
      * @return
      */
-    public ResultBean addRegister(User user);
+    public ResultBean addRegister(User user, long announcementId);
 
     /**
      *  删除一个报名
@@ -44,4 +44,5 @@ public interface RegisterDealService {
      * @param studentId 搜索的学号
      */
     public ResultBean selectRegister(long announcementId, String studentId);
+
 }

@@ -30,7 +30,8 @@ public enum ResultCode {
     TASK_IS_CONDUCTING(20, "关联任务进行中"),
     USER_NOT_ADMIN(21, "用户不是管理员"),
     USER_EXEIST(22, "该用户已存在"),
-    SQL_NULL_RECODE(23, "数据中没有满足条件的记录");
+    SQL_NULL_RECODE(23, "数据中没有满足条件的记录"),
+    REGISTER_FAIL(24, "请勿重复报名");
 
     private final int status;  // code
     private String msg;

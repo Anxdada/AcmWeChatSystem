@@ -144,6 +144,33 @@ class EditRegisterTable extends React.Component {
         ];
     }
 
+    handleDelete(registerId) {
+        Fetch.requestPost({
+            url: DeleteRegisterTable,
+            info: 'registerId='+registerId,
+            timeOut: 3000,
+        }).then(
+            data => {
+                if (data.status == 0) {
+                    message.success('删除成功!');
+                    emitter.emit("refresh", "删除");
+                } else {
+                    if (data.status < 100) {
+                        message.error(data.msg);
+                    } else {
+                        notification.error({
+                            message: data.error,
+                            description: data.message
+                        });
+                    }
+                }
+            }
+        ).catch( err => {
+            // console.log("err", err);
+            message.error('连接超时! 请检查服务器是否启动.');
+        });
+    }
+
     isEditing = record => {
         // console.log(record);
         return record.registerId === this.state.editingKey;

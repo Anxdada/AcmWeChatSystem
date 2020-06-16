@@ -363,7 +363,7 @@ class ModifyAnnouncementPublishView extends React.Component {
                     this.state.isPublish == 1 ? null : 
                     <Button type="dashed" onClick={() => this.handlePublish(0)} loading={this.state.loading}> 存为草稿 </Button>
                 }
-                <Button type="primary" onClick={() => this.handlePublish(1)} loading={this.state.loading}>
+                <Button type="primary" onClick={() => this.handlePublish(1)} loading={this.state.loading} style={{ marginTop: 5 }}>
                 {
                     this.state.isPublish == 1 ? <span>修改提交</span> : <span>修改并发布</span>
                 }
@@ -461,6 +461,8 @@ class ModifyAnnouncementEditView extends React.Component {
         const elem = this.refs.editorElem
         const editor = new E(elem)
         this.setState({editor:editor})
+
+        editor.customConfig.zIndex = 0;  // 防止wangeditor遮挡antd组件
         editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
         editor.customConfig.uploadFileName = 'myFileName';
         editor.customConfig.uploadImgServer = UploadImg;

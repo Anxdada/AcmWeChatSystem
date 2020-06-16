@@ -270,6 +270,7 @@ class ModifyPostEditView extends React.Component {
         // 只要第一张图
         let tmpFirstImg = this.state.firstImg; // 异步请求的原因, 初始一定为空, 后面的判断逻辑就会出问题.
 
+        editor.customConfig.zIndex = 0;  // 防止wangeditor遮挡antd组件
         editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
         editor.customConfig.uploadFileName = 'myFileName';
         editor.customConfig.uploadImgServer = UploadImg;

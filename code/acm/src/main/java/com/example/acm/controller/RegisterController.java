@@ -28,7 +28,8 @@ public class RegisterController extends BaseController {
 
     @PostMapping("/addRegister")
     @ResponseBody
-    public ResultBean addRegister(HttpServletRequest request, HttpServletResponse response) {
+    public ResultBean addRegister(@RequestParam(value = "announcementId", required = true) long announcementId,
+                                    HttpServletRequest request, HttpServletResponse response) {
 
         User user = getUserIdFromSession(request);
         if (user == null) {
@@ -37,7 +38,7 @@ public class RegisterController extends BaseController {
             user.setUserId(longTwo);
         }
 
-        return registerDealService.addRegister(user);
+        return registerDealService.addRegister(user, announcementId);
 
     }
 

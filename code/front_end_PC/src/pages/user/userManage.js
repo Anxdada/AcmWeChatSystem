@@ -281,6 +281,7 @@ class UserTable extends React.Component {
         )
     }
 
+    // 二进制求 身份信息
     handleShowUserDetail = (record) => {
         // console.log(record);
         let authStr = ''; // 根据身份号组装身份字符串

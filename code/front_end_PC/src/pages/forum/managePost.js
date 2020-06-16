@@ -121,28 +121,28 @@ class PostTable extends React.Component {
                     </span>
                 ),
             },
-            {
-                title: '精热操作',
-                key: 'stopaction',
-                align: 'center',
-                render: (text, record) => (
-                    <span>
-                    {
-                        record.isHead == 0?<a><Tag color="#108ee9" onClick={()=>this.updatePostData("isHead", record)}>置顶</Tag></a>:
-                            <a ><Tag color="#FF0000" onClick={()=>this.updatePostData("isHead", record)}>取消置顶</Tag></a>
-                        // 暂时用state的, 实际直接用record的, 都是通过id操作的.
-                    }
-                    {
-                        record.isGreat == 0?<a><Tag color="#108ee9" onClick={()=>this.updatePostData("isGreat", record)}>加精</Tag></a>:
-                            <a ><Tag color="#FF0000" onClick={()=>this.updatePostData("isGreat", record)}>取消加精</Tag></a>
-                    }
-                    {
-                        record.isHot == 0?<a><Tag color="#108ee9" onClick={()=>this.updatePostData("isHot", record)}>加热</Tag></a>:
-                            <a ><Tag color="#FF0000" onClick={()=>this.updatePostData("isHot", record)}>取消加热</Tag></a>
-                    }
-                    </span>
-                ),
-            }
+            // {
+            //     title: '精热操作',
+            //     key: 'stopaction',
+            //     align: 'center',
+            //     render: (text, record) => (
+            //         <span>
+            //         {
+            //             record.isHead == 0?<a><Tag color="#108ee9" onClick={()=>this.updatePostData("isHead", record)}>置顶</Tag></a>:
+            //                 <a ><Tag color="#FF0000" onClick={()=>this.updatePostData("isHead", record)}>取消置顶</Tag></a>
+            //             // 暂时用state的, 实际直接用record的, 都是通过id操作的.
+            //         }
+            //         {
+            //             record.isGreat == 0?<a><Tag color="#108ee9" onClick={()=>this.updatePostData("isGreat", record)}>加精</Tag></a>:
+            //                 <a ><Tag color="#FF0000" onClick={()=>this.updatePostData("isGreat", record)}>取消加精</Tag></a>
+            //         }
+            //         {
+            //             record.isHot == 0?<a><Tag color="#108ee9" onClick={()=>this.updatePostData("isHot", record)}>加热</Tag></a>:
+            //                 <a ><Tag color="#FF0000" onClick={()=>this.updatePostData("isHot", record)}>取消加热</Tag></a>
+            //         }
+            //         </span>
+            //     ),
+            // }
         ];
     }
 

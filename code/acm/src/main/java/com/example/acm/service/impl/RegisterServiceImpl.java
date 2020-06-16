@@ -49,6 +49,13 @@ public class RegisterServiceImpl implements RegisterService {
     }
 
     /**
+     * 重复报名
+     */
+    public List<Register> findRepeatRegisterUser(Map<String, Object> map) {
+        return registerMapper.findRepeatRegisterUser(map);
+    }
+
+    /**
      * 根据查询条件获取Register列表
      *
      * @param map 查询条件

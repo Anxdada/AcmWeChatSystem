@@ -4,7 +4,7 @@ import { Divider, Typography, Icon, Comment, Avatar, message, notification, Tag}
 import { Link } from "react-router-dom";
 import { Modal, WingBlank, NavBar, WhiteSpace, Button, Toast } from 'antd-mobile';
 import Fetch from '../../fetch';
-import { DetailAnnouncementUrl, UpdateAnnouncementView } from '../../config/dataAddress';
+import { DetailAnnouncementUrl, AddRegisterTable, UpdateAnnouncementView } from '../../config/dataAddress';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 
@@ -91,7 +91,32 @@ export default class MobileDetailAnnouncement extends React.Component {
             ])
         }
         else {
-            Toast.info('报名成功!', 2);
+            Fetch.requestPost({
+                url: AddRegisterTable,
+                info: 'announcementId='+this.props.match.params.id,
+                timeOut: 3000,
+            }).then ( 
+                data => {
+                    if (data.status == 24) {
+                        Toast.info('你已经报过名了,请勿重复报名!', 2);
+                    }
+                    else if (data.status == 0) {
+                        Toast.info('报名成功!', 2);
+                    } else {
+                        if (data.status < 100) {
+                            message.error(data.msg);
+                        } else {
+                            notification.error({
+                                message: data.error,
+                                description: data.message
+                            });
+                        }
+                    }
+                }
+            ).catch( err => {
+                // console.log("err", err);
+                message.error('连接超时! 请检查服务器是否启动.');
+            });
         }
     }
 
@@ -103,7 +128,7 @@ export default class MobileDetailAnnouncement extends React.Component {
                             <Tag color="#f50">报名结束</Tag> :
                             <Tag color="green">正在报名</Tag>;
 
-        const disableRegister = moment().isAfter(this.state.registerEndTime) ? false : false;
+        const disableRegister = moment().isAfter(this.state.registerEndTime) ? true : false;
 
         const signUpComponent = this.state.isRegister == 0 ? null : 
                                 <div>

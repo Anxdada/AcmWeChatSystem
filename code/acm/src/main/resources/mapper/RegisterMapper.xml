@@ -20,6 +20,8 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="register.registerId != null">registerId,</if>
             <if test="register.announcementId != null">announcementId,</if>
+            <if test="register.registerTime != null">registerTime,</if>
+            <if test="register.registerUserId != null">registerUserId,</if>
             <if test="register.studentId != null">studentId,</if>
             <if test="register.realName != null">realName,</if>
             <if test="register.updateUser != null">updateUser,</if>
@@ -30,6 +32,8 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="register.registerId != null">#{register.registerId},</if>
             <if test="register.announcementId != null">#{register.announcementId},</if>
+            <if test="register.registerTime != null">#{register.registerTime},</if>
+            <if test="register.registerUserId != null">#{register.registerUserId},</if>
             <if test="register.studentId != null">#{register.studentId},</if>
             <if test="register.realName != null">#{register.realName},</if>
             <if test="register.updateUser != null">#{register.updateUser},</if>
@@ -69,7 +73,7 @@
         </trim>
     </select>
 
-    <!-- 查找相同的比赛报名中是否有Register的学号相同的! -->
+    <!-- 查找学号相同的人! -->
     <select id="findRegisterByStudentId" resultType="com.example.acm.entity.Register">
         SELECT
             a.*
@@ -78,6 +82,23 @@
         <trim prefix="WHERE" prefixOverrides="AND|OR">
             <if test="studentId != null ">
                 AND a.studentId=#{studentId}
+            </if>
+            AND a.isEffective=1
+        </trim>
+    </select>
+
+    <!-- 查找相同的比赛报名中是否重复报名 -->
+    <select id="findRepeatRegisterUser" resultType="com.example.acm.entity.Register">
+        SELECT
+        a.*
+        FROM
+        register a
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="map.registerUserId != null ">
+                AND a.registerUserId=#{map.registerUserId}
+            </if>
+            <if test="map.announcementId != null ">
+                AND a.announcementId=#{map.announcementId}
             </if>
             AND a.isEffective=1
         </trim>

@@ -38,6 +38,14 @@ public interface RegisterMapper {
      */
     public List<Register> findRegisterByStudentId(@Param("studentId") long studentId);
 
+
+    /**
+     * 防止重复报名
+     *
+     * @return
+     */
+    public List<Register> findRepeatRegisterUser(@Param("map") Map<String, Object> map);
+
     /**
      * 根据查询条件获取Register列表
      *

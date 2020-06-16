@@ -104,7 +104,7 @@ export default class MobileSearchPostPage extends React.Component {
             timeOut: 3000,
         }).then ( 
             data => {
-                console.log(data);
+                // console.log(data);
                 if (data.status == 0) {
                     if(data.resultBean.currentPage > 0) {
                         this.setState({ nowPage: data.resultBean.currentPage });

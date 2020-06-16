@@ -41,6 +41,10 @@ public interface RegisterService {
      */
     public List<Register> findRegisterListByQueryMap(Map<String, Object> map);
 
+    /**
+     * 重复报名
+     */
+    public List<Register> findRepeatRegisterUser(Map<String, Object> map);
 
     /**
      * 根据查询条件获取Register列表
