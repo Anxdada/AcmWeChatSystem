@@ -1,7 +1,8 @@
 # 微信公众号
-前端手机页面
-前端后台页面
-后台管理系统
+ - code 文件夹是所有代码的存放处. 包括前后端以及数据库数据等
+ - document 文件夹是存放所有的相关文档
+ - image 文件夹是有关系统中用到的图片和文档中图片的存放处
+ - commit.sh 是提交到git仓库的脚本
 
 # Based On
  ![在这里插入图片描述](https://img-blog.csdnimg.cn/20191214173318266.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0FueGRhZGE=,size_16,color_FFFFFF,t_70)
@@ -27,5 +28,7 @@
 
 静态资源保存在本地, document -> images
 
-后期可能会接入线上练练这方面的能力
+后期可能会接入线上
+
+本系统尚未上线, 未在真实环境下(即微信中)测验
 
